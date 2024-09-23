@@ -1,0 +1,31 @@
+.cke_top{padding: 6px 8px 2px !important;}
+.cke_toolgroup{margin: 0 6px 5px 0 !important;}
+a.cke_button{height:24px !important;}
+.mb-board .cke_inner span.cke_combo_text{padding-left: 10px !important;}
+.mb-board .cke_inner .cke_combo {
+    margin-bottom: 5px !important;
+}
+.mb-board .cke_inner .cke_toolbox .cke_toolbar_separator {
+    margin: 4px 2px 0 2px !important;
+}
+.mb-board .cke_inner .cke_toolbox .cke_combo_open {
+    margin: 1px 10px 1px !important;
+}
+.mb-board .cke_inner .cke_toolbox .cke_combo_arrow {
+    margin: 11px 0 0 !important;
+}
+.mb-board .cke_inner .cke_toolbox .cke_button_arrow {
+    margin: 8px 0 0 3px !important;
+}
+.mb-board .cke_inner .cke_toolbox a.cke_button_expandable {
+    padding: 4px 5px !important;
+}
+body.mb-editor-ck{
+	margin: 15px !important;
+}
+body .cke_notification.cke_notification_warning { display: none !important; }
+body .cke_dialog a.cke_dialog_tab{
+	box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+}

@@ -1,0 +1,60 @@
+.mb-pop p{margin:0px !important;padding:0 !important;}
+.mb-pop ul{margin:0px !important;padding:6px 8px 4px !important;}
+.mb-pop ul.list-unstyled{list-style:none !important;}
+.mb-pop li{margin:0px !important;padding:0 0 2px !important;line-height:16px !important;}
+
+.mb-pop{display:none; position:absolute;left:0;top:0;color:#333333 !important;background-color:#FAFAFA;text-align:center !important;}
+.mb-pop .pop-title-head{font-size:16px !important;padding:9px 0 9px !important;border-bottom:1px solid #999;background-color:#525252;color:#FFF;font-weight:600 !important;text-align:center !important;}
+.mb-pop .pop-title-message{font-size:15px;padding:27px 10px 4px !important;line-height:22px !important;font-weight:400 !important;text-align:center !important;word-break: keep-all !important;}
+.pop-confirm, .pop-alert{-webkit-box-shadow: 1px 1px 3px #939393;box-shadow: 1px 1px 3px #939393;}
+
+.pop-info{z-index:9999991;overflow-y:auto;border: 1px solid #AAA;}
+.pop-html{z-index:9999992;display:none; position:absolute;left:0;top:0;text-align:center !important;overflow-y:auto;}
+.pop-confirm{z-index:9999993;overflow-y:auto;}
+.pop-alert{z-index:9999994;overflow-y:auto;}
+
+.pop-bg{display:none;background-image: url(../images/bg_popup_black.png); position: absolute; width:100%; left:0; top:0;z-index: 9999990;}
+.mb-pop .pop-title{padding:0px 0px 3px !important;font-weight:bold;line-height:1.4 !important;}
+.mb-pop .pop-title-confirm{padding:18px 0px 8px !important;line-height:1.6 !important;font-size:14px;}
+
+.mb-pop .pop-form{margin:0px !important;padding:0px !important;}
+.mb-pop .btn-box{padding:10px 0 0 !important;}
+.pop-input-passwd{width: 180px !important;margin:0 auto !important;vertical-align: middle;text-align:center;} 
+
+.mb-pop .pop-user-menu .pop-info-head{margin:0px 3px !important;padding:4px 2px 3px !important;border-bottom:1px solid #BBB;font-size:13px;}
+.mb-pop .pop-user-menu .pop-info-body{padding:5px 8px !important;text-align:left;font-size:12px;}
+.mb-pop .pop-user-menu .pop-info-body li{padding-top:3px !important;}
+
+.mb-pop ul.list-unstyled{list-style:none !important;}
+
+
+/* button style start */
+.mb-pop div.btn-box-right {padding:15px 0 0 ;text-align:right;}
+.mb-pop div.btn-box-center {padding:15px 0 0;text-align:center;}
+.mb-pop div.btn-box-left {padding:15px 0 0;text-align:left;}
+.mb-pop .btn-box-right .btn{margin:0 0 0 8px;}
+.mb-pop .btn-box-left .btn{margin:0 8px 0 0;}
+.mb-pop div a{border:none;}
+.mb-pop a,.mb-widgets-login button{text-decoration:none !important;color:#333333 !important;background:none;}
+.mb-pop a:hover,.mb-widgets-login button:hover{text-decoration:none; cursor:pointer !important;color:#333 !important;background:none;}
+.mb-pop button:hover{background-color:#F3F3F3 !important;}
+
+.mb-pop .btn {display:inline-block;*height:30px !important;text-decoration:none !important; font-weight:600;font-size:15px;line-height:18px !important;vertical-align: top !important;margin-top:0 !important;margin-bottom:0 !important;}
+.mb-pop .btn-default{padding:5px 12px 5px;border: 1px solid #ccc;-webkit-border-radius:3px;-moz-border-radius:3px;-khtml-border-radius:3px;border-radius:3px;background-color:#F0F0F0 !important;height:30px !important;} 
+/* button style end */
+
+.mb-board .pop-alert{width:100% !important;max-width:312px !important; padding-bottom: 20px !important;}
+.mb-board .pop-confirm{width:100% !important;max-width:312px !important; padding: 0px 0 20px !important;}
+
+.mb-board .input-focus,
+.mb-board .mb-input-focus{border:2px solid #D00 !important;}
+
+
+/* mobile style start*/
+.mb-board .mb-mobile .pop-alert,.mb-board .mb-mobile .pop-confirm{width:100% !important;max-width:294px !important;}
+/* mobile style end */
+
+.mb-board .pop-main .pop-confirm,.mb-board .pop-main .pop-alert {opacity:0.6;transition: opacity 0.1s, transform 0.1s; -webkit-transform:scale3d(0.95,0.95,1);-moz-transform:scale3d(0.95,0.95,1);-o-transform:scale3d(0.95,0.95,1);}
+.mb-board .pop-main .mb-ani-pop-open {opacity:1;  -webkit-transform:scale3d(1,1,1) !important;-moz-transform:scale3d(1,1,1) !important;-o-transform:scale3d(1,1,1) !important;}
+.mb-board .pop-main .pop-info {opacity:0.6;transition: opacity 0.15s}
+.mb-board .pop-main .mb-ani-pop-fadein {opacity:1; }

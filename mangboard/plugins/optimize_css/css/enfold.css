@@ -1,0 +1,8 @@
+#top .mb-board select,
+#top .entry-content-wrapper .mb-board select{display:inline-block; appearance:menulist;-moz-appearance:menulist;-webkit-appearance:menulist;}
+
+div ul.mb-sub-menu1 {list-style:none !important;}
+#menu-main_menu {list-style:none !important;}
+body ul.mb-sub-menu1 li{border-top:1px solid #EEE;padding:15px 10px;font-size:15px;}
+body ul.mb-sub-menu1 li a{color:#333 !important;text-decoration:none !important;}
+
