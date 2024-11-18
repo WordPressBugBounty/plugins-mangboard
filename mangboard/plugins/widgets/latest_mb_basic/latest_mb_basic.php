@@ -187,7 +187,7 @@ if(!function_exists('mbw_get_latest_mb_basic')){
 		}
 
 		//필요한 게시판 필드 이름 가져오기
-		$select_field			= array("fn_pid","fn_title","fn_category1","fn_category2","fn_category3","fn_image_path","fn_reg_date","fn_comment_count","fn_homepage");
+		$select_field			= array("fn_pid","fn_title","fn_category1","fn_category2","fn_category3","fn_is_show","fn_image_path","fn_reg_date","fn_comment_count","fn_homepage");
 		if(!empty($search_field) && $search_text!="") $select_field[]			= $search_field;
 		$board_field			= $mstore->get_board_select_fields($select_field,$name);
 
@@ -205,8 +205,9 @@ if(!function_exists('mbw_get_latest_mb_basic')){
 		
 		$table_name				= mbw_get_table_name($name);
 
-		$where_query				= "";
+		$where_query			= "";
 		$where_data				= array();
+		$where_data[]			= $board_field["fn_is_show"].'=1';
 		if(!empty($date_after)){
 			$where_data[]		= $mdb->prepare($board_field["fn_reg_date"].">%s",$date_after);
 		}

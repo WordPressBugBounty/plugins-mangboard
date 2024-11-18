@@ -212,7 +212,7 @@ if(mbw_get_param("mode")=="user"){
 			mbw_set_board_items_query($select_query);
 
 			if($list_data["total_count"] > 0){
-				$list_index		= (intval(mbw_get_board_option("fn_page_size"))*(intval(mbw_get_param("board_page")-1)))+1;
+				$list_index		= (intval(mbw_get_board_option("fn_page_size"))*(intval(mbw_get_param("board_page"))-1))+1;
 				foreach(mbw_get_board_items() as $item){
 					mbw_set_board_item($item);
 					if(intval(mbw_get_board_item("fn_is_notice"))==1){

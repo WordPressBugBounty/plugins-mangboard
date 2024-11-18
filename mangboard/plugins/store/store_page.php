@@ -57,22 +57,22 @@ if(!defined('_MB_')) exit();
 do_action('mbw_store_page_init');
 
 $category1			= "";
-$product_pid		= "";
+$product_pid			= "";
 $send_data			= array();
 if(!empty($_GET["category"])){
-	$category1						= $_GET["category"];
+	$category1						= mbw_value_filter($_GET["category"]);
 	$send_data['category1']		= $category1;
 }
 if(!empty($_GET["install_product"])){
-	$product_pid					= $_GET["install_product"];
+	$product_pid					= mbw_value_filter($_GET["install_product"],"int");
 	$send_data['product_pid']	= $product_pid;
-	if(!empty($_GET["cid"])) $send_data['cid']	= $_GET["cid"];
-	if(!empty($_GET["token"])) $send_data['token']	= $_GET["token"];
+	if(!empty($_GET["cid"])) $send_data['cid']	= mbw_value_filter($_GET["cid"]);
+	if(!empty($_GET["token"])) $send_data['token']	= mbw_value_filter($_GET["token"]);
 }else if(!empty($_GET["delete_product"])){
-	$delete_pid					= $_GET["delete_product"];
+	$delete_pid					= mbw_value_filter($_GET["delete_product"],"int");
 	$send_data['delete_pid']	= $delete_pid;
-	if(!empty($_GET["cid"])) $send_data['cid']	= $_GET["cid"];
-	if(!empty($_GET["token"])) $send_data['token']	= $_GET["token"];
+	if(!empty($_GET["cid"])) $send_data['cid']	= mbw_value_filter($_GET["cid"]);
+	if(!empty($_GET["token"])) $send_data['token']	= mbw_value_filter($_GET["token"]);	
 }
 if(!function_exists('curl_init')){
 	echo '<div class="mb-board"><div class="message-panel"><div style="font-size:15px;font-weight:600;">Error : Call to undefined function curl_init()</div><div style="font-size:15px;font-weight:600;">(스토어 연결 기능을 이용하기 위해서는 PHP - curl_init 모듈을 설치해 주셔야 합니다)</div></div></div>';	

@@ -143,7 +143,7 @@ function sendBoardListDataHandler(response, state)
 			<tbody id="<?php echo esc_attr($mb_board_name);?>_board_body">
 			<?php			
 			if($list_data["total_count"] > 0){
-				$list_index		= (intval(mbw_get_board_option("fn_page_size"))*(intval(mbw_get_param("board_page")-1)))+1;
+				$list_index		= (intval(mbw_get_board_option("fn_page_size"))*(intval(mbw_get_param("board_page"))-1))+1;
 				$contentbox	= false;
 				if(strpos($model_data,'"onclick":"openContents(this,\'\',')!==false){
 					$contentbox			= true;

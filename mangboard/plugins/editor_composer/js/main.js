@@ -1,4 +1,4 @@
-function mb_insertEditorLayout(editor_id,type){	
+function mb_insertEditorLayout(editor_id,type){
 	var insert_html		= '	';	
 	var inner_html		= '';
 	var outer_html		= '';
@@ -129,9 +129,13 @@ function mb_insertEditorVideo(editor_id) {
 		}else{
 			var add_attribute		= ' allow="autoplay"';
 			if(cinput.indexOf("youtube.com")!=-1){
-				vinput				= vinput.replace("youtube.com/watch?v=","youtube.com/embed/");
+				if(cinput.indexOf("youtube.com/watch?v=")!=-1){
+					vinput				= vinput.replace("youtube.com/watch?v=","youtube.com/embed/");				
+				}else if(cinput.indexOf("youtube.com/shorts/")!=-1){
+					vinput				= vinput.replace("youtube.com/shorts/","youtube.com/embed/");
+				}				
 			}else if(cinput.indexOf("youtu.be")!=-1){
-				vinput				= vinput.replace("youtu.be","youtube.com/embed/");
+				vinput				= vinput.replace("youtu.be/","youtube.com/embed/");			
 			}else if(cinput.indexOf("vimeo.com")!=-1){
 				if(cinput.indexOf("player.vimeo.com/video")==-1){
 					vinput				= vinput.replace("vimeo.com","player.vimeo.com/video");

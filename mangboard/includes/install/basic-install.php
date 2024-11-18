@@ -104,7 +104,7 @@ if(!function_exists('mbw_basic_install')){
 		$options_rows['ecomposer_use_board']		= "('setup', 'editor', 'W_ECOMPOSER_USE_BOARD', 'ecomposer_use_board', '', '', '', '', '', '', '', 'text', '<br>MSG_ECOMPOSER_USE_BOARD_DESC',1)";	
 		$options_rows['ecomposer_use_level']		= "('setup', 'editor', 'W_ECOMPOSER_USE_LEVEL', 'ecomposer_use_level', '0', '0,1,2,3,4,5,6,7,8,9,10,11', '0,1,2,3,4,5,6,7,8,9,10,11', '', '', '', '', 'select', '<br>MSG_ECOMPOSER_USE_LEVEL_DESC',1)";
 
-		$options_rows['upload_file_size']				= "('setup', 'file', 'W_UPLOAD_SIZE', 'upload_file_size', '4', '', '', '', 'width:100px;', '', 'maxlength=\"5\"', 'text', '<br>MSG_FILE_UPLOAD_SIZE',1)";
+		$options_rows['upload_file_size']				= "('setup', 'file', 'W_UPLOAD_SIZE', 'upload_file_size', '8', '', '', '', 'width:100px;', '', 'maxlength=\"5\"', 'text', '<br>MSG_FILE_UPLOAD_SIZE',1)";
 		$options_rows['make_img_small_size']		= "('setup', 'file', 'W_IMAGE_SIZE_SMALL', 'make_img_small_size', '480', '', '', '', 'width:100px;', 'onkeydown=\"return inputOnlyNumber(event)\"', 'maxlength=\"5\"', 'text', '<br>MSG_MAKE_IMAGE_SMALL_DESC',1)";
 		$options_rows['make_img_middle_size']		= "('setup', 'file', 'W_IMAGE_SIZE_MIDDLE', 'make_img_middle_size', '0', '', '', '', 'width:100px;', 'onkeydown=\"return inputOnlyNumber(event)\"', 'maxlength=\"5\"', 'text', '<br>MSG_MAKE_IMAGE_MIDDLE_DESC',1)";
 		$options_rows['login_log']						= "('setup', 'log', 'W_LOGIN_LOG', 'login_log', '1', '0,1', 'W_OFF_ON', '', '', '', '', 'radio', '<br>MSG_LOG_SAVE_SHOW',1)";

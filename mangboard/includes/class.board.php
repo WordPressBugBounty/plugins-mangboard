@@ -43,8 +43,12 @@ class MangBoard
 			if(function_exists('mbw_set_search_field')) mbw_set_search_field($args);
 		}
 		if(!empty($args['write_next_url'])){
-			mbw_set_option("write_next_page","url");
-			mbw_set_option("write_next_url",mbw_validate_redirect(trim($args['write_next_url'])));
+			if($args['write_next_url']=="write" || $args['write_next_url']=="referer"){
+				mbw_set_option("write_next_page",$args['write_next_url']);
+			}else{
+				mbw_set_option("write_next_page","url");
+				mbw_set_option("write_next_url",mbw_validate_redirect(trim($args['write_next_url'])));
+			}
 		}
 		if(mbw_get_param("mode")=="view" && mbw_get_param("board_pid")==""){
 			$where_query		= "";

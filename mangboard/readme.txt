@@ -3,9 +3,9 @@ Contributors: kitae-park
 Donate link: http://www.mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 5.5.1
-Stable tag: 1.8.4
+Stable tag: 1.8.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,10 +108,20 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 == Upgrade Notice ==
 
-= 2.2.0 =
+= 2.3.0 =
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.3.1 (1.8.5) =
+* 보안 기능 수정 [패치스택(Patchstack)에서 보안점검을 통해 알려주신 보안사항 수정]
+* 파일 업로드 허용 확장자에 hwpx 확장자 추가
+* minor bug 수정
+
+= 2.3.0 =
+* 구글 전환 추적 기능 수정 (상품 페이지 접속, 결제 이벤트 발생시 상품 정보 전송)
+* 망보드 호환성 향상을 위한 CSS 코드 수정
+* minor bug 수정
 
 = 2.2.9 (1.8.4) =
 * 에디터에서 video 태그를 추가할 수 있도록 htmlpurifier 보안설정 수정

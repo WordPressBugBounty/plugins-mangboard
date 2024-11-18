@@ -106,7 +106,8 @@ if(!function_exists('mbw_get_htmlpurify')){
 		$config->set('Cache.SerializerPath', rtrim(MBW_UPLOAD_PATH,'/'));
 
 		$def = $config->getHTMLDefinition(true);
-		$def->addElement('video','Block','Flow','Common', array('src' => 'URI','width' => 'Length','height' => 'Length', 'type' => 'Text','poster' => 'URI','style' => 'Text','id' => 'Text','controls' =>'Bool','autoplay' =>'Bool','muted' =>'Bool','playsinline' => 'Bool','loop' => 'Bool'));
+		$def->addElement('video','Block','Flow','Common', array('src'=>'URI','width'=>'Length','height'=>'Length', 'type'=>'Text','poster'=>'URI','style'=>'Text','id'=>'Text','controls' =>'Bool','autoplay' =>'Bool','muted' =>'Bool','playsinline'=>'Bool','loop'=>'Bool'));
+		$def->addElement('input', 'Block', 'Flow', 'Common', array('type'=>'Text', 'id'=>'Text', 'name'=>'Text', 'value'=>'Text', 'checked'=>'Bool'));
 		$def->addAttribute('iframe', 'allowfullscreen', 'Bool');
 
 		$purifier			= new HTMLPurifier($config);

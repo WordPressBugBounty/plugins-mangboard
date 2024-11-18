@@ -206,6 +206,9 @@
 .mb-board .btn-box-right>.btn-box-left{padding:0;}
 .mb-board .btn-box-right .btn{margin:0 0 0 9px;}
 .mb-board .btn-box-left .btn{margin:0 9px 0 0;}
+.mb-board .list-btn .btn-box-right .btn,.mb-board .list-btn .btn-box-left .btn,.mb-board .list-btn .btn-box-center .btn,
+.mb-board .write-btn .btn-box-right .btn,.mb-board .write-btn .btn-box-left .btn,.mb-board .write-btn .btn-box-center .btn,
+.mb-board .view-btn .btn-box-right .btn,.mb-board .view-btn .btn-box-left .btn,.mb-board .view-btn .btn-box-center .btn{margin-bottom: 7px;}
 
 
 .mb-board div a{border:none;}
@@ -290,7 +293,7 @@ btn-write,btn-modify,btn-reply,btn-delete,btn-list,btn-ok,btn-cancel,btn-cmt,btn
 
 
 /* mobile style start*/
-.mb-mobile .list-title{padding:8px 5px 6px 10px !important;position:relative;font-size:15px !important;}
+.mb-mobile .list-title{padding:8px 5px 6px 10px !important;position:relative;font-size:14px !important;}
 .mb-mobile .info-group>span{display:inline-block;margin-right:12px !important;font-size:13px !important;color:#999}
 .mb-mobile .cmt-count{font-size:13px !important;color:#999 !important;}
 .mb-mobile .cmt-list-box{padding:1px 4px 6px !important;}

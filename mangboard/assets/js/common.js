@@ -608,6 +608,7 @@ function sendContentDataHandler(response, state){
 		//openTarget.next().fadeIn('slow');
 		openTarget.next().show();
 		openTarget.next().find(".mb-open-slide").slideDown(300);
+		openTarget.find(".mb-icon-box").addClass('mb-icon-close');
 	}else{
 		showAlertPopup(response);
 	}

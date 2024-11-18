@@ -398,7 +398,12 @@ if(!function_exists('mbw_plugin_trigger_check')){
 			if(strpos($file_content, 'tempfile_')===0){
 				if(strpos($file_content, 'tempfile_excel')===0){
 					$file_path		= MBW_UPLOAD_PATH.'excel/'.$file_content.'.xlsx';
-					$file_name	= str_replace(".xls", ".xlsx", $file_name);
+					$file_ext		= array_pop(explode('.',$file_name));
+					if($file_ext=="xls"){
+						$file_name	= str_replace(".xls", ".xlsx", $file_name);
+					}
+				}else if(strpos($file_content, 'tempfile_word')===0){
+					$file_path		= MBW_UPLOAD_PATH.'word/'.$file_content.'.docx';
 				}
 			}
 			$file_name		= strip_tags($file_name);
