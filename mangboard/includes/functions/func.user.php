@@ -1,6 +1,6 @@
 <?php
-if(!function_exists('mbw_set_user_point')){
-	function mbw_set_user_point($target,$action,$add_point=0,$user_pid="0",$user_name=""){
+if(!function_exists('mbw_set_user_point2')){
+	function mbw_set_user_point2($target,$action,$add_point=0,$user_pid="0",$user_name="",$data=array()){
 		global $mstore,$mdb;
 		global $mb_admin_tables,$mb_fields,$mb_board_table_name,$mb_comment_table_name;
 		$point		= 0;
@@ -18,12 +18,19 @@ if(!function_exists('mbw_set_user_point')){
 					$point		= $point*(-1);
 					$comment_pid	= mbw_get_param("comment_pid");
 					if(!empty($comment_pid)){
-						$user_pid		= $mdb->get_var($mdb->prepare("select ".$mb_fields["select_comment"]["fn_user_pid"]." from `".$mb_comment_table_name."` where `".$mb_fields["select_comment"]["fn_pid"]."`=%d limit 1", $comment_pid));
+						$row		= $mdb->get_row($mdb->prepare("select ".$mb_fields["select_comment"]["fn_user_pid"].",".$mb_fields["select_comment"]["fn_content"]." from `".$mb_comment_table_name."` where `".$mb_fields["select_comment"]["fn_pid"]."`=%d limit 1", $comment_pid),ARRAY_A);
+						if(!empty($row)){
+							$user_pid		= $row[$mb_fields["select_comment"]["fn_user_pid"]];
+							$data["title"]	= $row[$mb_fields["select_comment"]["fn_content"]];
+						}
 					}
 				}
 				if($point<0){
 					$sign			= "-";
 					$point		= $point*(-1);
+				}
+				if(mbw_get_param("content")!=""){
+					$data["title"]	= mbw_get_param("content");
 				}
 			}else if($target=="board"){
 				$sign			= "+";
@@ -33,12 +40,19 @@ if(!function_exists('mbw_set_user_point')){
 					$point			= intval(mbw_get_board_option("fn_point_board_write"))*(-1);
 					$board_pid		= mbw_get_param("board_pid");
 					if(!empty($board_pid)){
-						$user_pid		= $mdb->get_var($mdb->prepare("select ".$mb_fields["select_board"]["fn_user_pid"]." from `".$mb_board_table_name."` where `".$mb_fields["select_board"]["fn_pid"]."`=%d limit 1", $board_pid));
+						$row		= $mdb->get_row($mdb->prepare("select ".$mb_fields["select_board"]["fn_user_pid"].",".$mb_fields["select_board"]["fn_title"]." from `".$mb_board_table_name."` where `".$mb_fields["select_board"]["fn_pid"]."`=%d limit 1", $board_pid),ARRAY_A);
+						if(!empty($row)){
+							$user_pid		= $row[$mb_fields["select_board"]["fn_user_pid"]];
+							$data["title"]	= $row[$mb_fields["select_board"]["fn_title"]];
+						}
 					}
 				}
 				if($point<0){
 					$sign			= "-";
 					$point		= $point*(-1);
+				}
+				if(mbw_get_param("title")!=""){
+					$data["title"]	= mbw_get_param("title");
 				}
 			}else if($target=="user"){
 				$sign			= "+";
@@ -72,7 +86,9 @@ if(!function_exists('mbw_set_user_point')){
 					if(!empty($user_pid) && empty($user_name)){
 						$user_name	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_name"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid));
 					}
-					$options		= array("mode"=>$target,"board_action"=>$action,"board_name"=>"users","user_pid"=>$user_pid,"user_name"=>$user_name);
+					$board_name	= mbw_get_board_name();
+					if(empty($board_name)){ $board_name	= "users"; }
+					$options			= array("mode"=>$target,"board_action"=>$action,"board_name"=>$board_name,"user_pid"=>$user_pid,"user_name"=>$user_name);
 					
 					if(!empty($user_pid)) {
 						$check_point		= true;
@@ -80,7 +96,7 @@ if(!function_exists('mbw_set_user_point')){
 						if($sign=="+" && ($action=="write" || $action=="reply")){
 							$today_max_point	= intval(mbw_get_option("user_today_max_point"));
 							if(!empty($today_max_point)){
-								$today_point			= intval($mdb->get_var($mdb->prepare("SELECT sum(content) FROM mb_logs where type='point' and (action='write' or action='reply') and reg_date>= DATE_SUB(curdate(),INTERVAL 0 DAY) and user_pid=%d  limit 1",$user_pid)));
+								$today_point			= mbw_get_user_today_point($user_pid);
 								if($today_point<$today_max_point){
 									if(($today_point+$point)>$today_max_point){
 										$point		= $today_max_point - $today_point;
@@ -94,7 +110,14 @@ if(!function_exists('mbw_set_user_point')){
 							$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_point"]."=".$mb_fields["users"]["fn_user_point"].$sign.$point." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
 							do_action('mbw_user_point');
 							//포인트 로그 남기기
-							if(mbw_get_option("point_log")) mbw_set_log("point",$sign.$point,$options);
+							if(mbw_get_option("point_log")){
+								if(!empty($data) && is_array($data)){
+									$data["point"]		= $sign.$point;
+									mbw_set_log("point",mbw_check_user_point_log($data),$options);
+								}else{
+									mbw_set_log("point",$sign.$point,$options);
+								}
+							}
 							$options["sign"]				= $sign;
 							$options["point"]			= $point;
 							$options["user_pid"]		= $user_pid;
@@ -106,9 +129,8 @@ if(!function_exists('mbw_set_user_point')){
 		}
 	}
 }
-
-if(!function_exists('mbw_set_user_money')){
-	function mbw_set_user_money($target,$action,$add_money=0,$user_pid="0",$user_name=""){
+if(!function_exists('mbw_set_user_money2')){
+	function mbw_set_user_money2($target,$action,$add_money=0,$user_pid="0",$user_name="",$data=array()){
 		global $mstore,$mdb;
 		global $mb_admin_tables,$mb_fields,$mb_board_table_name,$mb_comment_table_name;
 		$money		= 0;
@@ -143,13 +165,22 @@ if(!function_exists('mbw_set_user_money')){
 					if(!empty($user_pid) && empty($user_name)){
 						$user_name	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_name"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid));
 					}
-					$options		= array("mode"=>$target,"board_action"=>$action,"board_name"=>"users","user_pid"=>$user_pid,"user_name"=>$user_name);
+					$board_name	= mbw_get_board_name();
+					if(empty($board_name)){ $board_name	= "users"; }
+					$options		= array("mode"=>$target,"board_action"=>$action,"board_name"=>$board_name,"user_pid"=>$user_pid,"user_name"=>$user_name);
 					
 					if(!empty($user_pid)) {
 						$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_money"]."=".$mb_fields["users"]["fn_user_money"].$sign.$money." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
 						do_action('mbw_user_money');
 						//포인트 로그 남기기
-						mbw_set_log("money",$sign.$money,$options);
+						if(mbw_get_option("point_log")){
+							if(!empty($data) && is_array($data)){
+								$data["money"]		= $sign.$money;
+								mbw_set_log("money",mbw_check_user_point_log($data),$options);
+							}else{
+								mbw_set_log("money",$sign.$money,$options);
+							}
+						}
 						$options["sign"]			= $sign;
 						$options["money"]		= $money;
 						$options["user_pid"]	= $user_pid;
@@ -161,6 +192,240 @@ if(!function_exists('mbw_set_user_money')){
 	}
 }
 
+if(!function_exists('mbw_check_user_point_log')){
+	function mbw_check_user_point_log($data){
+		if(isset($data["title"])){
+			$data["title"]		= str_replace(array("\r\n","\n","\t","&nbsp;"," ","  "), " ", $data["title"]);
+			$maxtext			= "...";
+			$maxlength		= 50;
+			if(function_exists('mb_strlen')) $title_length	= mb_strlen($data["title"], mbw_get_option("encoding"));
+			else $title_length	= strlen($data["title"]);
+			if($maxlength<$title_length){
+				if(function_exists('mb_substr')) $data["title"]		= mb_substr($data["title"], 0, $maxlength, mbw_get_option("encoding")).$maxtext;
+				else $data["title"]	= substr($data["title"], 0, $maxlength).$maxtext;
+			}
+		}		
+		return json_encode($data,JSON_UNESCAPED_UNICODE);
+	}
+}
+if(!function_exists('mbw_set_user_point')){
+	function mbw_set_user_point($target,$action,$add_point=0,$user_pid="0",$user_name=""){
+		global $mstore,$mdb;
+		global $mb_admin_tables,$mb_fields,$mb_board_table_name,$mb_comment_table_name;
+		$point		= 0;
+		$sign		= "";
+		$data		= array();
+		
+		if(mbw_is_login() || !empty($user_pid)){
+			if($target=="comment"){
+
+				if($action=="write" || $action=="reply" || $action=="delete"){
+					$sign			= "+";
+					$point		= intval(mbw_get_board_option("fn_point_comment_write"));
+				}
+
+				if($action=="delete"){
+					$point		= $point*(-1);
+					$comment_pid	= mbw_get_param("comment_pid");
+					if(!empty($comment_pid)){
+						$row		= $mdb->get_row($mdb->prepare("select ".$mb_fields["select_comment"]["fn_user_pid"].",".$mb_fields["select_comment"]["fn_content"]." from `".$mb_comment_table_name."` where `".$mb_fields["select_comment"]["fn_pid"]."`=%d limit 1", $comment_pid),ARRAY_A);
+						if(!empty($row)){
+							$user_pid		= $row[$mb_fields["select_comment"]["fn_user_pid"]];
+							$data["title"]	= $row[$mb_fields["select_comment"]["fn_content"]];
+						}
+					}
+				}
+				if($point<0){
+					$sign			= "-";
+					$point		= $point*(-1);
+				}
+				if(mbw_get_param("content")!=""){
+					$data["title"]	= mbw_get_param("content");
+				}
+			}else if($target=="board"){
+				$sign			= "+";
+				if($action=="write")	$point		= intval(mbw_get_board_option("fn_point_board_write"));
+				else if($action=="reply")	$point		= intval(mbw_get_board_option("fn_point_board_reply"));
+				else if($action=="delete"){
+					$point			= intval(mbw_get_board_option("fn_point_board_write"))*(-1);
+					$board_pid		= mbw_get_param("board_pid");
+					if(!empty($board_pid)){
+						$row		= $mdb->get_row($mdb->prepare("select ".$mb_fields["select_board"]["fn_user_pid"].",".$mb_fields["select_board"]["fn_title"]." from `".$mb_board_table_name."` where `".$mb_fields["select_board"]["fn_pid"]."`=%d limit 1", $board_pid),ARRAY_A);
+						if(!empty($row)){
+							$user_pid		= $row[$mb_fields["select_board"]["fn_user_pid"]];
+							$data["title"]	= $row[$mb_fields["select_board"]["fn_title"]];
+						}
+					}
+				}
+				if($point<0){
+					$sign			= "-";
+					$point		= $point*(-1);
+				}
+				if(mbw_get_param("title")!=""){
+					$data["title"]	= mbw_get_param("title");
+				}
+			}else if($target=="user"){
+				$sign			= "+";
+				if($action=="join")	$point		= intval(mbw_get_option("user_join_point"));
+				if($action=="login")	$point		= intval(mbw_get_option("user_login_point"));
+			}else{
+				if($add_point>=0) $sign			= "+";
+				else{
+					$sign				= "-";
+					$add_point		= $add_point*(-1);
+				}
+				$point		= $add_point;
+			}
+			if(empty($user_pid)){
+				$user_pid			= mbw_get_user("fn_pid");
+				$user_name		= mbw_get_user("fn_user_name");
+				$user_point		= intval(mbw_get_user("fn_user_point"));
+			}else{
+				$user_point		= intval($mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_point"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid)));
+			}
+
+			if($sign!="" && $point!=0){
+				if($sign=="-" && $point>$user_point && ($action=="write" || $action=="reply")){
+					mbw_error_message("포인트 잔액이 부족합니다<br>(".($point-$user_point)." Point)","","1000");
+				}else{
+					//User 포인트가 차감 포인트 보다 작을 경우 0포인트로 설정
+					if($sign=="-" && $point>$user_point){
+						$point		= $user_point;
+					}
+
+					if(!empty($user_pid) && empty($user_name)){
+						$user_name	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_name"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid));
+					}
+					$board_name	= mbw_get_board_name();
+					if(empty($board_name)){ $board_name	= "users"; }
+					$options			= array("mode"=>$target,"board_action"=>$action,"board_name"=>$board_name,"user_pid"=>$user_pid,"user_name"=>$user_name);
+					
+					if(!empty($user_pid)) {
+						$check_point		= true;
+						//하루에 얻을 수 있는 최대 포인트 설정
+						if($sign=="+" && ($action=="write" || $action=="reply")){
+							$today_max_point	= intval(mbw_get_option("user_today_max_point"));
+							if(!empty($today_max_point)){
+								$today_point			= mbw_get_user_today_point($user_pid);
+								if($today_point<$today_max_point){
+									if(($today_point+$point)>$today_max_point){
+										$point		= $today_max_point - $today_point;
+									}
+								}else{
+									$check_point		= false;
+								}
+							}
+						}
+						if($check_point){
+							$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_point"]."=".$mb_fields["users"]["fn_user_point"].$sign.$point." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
+							do_action('mbw_user_point');
+							//포인트 로그 남기기
+							if(mbw_get_option("point_log")){
+								if(!empty($data) && is_array($data)){
+									$data["point"]		= $sign.$point;
+									mbw_set_log("point",mbw_check_user_point_log($data),$options);
+								}else{
+									mbw_set_log("point",$sign.$point,$options);
+								}
+							}
+							$options["sign"]				= $sign;
+							$options["point"]			= $point;
+							$options["user_pid"]		= $user_pid;
+							do_action('mbw_user_point2',$options);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+if(!function_exists('mbw_set_user_money')){
+	function mbw_set_user_money($target,$action,$add_money=0,$user_pid="0",$user_name=""){
+		global $mstore,$mdb;
+		global $mb_admin_tables,$mb_fields,$mb_board_table_name,$mb_comment_table_name;
+		$money		= 0;
+		$sign			= "";
+		$data			= array();
+		
+		if(mbw_is_login() || !empty($user_pid)){
+			if(true){
+				if($add_money>=0) $sign			= "+";
+				else{
+					$sign				= "-";
+					$add_money		= $add_money*(-1);
+				}
+				$money		= $add_money;
+			}
+
+			if(empty($user_pid)){
+				$user_pid			= mbw_get_user("fn_pid");
+				$user_name		= mbw_get_user("fn_user_name");
+				$user_money		= intval(mbw_get_user("fn_user_money"));
+			}else{
+				$user_money		= intval($mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_money"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid)));
+			}
+
+			if($sign!="" && $money!=0){
+				if($sign=="-" && $money>$user_money){
+					mbw_error_message("캐시 잔액이 부족합니다<br>(".($money-$user_money)." money)","","1000");
+				}else{
+					//User 캐시가 차감 캐시 보다 작을 경우 0으로 설정
+					if(mbw_is_login() && $sign=="-" && $money>$user_money){
+						$money		= $user_money;
+					}					
+					if(!empty($user_pid) && empty($user_name)){
+						$user_name	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_name"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid));
+					}
+					$board_name	= mbw_get_board_name();
+					if(empty($board_name)){ $board_name	= "users"; }
+					$options		= array("mode"=>$target,"board_action"=>$action,"board_name"=>$board_name,"user_pid"=>$user_pid,"user_name"=>$user_name);
+					
+					if(!empty($user_pid)) {
+						$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_money"]."=".$mb_fields["users"]["fn_user_money"].$sign.$money." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
+						do_action('mbw_user_money');
+						//포인트 로그 남기기
+						if(mbw_get_option("point_log")){
+							if(!empty($data) && is_array($data)){
+								$data["money"]		= $sign.$money;
+								mbw_set_log("money",mbw_check_user_point_log($data),$options);
+							}else{
+								mbw_set_log("money",$sign.$money,$options);
+							}
+						}
+						$options["sign"]			= $sign;
+						$options["money"]		= $money;
+						$options["user_pid"]	= $user_pid;
+						do_action('mbw_user_money2',$options);
+					}
+				}
+			}
+		}
+	}
+}
+if(!function_exists('mbw_get_user_today_point')){
+	function mbw_get_user_today_point($user_pid){		
+		$today_point		= 0;
+		if(!empty($user_pid)){
+			global $mdb;
+			$items		= $mdb->get_results($mdb->prepare("SELECT content FROM mb_logs where type='point' and (action='write' or action='reply') and user_pid=%d;",$user_pid), ARRAY_A);			
+			if(!empty($items)){
+				foreach($items as $key=>$item){
+					$value			= $item["content"];
+					if(strpos($value, '{')===false){
+						$today_point			+= intval($value);
+					}else{
+						$point_array		= mbw_json_decode(trim(mbw_htmlspecialchars_decode($value)));
+						if(isset($point_array[0]["point"])){
+							$today_point			+= intval($point_array[0]["point"]);
+						}
+					}
+				}
+			}
+		}
+		return $today_point;
+	}
+}
 if(!function_exists('mbw_set_wp_user_data')){
 	function mbw_set_wp_user_data($user_id=NULL){
 		if(mbw_get_trace("mbw_set_wp_user_data")!="") return;

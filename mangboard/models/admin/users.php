@@ -9,7 +9,7 @@ $desktop_model['list']		= '
 {"field":"fn_pid","name":"W_PID","width":"50px","class":"num","type":"pid","class":"pid","responsive":"mb-hide-mobile mb-hide-tablet"},
 {"field":"fn_user_id","name":"W_ID","width":"","width":"100px","mobile_width":"70px","link":"view"},
 {"field":"fn_user_name","name":"W_NAME","width":"100px","type":"text","mobile_width":"70px"},
-{"field":"fn_user_level","name":"W_LEVEL","width":"50px","type":"select","data":"1,2,3,4,5,6,7,8,9,10","default":"1","description":""},
+{"field":"fn_user_level","name":"W_LEVEL","width":"50px","type":"select","data":"0,1,2,3,4,5,6,7,8,9,10","default":"1","description":""},
 {"field":"fn_user_group","name":"W_GROUP","width":"70px","type":"text","responsive":"mb-hide-mobile mb-hide-tablet"},
 {"field":"fn_user_email","name":"W_EMAIL","width":"170px","type":"text","responsive":"mb-show-desktop-large"},
 {"field":"fn_login_count","name":"W_LOGIN","width":"40px","responsive":"mb-hide-mobile"},
@@ -63,7 +63,7 @@ $desktop_model['write']		= '
 {"field":"fn_user_name","name":"W_NAME","width":"300px","required":"(*)","maxlength":"30","pattern":"pattern_2ge","pattern_error":"MSG_NAME_INPUT_2MORE"},
 {"field":"fn_passwd","name":"W_PASSWORD","width":"300px","type":"password","modify":"admin_user_name_password","pattern":"pattern_4ge","pattern_error":"MSG_PASSWORD_INPUT_4MORE"},
 {"field":"fn_user_group","name":"W_GROUP","width":"300px","maxlength":"50"},
-{"field":"fn_user_level","name":"W_LEVEL","width":"100px","type":"select","data":"1,2,3,4,5,6,7,8,9,10","default":"1","description":""},
+{"field":"fn_user_level","name":"W_LEVEL","width":"100px","type":"select","data":"0,1,2,3,4,5,6,7,8,9,10","default":"1","description":""},
 {"field":"fn_user_email","name":"W_EMAIL","width":"300px","maxlength":"100"},
 {"field":"fn_user_phone","name":"W_MOBILE","width":"300px"},
 {"field":"fn_user_birthday","name":"W_DATE_OF_BIRTH","width":"300px"},
@@ -139,11 +139,24 @@ if(!function_exists('mbw_get_synchronize_template')){
 	}
 }
 
+if(!function_exists('mbw_user_skin_footer')){
+	function mbw_user_skin_footer(){
+		if(mbw_is_admin_page() && mbw_get_param("mode")=="list"){
+			echo '<script type="text/javascript">jQuery(document).ready(function(){';
+				echo 'jQuery("input[type=\'text\'],select",jQuery("#tbl_board_list")).on("input",function(){  var objTarget	= jQuery(this).closest("tr").find("input[name=\'check_array[]\']"); if(!objTarget.is(":checked")){ objTarget.trigger("click"); }	}); ';
+			echo '}); </script>';
+		}
+	}
+}
+add_action('mbw_board_skin_footer', 'mbw_user_skin_footer',5); 
+
 if(mbw_is_admin_page()){		//어드민 페이지에서만 실행
 	if(mbw_get_request_mode()=="Frontend"){		// 게시판 모드일 경우에만
 		if(strtoupper(mbw_get_option("user_mode"))=="WP"){			
 			add_action('mbw_board_skin_search', 'mbw_get_synchronize_template');
 		}
+		$button_html		= mbw_get_btn_template(array("name"=>"Modify","onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify'})","class"=>"btn btn-default"));
+		mbw_add_left_button("list",$button_html);
 	}
 }
 ?>

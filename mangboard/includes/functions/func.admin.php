@@ -67,6 +67,7 @@ if(!function_exists('mbw_request_store_api')){
 			$data['mb_home_url']	= urlencode(MBW_HOME_URL);
 			$data['mb_site_url']		= urlencode(MBW_SITE_URL);
 			$data['mb_version']		= mbw_get_option("mb_version");
+			$data['php_version']	= PHP_VERSION;
 			$data['locale']			= mbw_get_option("locale");
 			$url						= "https://www.mangboard.com?mb_store=product";
 			$ch						= curl_init();

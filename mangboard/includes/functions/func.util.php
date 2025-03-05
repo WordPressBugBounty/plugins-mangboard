@@ -484,7 +484,7 @@ if(!function_exists('mbw_get_prevent_content_copy')){
 
 if(!function_exists('mbw_get_resize_responsive')){
 	function mbw_get_resize_responsive($device_type){
-		if(defined("HT_THEME")) return "";
+		if(!mbw_is_admin_page() && defined("HT_THEME")) return "";
 		if(mbw_get_trace("mbw_get_resize_responsive")==""){
 			mbw_add_trace("mbw_get_resize_responsive");
 

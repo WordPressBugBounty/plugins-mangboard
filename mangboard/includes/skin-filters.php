@@ -27,14 +27,18 @@ if(!function_exists('mbw_filter_board_item')){
 			$ip_address			= "";
 			if(mbw_get_param("mode")=="view" || mbw_get_param("mode")=="comment"){
 				if(!empty($data["ip"])){
-					$ip_address			= $data["ip"];
-					if(strpos($ip_address,':')!==false){
-						$ip_address	= " **".substr($ip_address,4,10)."**";
+					if(!mbw_is_admin()){
+						$ip_address			= $data["ip"];
+						if(strpos($ip_address,':')!==false){
+							$ip_address	= " **".substr($ip_address,4,10)."**";
+						}else{
+							$ip_address	= " **".substr($ip_address,2,-2)."**";
+						}				
+						if(function_exists('substr_replace')){
+							$ip_address	= substr_replace($ip_address,"*",-5,1);
+						}
 					}else{
-						$ip_address	= " **".substr($ip_address,2,-2)."**";
-					}				
-					if(function_exists('substr_replace')){
-						$ip_address	= substr_replace($ip_address,"*",-5,1);
+						$ip_address			= " ".$data["ip"];
 					}
 				}
 			}

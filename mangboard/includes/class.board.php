@@ -179,7 +179,7 @@ class MangBoard
 				echo '</div>';
 			echo '</div>';
 			echo '</div>';
-			echo '<div style="display:none !important;" class="mb-poweredby"><!-- 웹사이트 제작 플랫폼 - 망보드 --><a href="https://www.mangboard.com" target="_blank" style="font-size:13px;" title="Powered by MangBoard">Powered by MangBoard</a> | <a href="https://www.mangboard.com/store/" target="_blank" style="font-size:13px;" title="워드프레스 쇼핑몰 망보드">워드프레스 쇼핑몰 망보드</a></div>';
+			echo '<div style="display:none !important;" class="mb-poweredby"><a href="https://www.mangboard.com" target="_blank" style="font-size:13px;" title="Powered by MangBoard">Powered by MangBoard</a></div>';
 		}
 	}
 }

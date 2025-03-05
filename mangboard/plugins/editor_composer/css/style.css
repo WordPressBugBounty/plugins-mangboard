@@ -188,8 +188,8 @@
 	font-size:12px !important;
 	padding:5px 2px !important;
 }
-#mb_top .mb-editor-composer .mb-box-attr-bgcolor .mb-box-attr-option .evo-cp-wrap,
-#mb_top .mb-editor-composer .mb-box-attr-option input,#mb_top .mb-editor-composer .mb-box-attr-option select {width:100% !important;height:30px !important}
+#mb_top .mb-editor-composer .mb-box-attr-bgcolor .mb-box-attr-option .evo-cp-wrap{width:100% !important;height:30px !important;min-height:30px !important;font-size:13px !important;}
+#mb_top .mb-editor-composer .mb-box-attr-option input,#mb_top .mb-editor-composer .mb-box-attr-option select {width:100% !important;height:30px !important;min-height:30px !important;font-size:13px !important;padding: 1px 5px 0 7px !important;}
 
 #mb_top .mb-editor-composer input,#mb_top .mb-editor-composer select{display:inline-block !important;vertical-align:top !important;-webkit-border-radius:0px !important;-moz-border-radius:0px !important;-khtml-border-radius:0px !important;border-radius:0px !important;border:1px solid #DDD !important;}
 #mb_top .mb-editor-composer .mb-box-attr-label{display:inline-block !important;width:98px !important;min-width:98px !important;font-size:13px !important;padding:4px 0px 4px 6px !important;border:1px solid #EEE;background-color:#F3F3F3;margin:0px 2px 9px 5px;font-weight:600;}

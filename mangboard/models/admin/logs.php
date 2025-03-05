@@ -9,8 +9,8 @@ $desktop_model['version']		= "1.0.0";
 $desktop_model['list']		= '
 {"type":"list_check","width":"40px","level":"10","class":"list_check"},
 {"field":"fn_pid","name":"W_PID","width":"50px","class":"num","type":"pid","class":"pid","responsive":"mb-show-desktop-large"},
-{"field":"fn_board_name","name":"W_BOARD_NAME","width":"120px","responsive":"mb-hide-mobile mb-hide-tablet"},
-{"field":"fn_action","name":"Action","width":"80px","type":"admin_action_type"},
+{"field":"fn_board_name","name":"W_BOARD_NAME","width":"180px","mobile_width":"120px","responsive":"mb-hide-mobile mb-hide-tablet"},
+{"field":"fn_action","name":"Action","width":"100px","type":"admin_action_type"},
 {"field":"fn_content","name":"W_CONTENT","width":"","td_class":"text-left"},
 {"field":"fn_user_name","name":"W_USER_REGDATE","width":"160px","type":"admin_user_name_pid_date","responsive":"mb-hide-mobile"},
 {"field":"fn_user_pid","name":"W_USER_PID","type":"search"},

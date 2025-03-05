@@ -17,18 +17,23 @@ if(!function_exists('mbw_create_board_item_panel')){
 		else $class				= "";
 		if(!empty($args['field'])) $field		= mbw_value_filter(trim($args['field']),"name");
 		else $field				= 'content';
+		if(!empty($args['is_shortcode'])) $is_shortcode		= mbw_value_filter(trim($args['is_shortcode']));
+		else $is_shortcode		= 'true';
+		if(!empty($args['is_link'])) $is_link		= mbw_value_filter(trim($args['is_link']));
+		else $is_link		= 'true';
 
+		$html					= "";
 		$field					= str_replace('fn_','',$field);
 		$pid					= intval($pid);
 		$fields					= $mb_fields["board"];
 		$board_options		= $mdb->get_row($mdb->prepare("select * from ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_board_name2"]."=%s",$name), ARRAY_A);
-
+		
 		if(empty($board_options)){
-			echo __MM("MSG_EXIST_ERROR2", array(esc_html($name),__MW("W_BOARD")));
+			$html		.= __MM("MSG_EXIST_ERROR2", array(esc_html($name),__MW("W_BOARD")));
 		}else if($board_options[$mb_fields["board_options"]["fn_board_type"]]=="board"){
-			$view_level			= intval($board_options[$mb_fields["board_options"]["fn_view_level"]]);
+			$view_level		= intval($board_options[$mb_fields["board_options"]["fn_view_level"]]);
 			$list_level			= intval($board_options[$mb_fields["board_options"]["fn_list_level"]]);
-			if($list_level==0 && $view_level==0){				
+			if($list_level==0 && $view_level==0){
 				if(!empty($pid)){
 					$item			= $mdb->get_row($mdb->prepare("select * from %1s where %1s=%d limit 1;",mbw_get_board_table_name($name),$fields["fn_pid"],$pid), ARRAY_A);
 				}else{
@@ -42,28 +47,33 @@ if(!function_exists('mbw_create_board_item_panel')){
 								$content			= mbw_htmlspecialchars_decode($content);
 								if(function_exists('mbw_replace_image_url')) $content			= mbw_replace_image_url($content);
 							}
-							$content		= make_clickable($content);
-							if(!empty($item[$fields["fn_level"]]) && (intval($item[$fields["fn_level"]])>7) ) $content		= do_shortcode($content);
+							if($is_link=="true" && (!empty($item[$fields["fn_editor_type"]]) && $item[$fields["fn_editor_type"]]=="N")){
+								$content		= make_clickable($content);
+							}
+							if($is_shortcode=="true" && !empty($item[$fields["fn_level"]]) && (intval($item[$fields["fn_level"]])>7) ){
+								$content		= do_shortcode($content);
+							}
 						}else if($field=='image_path'){
 							$content	= mbw_get_image_url("url",$content);
 						}
-						echo '<div class="mb-'.esc_attr(mbw_get_vars("device_type")).'"><div class="mb-board"><div class="mb-content-item'.esc_attr($class).'" style="'.esc_attr($style).'">'.$content.'</div></div></div>';
+						$html		.= '<div class="mb-'.esc_attr(mbw_get_vars("device_type")).'"><div class="mb-board"><div class="mb-content-item'.esc_attr($class).'" style="'.esc_attr($style).'">'.$content.'</div></div></div>';
 					}else{
-						echo "<div>".__MM("MSG_ITEM_NOT_EXIST")."</div>";
+						$html		.= "<div>".__MM("MSG_ITEM_NOT_EXIST")."</div>";
 					}
 				}else{
 					if(!empty($item[$fields["fn_is_secret"]])){
-						echo "<div>".__MM("MSG_SECRET_CONTENT_DISPLAY_ERROR")."</div>";
+						$html		.= "<div>".__MM("MSG_SECRET_CONTENT_DISPLAY_ERROR")."</div>";
 					}else{
-						echo "<div>".__MM("MSG_PRIVATE_CONTENT_DISPLAY_ERROR")."</div>";
+						$html		.= "<div>".__MM("MSG_PRIVATE_CONTENT_DISPLAY_ERROR")."</div>";
 					}
 				}
 			}else{
-				echo "<div>".__MM("MSG_BOARD_CONTENT_LEVEL_ERROR")."</div>";
+				$html		.= "<div>".__MM("MSG_BOARD_CONTENT_LEVEL_ERROR")."</div>";
 			}
 		}else{
-			echo "<div>".__MM("MSG_BOARD_CONTENT_DISPLAY_ERROR")."</div>";
+			$html		.= "<div>".__MM("MSG_BOARD_CONTENT_DISPLAY_ERROR")."</div>";
 		}
+		return $html;
 	}
 }
 ?>

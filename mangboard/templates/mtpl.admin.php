@@ -21,20 +21,22 @@ if(!function_exists('mbw_get_admin_template')){
 			if(mbw_get_board_item("fn_use_comment_vote_bad")=="1") $use_data[]		= __MW("W_COMMENT_VOTE_BAD");
 
 			$board_use			= implode(",",$use_data);
-			$board_type		= mbw_get_board_item("fn_board_type");
-			$board_rss			= "";
+			$board_type			= mbw_get_board_item("fn_board_type");
+			$board_name		= mbw_value_filter(mbw_get_board_item("fn_board_name2"),"name");
+			$board_link			= "";
 
 			if($board_type=="board" && intval(mbw_get_board_item("fn_list_level"))==0){
-				$board_rss		.= '<a href="'.esc_url(MBW_HOME_URL.'/?mb_trigger=rss&board_name='.mbw_get_board_item("fn_board_name2")).'" target="_blank"> [RSS]</a>';
+				$board_link		.= '<a href="'.esc_url(MBW_HOME_URL.'/?mb_trigger=rss&board_name='.$board_name).'" target="_blank"> [RSS]</a>';
 			}
 			if(intval(mbw_get_board_item("fn_post_id"))!=0){
-				$board_rss		.= ' <a href="'.esc_url(get_permalink(mbw_get_board_item("fn_post_id"))).'" target="_blank"> [PAGE]</a>';				
-			}			
+				$board_link		.= ' <a href="'.esc_url(get_permalink(mbw_get_board_item("fn_post_id"))).'" target="_blank"> [PAGE]</a>';				
+			}
+			if(has_filter('mf_admin_board_name_link')) $board_link			= apply_filters("mf_admin_board_name_link",$board_link,$board_name);
 
 			if(!empty($board_use)) $board_use		='<span class="admin_board_use"> ('.esc_html($board_use).')</span>';
-			$template_start		= '<div><strong style="font-size:15px;">'.mbw_get_btn_template(array("name"=>mbw_get_board_item("fn_board_name2"),"type"=>"a","title"=>mbw_get_board_item("fn_board_name2")." ".substr(mbw_get_board_item("fn_ip"),0,-2)."**","href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".$data["value"],"class"=>"")).'</strong>'.$board_use.$board_rss;
-			if(mbw_get_board_item("fn_description")!="") $template_start	.= '<div>'.mbw_get_board_item("fn_description").'</div>';			
-			$template_start		.= '</div>';			
+			$template_start		= '<div><strong style="font-size:15px;">'.mbw_get_btn_template(array("name"=>$board_name,"type"=>"a","title"=>$board_name." ".substr(mbw_get_board_item("fn_ip"),0,-2)."**","href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".$data["value"],"class"=>"")).'</strong>'.$board_use.$board_link;
+			if(mbw_get_board_item("fn_description")!="") $template_start	.= '<div>'.mbw_get_board_item("fn_description").'</div>';
+			$template_start		.= '</div>';
 	
 			//게시판 타입에 맞게 ShortCode 표시
 			if($board_type=="admin" || $data["value"]=="user_messages" || $data["value"]=="user_activity"){
@@ -131,14 +133,15 @@ if(!function_exists('mbw_get_admin_template')){
 			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify','category1':'".mbw_get_param("category1")."','board_pid':'".mbw_get_board_item("fn_pid")."'})","class"=>"btn btn-default"));
 			$template_start	.= '<input type="hidden" name="pid_array[]" value="'.mbw_get_board_item("fn_pid").'" />';
 		}else if($item_type=='admin_board_modify'){
-			if(mbw_get_board_item("fn_use_comment")=="1") $template_start	.= mbw_get_btn_template(array("name"=>__MW("W_COMMENT"),"href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_board_item("fn_board_name2")."&mode=comment","class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
+			$board_name		= mbw_value_filter(mbw_get_board_item("fn_board_name2"),"name");
+			if(mbw_get_board_item("fn_use_comment")=="1") $template_start	.= mbw_get_btn_template(array("name"=>__MW("W_COMMENT"),"href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".$board_name."&mode=comment","class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
 			$template_start	.= mbw_get_btn_template(array("name"=>"Copy","href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=write&board_pid=".mbw_get_board_item("fn_pid"),"class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
 			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=modify&board_pid=".mbw_get_board_item("fn_pid"),"class"=>"btn btn-default","style"=>"width:96%;"));
 		}else if($item_type=='admin_user_modify'){
 			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"href"=>admin_url('admin.php')."?page=mbw_users&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=modify&board_pid=".mbw_get_board_item("fn_pid"),"class"=>"btn btn-default"));
 		}else if($item_type=='admin_board_analytics'){
-			$template_start					= '<span style="font-size:11px;">';
-			$board_name					= mbw_get_board_item("fn_board_name2");
+			$template_start				= '<span style="font-size:11px;">';
+			$board_name				= mbw_value_filter(mbw_get_board_item("fn_board_name2"),"name");
 			if(mbw_get_board_item("fn_table_link")!="") $board_name		= mbw_get_board_item("fn_table_link");
 			$board_table_name			= mbw_get_table_name($board_name);
 			$comment_table_name		= mbw_get_table_name($board_name,"comment");

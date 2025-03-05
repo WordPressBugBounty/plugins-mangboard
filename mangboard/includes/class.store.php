@@ -127,14 +127,27 @@ Class MStore
 				if(!empty($this->params[$key])){
 					$this->params[$key]			= mbw_value_filter($this->params[$key]);
 				}
-			}			
+			}
 			$text_param		= array("search_text","stag","search_add_text1","search_add_text2","search_add_text3","redirect_to","category1","category2","category3","stype1","stype2","stype3","se_text1","se_text2","se_text3","se_text4","se_text5","search_name");
 			foreach($text_param as $key){
 				if(!empty($this->params[$key])){
 					if(is_array($this->params[$key])){
-						$this->params[$key]		= implode(",",$this->params[$key]);
+						if(mbw_get_param("board_action")=="multi_modify" && (intval(mbw_get_board_option("fn_modify_level")) <= intval(mbw_get_user("fn_user_level")))){
+							foreach($this->params[$key] as $key2 => $value2){
+								if(is_array($value2)){
+									$this->params[$key][$key2]		= implode(",",$value2);
+								}
+								if(is_string($value2)){
+									$this->params[$key][$key2]		= strip_tags($value2);
+								}
+							}
+						}else{
+							$this->params[$key]		= implode(",",$this->params[$key]);
+						}
 					}
-					$this->params[$key]			= strip_tags($this->params[$key]);
+					if(is_string($this->params[$key])){
+						$this->params[$key]			= strip_tags($this->params[$key]);
+					}
 				}
 			}
 			$date_param		= array("calendar_date","reg_date","modify_date","search_date","start_date","end_date","search_year","search_month","search_day");

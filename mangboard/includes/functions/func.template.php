@@ -670,7 +670,7 @@ if(!function_exists('mbw_create_template')){
 			if($template_start=="none" || $template_start=="empty") $template_start		= "";
 			else if(empty($template_start) && function_exists('mbw_get_input_template')) $template_start		= call_user_func("mbw_get_input_template",$mode, $data);
 		}
-		
+		if(has_filter('mf_board_create_template')) $template_start			= apply_filters("mf_board_create_template", $template_start, $mode, $data);		
 		return $template_start;
 	}
 }
@@ -908,7 +908,7 @@ if(!function_exists('mbw_get_list_setup_data')){
 					if(isset($data["order"]) && ($data["order"]=="false" || $data["order"]=="0")){
 						$template_list_title	.= '<th scope="col"'.$data["th_class"].__STYLE($data["th_style"]).'><span>'.esc_html($data["name"]).'</span></th>';
 					}else if(isset($data["type"]) && $data["type"]=="list_check"){
-						$template_list_title	.= '<th scope="col"'.$data["th_class"].__STYLE($data["th_style"]).'><input type="checkbox" name="mb_check_all" style="min-width:16px;min-height:16px;"/></th>';
+						$template_list_title	.= '<th scope="col"'.$data["th_class"].__STYLE($data["th_style"]).'><input type="checkbox" name="mb_check_all" /></th>';
 					}else if($data["field"]==mbw_get_param("order_by")){
 						$template_list_title	.= '<th scope="col"'.$data["th_class"].__STYLE($data["th_style"]).' class="order-'.esc_attr($order_type).'"><a href="'.esc_url(mbw_get_url(array('order_by'=>$data["field"],'order_type'=>$order_type))).'" title="'.esc_attr($data["name"]).'"><span>'.esc_html($data["name"]).'</span></a></th>';
 					}else{

@@ -5,7 +5,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
 Tested up to: 6.7
 Requires PHP: 5.5.1
-Stable tag: 1.8.5
+Stable tag: 1.8.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,21 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.3.3 (1.8.6) =
+* 관리자 회원관리 기능에 회원레벨 0 설정 기능 추가 (스팸 게시물 작성자를 차단하기 위한 용도)
+* 페이스북 Pixel 전환추적 기능 수정 ("상품 페이지 접속/결제시작/결제완료" 이벤트 발생시 상품 정보 전송, 망보드 옵션설정>Facebook Pixel ID 입력시에만 동작)
+* 망보드 옵션설정 페이지에서 옵션 수정시 자동으로 체크박스가 선택되도록 반영해서 멀티 수정이 보다 간편하게 진행되도록 수정
+* 파라미터(GET,POST) 필터 기능 수정
+* minor bug 수정
+
+= 2.3.2 =
+* 네이버 프리미엄 로그분석 기능 수정 (cnv=>trans 방식으로 변경, "상품 페이지 접속/결제시작/결제완료" 이벤트 발생시 상품 정보 전송)
+* 글보기 페이지에서 작성자 이름에 마우스 오버시 관리자는 작성자 IP 주소가 모두 표시되도록 수정 (일반 사용자는 일부만 표시)
+* 관리자 페이지에서 게시판 목록 체크박스를 클릭하면 목록 하단 버튼이 스크롤 움직임에 상관없이 고정되도록 수정 (게시판 목록 테이블의 높이가 500px 이상일 경우에만 동작)
+* WP Super Cache 플러그인에서 망보드 게시판 페이지 캐시 안되도록 수정
+* 망보드 호환성 향상을 위한 CSS 코드 수정
+* 포인트 로그 저장 기능 수정
 
 = 2.3.1 (1.8.5) =
 * 보안 기능 수정 [패치스택(Patchstack)에서 보안점검을 통해 알려주신 보안사항 수정]

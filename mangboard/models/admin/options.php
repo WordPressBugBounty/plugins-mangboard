@@ -67,8 +67,13 @@ if(!function_exists('mbw_options_api_footer')){
 add_action('mbw_board_api_footer', 'mbw_options_api_footer',5); 
 
 if(!function_exists('mbw_board_options_skin_footer')){
-	function mbw_board_options_skin_footer(){	
-		echo '<script type="text/javascript">jQuery(document).ready(function(){ jQuery(".mb-tr-hide").closest("tr").hide();});</script>';		
+	function mbw_board_options_skin_footer(){
+		if(mbw_is_admin_page() && mbw_get_param("mode")=="list"){
+			echo '<script type="text/javascript">jQuery(document).ready(function(){';
+				echo 'if(jQuery(".mb-tr-hide").length>0) {jQuery(".mb-tr-hide").closest("tr").hide(); }';
+				echo 'jQuery("input[type=\'text\'],textarea,select,input[type=\'radio\']",jQuery("#tbl_board_list")).on("input",function(){  var objTarget	= jQuery(this).closest("tr").find("input[name=\'check_array[]\']"); if(!objTarget.is(":checked")){ objTarget.trigger("click"); }	}); ';
+			echo '}); </script>';
+		}
 	}
 }
 add_action('mbw_board_skin_footer', 'mbw_board_options_skin_footer',5); 
@@ -79,6 +84,8 @@ if(mbw_is_admin_page()){		//어드민 페이지에서만 실행
 		//카테고리 데이타 수정
 		$category		= $mdb->get_distinct_values($mb_admin_tables["options"],$mb_fields["options"]["fn_option_category"]);		//option_category 필드에서 고유한 값을 배열로 가져옴
 		if(!empty($category)) mbw_set_board_option("fn_category_data", implode(",",$category));
+		$button_html		= mbw_get_btn_template(array("name"=>"Modify","onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify'})","class"=>"btn btn-default"));
+		mbw_add_left_button("list",$button_html);
 	}
 }
 ?>

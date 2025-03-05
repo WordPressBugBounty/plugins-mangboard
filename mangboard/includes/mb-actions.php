@@ -314,7 +314,7 @@ if(!function_exists('mbw_print_head_scripts')){
 			echo "<script async src='https://www.googletagmanager.com/gtag/js?id=".esc_js(mbw_get_option("google_analytics_id"))."'></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '".esc_js(mbw_get_option("google_analytics_id"))."');</script>";
 		}
 		if(mbw_get_option("naver_analytics_id")!=""){
-			echo '<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script> <script type="text/javascript"> if(!wcs_add) {var wcs_add = {};}; wcs_add["wa"] = "'.esc_js(mbw_get_option("naver_analytics_id")).'";wcs.inflow();</script>';
+			echo '<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script> <script type="text/javascript"> if(!wcs_add) {var wcs_add = {};}; wcs_add["wa"] = "'.esc_js(mbw_get_option("naver_analytics_id")).'";if(window.wcs){wcs.inflow();}</script>';
 		}
 	}
 }
@@ -503,19 +503,24 @@ if(!function_exists('mbw_api_callback')){
 		global $mdb,$mstore,$mb_fields,$mb_request_mode,$mb_languages,$send_data;
 		global $mb_admin_tables,$mb_board_table_name,$mb_comment_table_name;
 		$action		= mbw_get_param("action");
-		$file_name		= str_replace( "_", "-", $action).".php";
+		$file_name	= str_replace( "_", "-", $action).".php";
 
 		if($action=="mb_uploader"){
-			if(is_file(MBW_PLUGIN_PATH."includes/".$file_name))
+			if(is_file(MBW_PLUGIN_PATH."includes/".$file_name)){
 				require(MBW_PLUGIN_PATH."includes/".$file_name);
+			}
 		}else if(strpos($action, 'skin')===0){
 			$file_name		= str_replace( "skin-", "", $file_name);
-			if(is_file(MBW_SKIN_PATH."api/".$file_name))
+			if(defined('MBW_SKIN_PATH') && is_file(MBW_SKIN_PATH."api/".$file_name)){
 				require(MBW_SKIN_PATH."api/".$file_name);
-		}else{
-			if(is_file(MBW_PLUGIN_PATH."api/".$file_name))
+			}else if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
 				require(MBW_PLUGIN_PATH."api/".$file_name);
-		}	
+			}
+		}else{
+			if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
+				require(MBW_PLUGIN_PATH."api/".$file_name);
+			}
+		}
 	}
 }
 
@@ -601,16 +606,37 @@ if(!function_exists('mbw_create_image_panel')){
 add_action('mbw_board_skin_header', 'mbw_add_board_setup_button');		//게시판 설정 버튼 추가
 if(!function_exists('mbw_add_board_setup_button')){
 	function mbw_add_board_setup_button(){
-		if(mbw_is_admin() && !mbw_is_admin_page()){
+		if(mbw_is_admin()){
 			if(mbw_get_trace("mbw_add_board_setup_button")==""){
 				mbw_add_trace("mbw_add_board_setup_button");
-				if(mbw_get_board_name()!="" && mbw_get_board_option("fn_pid")!=""){
-					$button_name		= __MW("W_SETTING");
-					$button_html		= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name=board_options&mode=write&board_action=modify&board_pid='.mbw_get_board_option("fn_pid").'\');return false;" class="btn btn-default btn-setup" title="'.$button_name.'" type="button"><span>'.$button_name.'</span></button>';
-					if(mbw_get_vars("device_type")=="desktop"){
-						$button_name		= __MW("W_MENU_BOARD");
-						$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name='.mbw_get_board_option("fn_board_name2").'\');return false;" class="btn btn-default btn-manage" title="'.$button_name.'" type="button"><span>'.$button_name.'</span></button>';
+
+				$button_html					= '';
+				$list_btn_bottom_fixed		= intval(mbw_get_option("list_btn_bottom_fixed"));
+				if((mbw_is_admin_page() && $list_btn_bottom_fixed==1) || $list_btn_bottom_fixed==2){
+					$button_html		.= '<script type="text/javascript">';
+						$button_html		.= 'jQuery(document).ready(function(){';
+							$button_html		.= 'if(jQuery(".mb-board #tbl_board_list").length>0){';
+								$button_html		.= 'var mba_tbl_list = jQuery(".mb-board #tbl_board_list");';
+								$button_html		.= 'if(mba_tbl_list.outerHeight()>500){';
+									$button_html		.= 'jQuery(".mb-board .mb-mode-list .list-btn").prepend("<span class=\'mb-btn-close\' style=\'display:none;\' onclick=\'closeListBtnFixedBox();return false;\'></span>");';
+									$button_html		.= 'jQuery(":checkbox",mba_tbl_list).click(function(){ if(jQuery("td :checkbox",mba_tbl_list).filter(":checked").length>0){ jQuery(".mb-board .mb-mode-list .list-btn").addClass("mb-btn-bottom-fixed"); }else{ jQuery(".mb-board .mb-mode-list .list-btn").removeClass("mb-btn-bottom-fixed");} });';
+								$button_html		.= '}';
+							$button_html		.= '}';
+						$button_html		.= '});';
+						$button_html		.= 'function closeListBtnFixedBox(){ jQuery(".mb-board .mb-mode-list .list-btn").removeClass("mb-btn-bottom-fixed"); }';
+					$button_html		.= '</script>';
+				}
+				if(!mbw_is_admin_page()){
+					if(mbw_get_board_name()!="" && mbw_get_board_option("fn_pid")!=""){
+						$button_name		= __MW("W_SETTING");
+						$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name=board_options&mode=write&board_action=modify&board_pid='.mbw_get_board_option("fn_pid").'\');return false;" class="btn btn-default btn-setup" title="'.$button_name.'" type="button"><span>'.$button_name.'</span></button>';
+						if(mbw_get_vars("device_type")=="desktop"){
+							$button_name		= __MW("W_MENU_BOARD");
+							$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name='.mbw_get_board_option("fn_board_name2").'\');return false;" class="btn btn-default btn-manage" title="'.$button_name.'" type="button"><span>'.$button_name.'</span></button>';
+						}						
 					}
+				}
+				if(!empty($button_html)){
 					mbw_add_left_button("list",$button_html);
 				}
 			}
@@ -785,7 +811,8 @@ if(!function_exists('mbw_filter_widget_latest_items')){
 						$items[$key]['board_url']			= $permalink;
 					}
 				}
-				$join_array		= explode(',',$data['join']);
+				$join_board		= str_replace(array(", "," ,"),",", trim($data['join']));
+				$join_array		= explode(',',$join_board);
 				$index			= 0;
 				if(!empty($join_array)){
 					foreach($join_array as $item){
@@ -960,6 +987,60 @@ if(!function_exists('mbw_set_theme_body_classs')){
 }
 add_filter( 'body_class', 'mbw_set_theme_body_class', 100,1);
 add_filter( 'admin_body_class', 'mbw_set_theme_body_class', 100,1);
+
+if(!function_exists('mbw_filter_commerce_create_template1')){
+	function mbw_filter_commerce_create_template1($template,$mode,$data){
+		if(!empty($data["type"])){
+			$item_type	= $data["type"];
+			if($item_type=="commerce_point_content"){
+				$value				= mbw_get_board_item("fn_content");
+				if(strpos($value, '{')===false){
+					$value				= $value;
+				}else{
+					$point_array		= mbw_json_decode(trim(mbw_htmlspecialchars_decode($value)));
+					if(isset($point_array[0]["point"])){
+						$value				= $point_array[0]["point"];
+					}
+				}
+				$sign					= substr($value,0,1);
+				$point					= substr($value,1);
+				$message_start		= "";
+				$add_message		= "";
+				if($sign=="-"){
+					$message_start		= "-";
+				}else{
+					$message_start		= "+";
+				}			
+				if(strpos(mbw_get_board_item('fn_action'),'_order_save')!==false){
+					$template		= $value;	
+				}else{
+					if($sign=="-"){
+						$template		= "<div class='mb-point-use'>".$message_start.mbw_set_format($point," P").$add_message."</div>";	
+					}else{
+						$template		= "<div class='mb-point-save'>".$message_start.mbw_set_format($point," P").$add_message."</div>";	
+					}
+				}
+			}
+		}
+		return $template;
+	}
+}
+if(!function_exists('mbw_set_commerce_version_template')){
+	function mbw_set_commerce_version_template(){	
+		global $mstore;
+		if(empty($mstore)) return;		//init 액션은 WP_CLI 환경에서 mstore 객체가 설정되지 않을 경우 종료하는 코드 필요
+		if(mbw_get_option("commerce_version")!=""){
+			$commerce_version		= mbw_get_option("commerce_version");
+			if(version_compare($commerce_version, "1.5.4", '<')){
+				// 커머스 패키지 1.5.3 이하 버전에서 망보드 2.3.2 이상 버전을 사용할 경우 포인트 목록이 깨지는 문제를 해결하는 템플릿 필터 추가
+				// 망보드 2.3.2 버전에서 포인트를 JSON 방식으로 저장하는 기능이 추가됨
+				add_filter('mf_board_create_template', 'mbw_filter_commerce_create_template1',5,3);
+			}
+		}	
+	}
+}
+add_action('wp', 'mbw_set_commerce_version_template', 0);
+
 /*
 //WP Super Cache 플러그인 사용시 게시물,댓글 작성시에 캐시 초기화
 function mbw_super_cache_clear_cache(){

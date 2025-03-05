@@ -255,7 +255,7 @@ function openWindow(url,name,option){
 		url		= url.replace(/&#038;/g,'&');
 	}
 	if(typeof(mb_hybrid_app)==='undefined' || mb_hybrid_app==""){
-		if(typeof(option)==='undefined') option	= "width=600,height=450,toolbar=no,location=no,status=no,menubar=no,top=200,left=300,scrollbars=no,resizable=no";
+		if(typeof(option)==='undefined') option	= "width=600,height=640,toolbar=no,location=no,status=no,menubar=no,top=200,left=300,scrollbars=no,resizable=no";
 		if(typeof(mb_options)!=='undefined' && typeof(mb_options["device_type"])!=='undefined' && mb_options["device_type"]=="mobile"){
 			objPopup		= window.open(url,name);
 		}else{
