@@ -92,13 +92,18 @@ if(!function_exists('mbw_editor_smart_template')){
 			$editor_skin			= $editor_url."mb_ext=seditor&se_skin=SmartEditor2Skin_".$editor_locale."&se_locale=".$editor_locale."&board_name=".$board_name;
 			
 			if(empty($data["value"])){
+				$default_font_size		= "13px";
+				$font_size			= mbw_value_filter(mbw_get_vars("mb-font-size"));
+				if(!empty($font_size)){
+					$default_font_size		= $font_size;
+				}
 				if($font_local_name!=$font_name){
 					if($editor_locale!='ko_KR'){
-						$font_local_name	= trim(str_replace(" ", "", $font_name));						
+						$font_local_name	= trim(str_replace(" ", "", $font_name));
 					}
-					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:13px;font-family:'".esc_attr($font_local_name)."','".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
+					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:".$default_font_size.";font-family:'".esc_attr($font_local_name)."','".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
 				}else{
-					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:13px;font-family:'".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
+					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:".$default_font_size.";font-family:'".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
 				}
 			}
 			$item_html		= "";

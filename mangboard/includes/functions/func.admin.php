@@ -14,7 +14,7 @@ if(!function_exists('mbw_get_admin_board_name')){
 if(!function_exists('mbw_manage_custom')){
 	function mbw_manage_custom(){
 		mbw_add_trace("mbw_manage_custom");
-		echo "<div style='margin-top:20px;padding:0 15px 0 0;'><div style='background-color:#FFF;padding:20px 15px;border:1px solid #EEE;'>";
+		echo "<div style='margin-top:20px;padding:0 15px 0 0;'><div style='background-color:#FFF;padding:20px 15px;border:1px solid #EEE;overflow-x:auto;'>";
 		do_action('mbw_manage_custom');
 		echo "</div></div>";
 	}
@@ -23,7 +23,7 @@ if(!function_exists('mbw_manage_board')){
 	function mbw_manage_board(){
 		mbw_add_trace("mbw_manage_board");
 		do_action('mbw_manage_board_header');
-		echo "<div style='margin-top:20px;padding:0 15px 0 0;'><div style='background-color:#FFF;padding:20px 15px;border:1px solid #EEE;'>";
+		echo "<div style='margin-top:20px;padding:0 15px 0 0;'><div style='background-color:#FFF;padding:20px 15px;border:1px solid #EEE;overflow-x:auto;'>";
 		mbw_create_board(array("name"=>mbw_get_admin_board_name(),"echo"=>"true"));
 		echo "</div></div>";
 		do_action('mbw_manage_board_footer');

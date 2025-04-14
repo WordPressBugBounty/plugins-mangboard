@@ -19,9 +19,9 @@ if(!function_exists('mbw_get_category_template')){
 		if($data=="") 
 			$type		= "NONE";
 
-		$category1				= mbw_get_param("category1");
-		$category2				= mbw_get_param("category2");
-		$category3				= mbw_get_param("category3");
+		$category1				= mbw_stripslashes(mbw_get_param("category1"));
+		$category2				= mbw_stripslashes(mbw_get_param("category2"));
+		$category3				= mbw_stripslashes(mbw_get_param("category3"));
 		
 		// SELECT 박스로 카테고리 보여주기
 		if(strpos($type, "SELECT")===0 && $data!=""){

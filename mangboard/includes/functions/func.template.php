@@ -835,6 +835,12 @@ if(!function_exists('mbw_get_default_editor')){
 		mbw_set_board_option("fn_editor_type","N");
 		if(empty($data["width"])) $data["width"]			= '100%';
 		if(empty($data["height"])) $data["height"]		= '300px';
+		if(isset($data["value"]) && $data["value"]!=""){
+			if(strpos($data["value"],"'")!==false || strpos($data["value"],'"')!==false){
+				$data["value"]			= esc_textarea($data["value"]);
+			}
+			$data["value"]			= strip_tags($data["value"]);
+		}
 		return '<textarea'.$data["ext"].__STYLE("width:".$data["width"].";height:".$data["height"].";".$data["style"]).'  name="'.esc_attr($data["item_name"]).'" id="'.esc_attr($data["item_id"]).'" title="'.esc_attr($data["name"]).'">'.($data["value"]).'</textarea><input type="hidden" name="data_type" id="data_type" value="text" /><script type="text/javascript">setEditorType("N");</script>';
 	}
 }

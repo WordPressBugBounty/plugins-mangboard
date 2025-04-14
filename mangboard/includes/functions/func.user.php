@@ -408,7 +408,7 @@ if(!function_exists('mbw_get_user_today_point')){
 		$today_point		= 0;
 		if(!empty($user_pid)){
 			global $mdb;
-			$items		= $mdb->get_results($mdb->prepare("SELECT content FROM mb_logs where type='point' and (action='write' or action='reply') and user_pid=%d;",$user_pid), ARRAY_A);			
+			$items		= $mdb->get_results($mdb->prepare("SELECT content FROM mb_logs where type='point' and (action='write' or action='reply') and user_pid=%d and reg_date>=DATE_SUB(curdate(),INTERVAL 0 DAY);",$user_pid), ARRAY_A);
 			if(!empty($items)){
 				foreach($items as $key=>$item){
 					$value			= $item["content"];

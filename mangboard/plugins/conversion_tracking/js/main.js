@@ -14,17 +14,17 @@ function sendConversionTracking(type, data){
 		if(typeof(data.category1)!=="undefined" && data.category1!=="") item_category = data.category1;
 
 		if(item_name!="" && item_id!=""){
-			if(gtag){	//google
-				gtag('event', type, {'currency': 'KRW','value': total_price,'items': [{ 'item_id':item_id,'item_name':item_name,'price':item_price,'quantity':quantity,'item_category':item_category }]});
+			if(typeof(gtag)!=="undefined"){	//google
+				gtag('event', type, {'currency':'KRW','value':total_price,'items':[{'item_id':item_id,'item_name':item_name,'price':item_price,'quantity':quantity,'item_category':item_category}]});
 			}
-			if(window.wcs){	//naver
+			if(typeof(wcs)!=="undefined"){		//naver
 				var _conv = {};
 					_conv.type = 'add_to_cart';
-					_conv.items = [{'id':item_id,'name': item_name,'quantity':quantity,'payAmount':item_price,'category':item_category}];
+					_conv.items = [{'id':item_id,'name':item_name,'quantity':quantity,'payAmount':item_price,'category':item_category}];
 				wcs.trans(_conv);
 			}
-			if(fbq){		//facebook pixel
-				fbq('track', 'AddToCart', { 'content_name': item_name, 'content_category': item_category, 'content_ids': [item_id], 'content_type': 'product', 'value': item_price, 'currency': 'KRW' });
+			if(typeof(fbq)!=="undefined"){		//facebook pixel
+				fbq('track', 'AddToCart',{'content_name':item_name,'content_category':item_category,'content_ids':[item_id],'content_type':'product','value':item_price,'currency':'KRW'});
 			}
 		}
 	}

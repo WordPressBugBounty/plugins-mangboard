@@ -261,7 +261,7 @@ if(!function_exists('mbw_get_latest_mb_basic')){
 		$latest_html	= '<div class="mb-widget">';
 		$latest_html	.= '<div'.$div_style.' class="mb-latest-basic mb-widget-'.esc_attr($mode.$div_class).'">';
 		if($mode!="sidebar" && !empty($title)) 
-			$latest_html	.= '<div class="mb-latest-title"><a href="'.esc_url(get_permalink($post_id)).'" title="'.esc_attr($title).'"'.$head_title_style1.'>'.$title.'</a></div>';
+			$latest_html	.= '<div class="mb-latest-title"><a href="'.esc_url(get_permalink($post_id)).'" title="'.esc_attr($title).'"'.$head_title_style1.'>'.esc_html($title).'</a></div>';
 
 		$latest_html	.= '<div class="mb-latest-box"><table  cellspacing="0" cellpadding="0" border="0" class="table table-latest">';
 		$latest_html	.= '<colgroup><col style="width:100%" /></colgroup>';

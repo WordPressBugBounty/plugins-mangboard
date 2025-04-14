@@ -53,7 +53,7 @@
 .mb-board .tab-menu-on span{color:#FFF !important;}
 </style>
 <?php 
-if(!defined('_MB_')) exit();
+if(!defined('_MB_') || !is_super_admin()) exit();
 do_action('mbw_store_page_init');
 
 $category1			= "";
@@ -81,7 +81,7 @@ if(!function_exists('curl_init')){
 $response			= mbw_request_store_api($send_data);
 
 $mb_version2	= mbw_get_option("mb_version");
-$check_version	= '1.9.0';
+$check_version	= '2.1.0';
 if(function_exists('get_plugin_data')){
 	$plugin_data		= get_plugin_data(MBW_PLUGIN_PATH.'mangboard.php',false,false);
 	if(!empty($plugin_data['Version'])){

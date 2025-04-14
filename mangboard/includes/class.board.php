@@ -163,6 +163,9 @@ class MangBoard
 					require($file_path["base"]."_header.php");
 					do_action('mbw_board_header');
 					$board_header		= mbw_get_board_option("fn_board_header");
+					if(defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML){
+						$board_header	= mbw_get_htmlpurify($board_header);
+					}
 					if(!empty($board_header)) echo do_shortcode($board_header);
 					if(mbw_get_param($board_mode."_type")!="" && is_file($file_path["base"].$file_path["prefix"].mbw_get_param($board_mode."_type").".php")){
 						require($file_path["base"].$file_path["prefix"].mbw_get_param($board_mode."_type").".php");
@@ -172,6 +175,9 @@ class MangBoard
 					require($file_path["base"]."_footer.php");
 					do_action('mbw_board_footer');
 					$board_footer		= mbw_get_board_option("fn_board_footer");
+					if(defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML){
+						$board_footer	= mbw_get_htmlpurify($board_footer);
+					}
 					if(!empty($board_footer)) echo do_shortcode($board_footer);
 					if(!empty($template_class)){
 						echo '</div>';

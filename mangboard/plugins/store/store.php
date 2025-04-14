@@ -13,7 +13,9 @@ add_filter('mf_admin_menu_page', 'mbw_admin_store_page',5,2);
 
 if(!function_exists('mbw_add_store_menu')){
 	function mbw_add_store_menu(){
-		add_submenu_page('mbw_dashboard', 'STORE', 'STORE', 'administrator', 'mbw_store', 'mbw_manage_page');
+		if(!is_multisite() || is_super_admin()){
+			add_submenu_page('mbw_dashboard', 'STORE', 'STORE', 'administrator', 'mbw_store', 'mbw_manage_page');
+		}
 	}
 }
 add_action('admin_menu', 'mbw_add_store_menu',38);

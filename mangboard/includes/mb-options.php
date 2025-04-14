@@ -26,9 +26,9 @@ else if($mb_locale=='ko') $mb_locale	= 'ko_KR';
 else if($mb_locale=='zh' || $mb_locale=='ch' || $mb_locale=='zh-hans' || $mb_locale=='zh-hant') $mb_locale	= 'zh_CN';
 else if($mb_locale=='jp') $mb_locale	= 'ja';
 
-if(empty($mb_version)) $mb_version	= "2.2.8";
-if(empty($mb_index)) $mb_index	= "153";
-if(empty($mb_db_version)) $mb_db_version	= "1.0.6";
+if(empty($mb_version)) $mb_version	= "2.3.4";
+if(empty($mb_index)) $mb_index	= "169";
+if(empty($mb_db_version)) $mb_db_version	= "1.0.7";
 
 //설정 데이타
 $mb_options				= array("locale"=>$mb_locale,		//ko_KR, en_US   (DB에서 설정 불가)

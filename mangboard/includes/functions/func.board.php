@@ -251,7 +251,6 @@ if(!function_exists('mbw_replace_image_url')){
 			$index1				= $end_index;
 		}
 
-		//차후에 삭제
 		$index1			= 0;
 		$file_url			= MBW_PLUGIN_URL."includes/mb-file.php?path=";
 		$file_url			= str_replace(array("http://","https://"), "", $file_url);
@@ -266,7 +265,7 @@ if(!function_exists('mbw_replace_image_url')){
 			$url_data1[]		= $image_url;			
 			$url_data2[]		= str_replace(array("http://","https://"), "", $url);
 			$index1				= $end_index;
-		} //end
+		}
 
 		if(!empty($url_data1)){
 			if(mbw_is_ssl()){
@@ -1461,7 +1460,7 @@ if(!function_exists('mbw_check_cookie')){
 			}else{
 				return "login";
 			}
-			$where_query			= $mdb->prepare(" where user_pid=%d and board_name=%s and cookie_type=%s and cookie_name=%s and cookie_value=%s", mbw_get_user("fn_pid"),mbw_get_param("board_name"),$data["type"],$data["name"],$data["value"]);
+			$where_query			= $mdb->prepare(" where user_pid=%d and board_name=%s and cookie_type=%s and cookie_value=%s", mbw_get_user("fn_pid"),mbw_get_param("board_name"),$data["type"],$data["value"]);
 			$select_query			= mbw_get_add_query(array("column"=>"count(*)","table"=>$mb_admin_tables["cookies"]));
 			$cookie_check			= $mdb->get_var($select_query.$where_query);
 

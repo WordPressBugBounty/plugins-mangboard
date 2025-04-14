@@ -305,7 +305,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 	}
 }else if(mbw_get_param("board_action")=="vote_good"){
 	if(isset($api_fields["fn_vote_good_count"])){		
-		$cookie_check		= mbw_check_cookie(array("type"=>"mb_board_vote","save"=>"db","name"=>"board_pid","value"=>$board_pid));
+		$cookie_check		= mbw_check_cookie(array("type"=>"mb_board_vote","save"=>"db","name"=>"good_pid","value"=>$board_pid));
 		if($cookie_check=="success"){
 			$query_data[]		= $mdb->prepare( "update ".$mb_board_table_name." set ".$api_fields["fn_vote_good_count"]."=".$api_fields["fn_vote_good_count"]."+1 where ".$api_fields["fn_pid"]."=%d",$board_pid);
 			$vote_count		= intval($mdb->get_var($mdb->prepare( "select ".$api_fields["fn_vote_good_count"]." from `".$mb_board_table_name."` where ".$api_fields["fn_pid"]."=%d limit 1",$board_pid)))+1;
@@ -319,7 +319,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 	}
 }else if(mbw_get_param("board_action")=="vote_bad"){
 	if(isset($api_fields["fn_vote_bad_count"])){
-		$cookie_check		= mbw_check_cookie(array("type"=>"mb_board_vote","save"=>"db","name"=>"board_pid","value"=>$board_pid));
+		$cookie_check		= mbw_check_cookie(array("type"=>"mb_board_vote","save"=>"db","name"=>"bad_pid","value"=>$board_pid));
 		if($cookie_check=="success"){
 			$query_data[]		= $mdb->prepare( "update ".$mb_board_table_name." set ".$api_fields["fn_vote_bad_count"]."=".$api_fields["fn_vote_bad_count"]."+1 where ".$api_fields["fn_pid"]."=%d",$board_pid);
 			$vote_count		= intval($mdb->get_var($mdb->prepare( "select ".$api_fields["fn_vote_bad_count"]." from `".$mb_board_table_name."` where ".$api_fields["fn_pid"]."=%d limit 1",$board_pid)))+1;

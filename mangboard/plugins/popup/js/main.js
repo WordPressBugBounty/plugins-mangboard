@@ -43,11 +43,15 @@ function setPopupScrollEvent(){
 			if(scrollMode) setPopupPosition("scroll");
 		},'scroll': function(e){
 			if(scrollMode) setPopupPosition("scroll");
+		},'resize': function(e){
+			setPopupPosition("resize");
 		}
 	})
 }
 function setPopupPosition(mode){
-	if(typeof(mode)!=='undefined' && mode=="scroll" && jQuery("#mb_pop_bg").css('display')=='none') return;
+	if(typeof(mode)!=='undefined'){
+		if((mode=="scroll" || mode=="resize") && jQuery("#mb_pop_bg").css('display')=='none') return;
+	}
 
 	var pHeight			= 120;
 	var nWidth			= jQuery(window).width();

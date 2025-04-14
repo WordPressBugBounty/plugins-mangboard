@@ -68,9 +68,9 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					if(mbw_get_option("google_analytics_id")!=""){
 						if(!empty($google_tag)){
 							$tag_json			= json_encode($google_tag, JSON_UNESCAPED_UNICODE);
-							echo "<script type='text/javascript'> gtag('event', 'begin_checkout', {'currency': 'KRW','value': ".esc_js($order_price+$options_price).",'items': ".$tag_json."});</script>";
+							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'begin_checkout', {'currency': 'KRW','value': ".esc_js($order_price+$options_price).",'items': ".$tag_json."}); }</script>";
 						}else{
-							echo "<script type='text/javascript'> gtag('event', 'begin_checkout');</script>";
+							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'begin_checkout'); }</script>";
 						}
 					}
 					if(mbw_get_option("naver_analytics_id")!=""){
@@ -84,9 +84,9 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					if(mbw_get_option("facebook_pixel_id")!=""){
 						if(!empty($pixel_tag)){
 							$tag_json			= json_encode($pixel_tag, JSON_UNESCAPED_UNICODE);
-							echo "<script type='text/javascript'> fbq('track', 'InitiateCheckout', {'value': ".esc_js($order_price+$options_price).",'currency': 'KRW','contents': ".$tag_json."});</script>";
+							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'InitiateCheckout', {'value': ".esc_js($order_price+$options_price).",'currency': 'KRW','contents': ".$tag_json."}); }</script>";
 						}else{
-							echo "<script type='text/javascript'> fbq('track', 'InitiateCheckout');</script>";
+							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'InitiateCheckout'); }</script>";
 						}
 					}
 				}		
@@ -119,7 +119,7 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					$google_tag		= array();
 					$google_tag[]	= array( 'item_id'=>(mbw_get_board_item('fn_pid')),'item_name'=>$title,'price'=>(mbw_get_board_item('fn_sale_price')),'quantity'=>1, 'item_category'=>$category1,'item_category2'=>$category2,'item_category3'=>$category3 );
 					$tag_json			= json_encode($google_tag, JSON_UNESCAPED_UNICODE);
-					echo "<script type='text/javascript'> gtag('event', 'view_item', {'currency': 'KRW','value': ".esc_js(mbw_get_board_item('fn_sale_price')).",'items': ".$tag_json."});</script>";
+					echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'view_item', {'currency': 'KRW','value': ".esc_js(mbw_get_board_item('fn_sale_price')).",'items': ".$tag_json."}); }</script>";
 				}
 				if(mbw_get_option("naver_analytics_id")!=""){
 					$naver_tag		= array();
@@ -128,7 +128,7 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					echo "<script type='text/javascript'> if(window.wcs){ var _conv={};_conv.type = 'view_product';_conv.items=".$tag_json.";wcs.trans(_conv); }</script>";
 				}
 				if(mbw_get_option("facebook_pixel_id")!=""){
-					echo '<script type="text/javascript">fbq("track", "ViewContent", {content_ids: ["'.esc_js(mbw_get_board_item('fn_pid')).'"],content_name: "'.esc_js($title).'",content_category: "'.esc_js($category1).'",content_type: "product",value: '.esc_js(mbw_get_board_item('fn_sale_price')).',currency: "KRW"});</script>';
+					echo '<script type="text/javascript"> if(window.fbq){ fbq("track", "ViewContent", {content_ids: ["'.esc_js(mbw_get_board_item('fn_pid')).'"],content_name: "'.esc_js($title).'",content_category: "'.esc_js($category1).'",content_type: "product",value: '.esc_js(mbw_get_board_item('fn_sale_price')).',currency: "KRW"}); }</script>';
 				}
 			}
 		}else if(mbw_get_board_name()=='commerce_order_result' && !empty($_SESSION['commerce_billing_id'])){
@@ -177,9 +177,9 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					if(mbw_get_option("google_analytics_id")!=""){
 						if(!empty($google_tag)){
 							$tag_json			= json_encode($google_tag, JSON_UNESCAPED_UNICODE);
-							echo "<script type='text/javascript'> gtag('event', 'purchase', {'transaction_id': '".esc_js($order_id)."','value': ".esc_js($order_price).",'shipping': ".esc_js(mbw_get_board_item('fn_shipping_cost')).",'currency': 'KRW','items': ".$tag_json."});</script>";
+							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'purchase', {'transaction_id': '".esc_js($order_id)."','value': ".esc_js($order_price).",'shipping': ".esc_js(mbw_get_board_item('fn_shipping_cost')).",'currency': 'KRW','items': ".$tag_json."}); }</script>";
 						}else{
-							echo "<script type='text/javascript'> gtag('event', 'purchase', {'transaction_id': '".esc_js($order_id)."','value': ".esc_js($order_price).",'currency': 'KRW'});</script>";
+							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'purchase', {'transaction_id': '".esc_js($order_id)."','value': ".esc_js($order_price).",'currency': 'KRW'}); }</script>";
 						}
 					}
 					if(mbw_get_option("naver_analytics_id")!=""){
@@ -194,9 +194,9 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					if(mbw_get_option("facebook_pixel_id")!=""){
 						if(!empty($pixel_tag)){
 							$tag_json			= json_encode($pixel_tag, JSON_UNESCAPED_UNICODE);
-							echo "<script type='text/javascript'> fbq('track', 'Purchase', {'value': ".esc_js($order_price).",'currency': 'KRW','contents': ".$tag_json."});</script>";
+							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'Purchase', {'value': ".esc_js($order_price).",'currency': 'KRW','contents': ".$tag_json."}); }</script>";
 						}else{
-							echo "<script type='text/javascript'> fbq('track', 'Purchase', {'value': ".esc_js($order_price).",'currency': 'KRW'});</script>";
+							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'Purchase', {'value': ".esc_js($order_price).",'currency': 'KRW'}); }</script>";
 						}						
 					}
 				}
@@ -216,7 +216,7 @@ if(!function_exists('mbw_user_register_conversion_tracking')){
 				if( ((isset($parse_url['path']) && $parse_url['path']=='/user_register/') || (strpos($_SERVER['HTTP_REFERER'], 'step=2')!== false)) && mbw_get_param("ref")=="register" ){
 					//구글 회원가입
 					if(mbw_get_option("google_analytics_id")!=""){
-						echo "<script type='text/javascript'>gtag('event', 'sign_up');</script>";
+						echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'sign_up'); }</script>";
 					}
 					//네이버 회원가입
 					if(mbw_get_option("naver_analytics_id")!=""){
@@ -224,7 +224,7 @@ if(!function_exists('mbw_user_register_conversion_tracking')){
 					}
 					//페이스북 회원가입
 					if(mbw_get_option("facebook_pixel_id")!=""){
-						echo '<script type="text/javascript">fbq("track", "CompleteRegistration");</script>';
+						echo '<script type="text/javascript"> if(window.fbq){ fbq("track", "CompleteRegistration"); }</script>';
 					}
 				}
 			}

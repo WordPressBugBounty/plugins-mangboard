@@ -142,24 +142,26 @@ function checkBoxDisplayID(obj, id){
 		jQuery("#"+id).hide();
 	}
 }
-
+function replaceCategoryText(value){
+  	return value.replace(/&#038;/g, "&").replace(/&/g, "&amp;").replace(/[=<>`'"]/g, '');
+}
 function set_category_data(data, id,value){
 	if(typeof(data)!=='undefined'){
-
 		jQuery("#"+id+" option").remove();
 		var index		= id.substr(-1);
-
-		if(typeof(mb_languages["selectbox"+index])!='undefined' && mb_languages["selectbox"+index]!="")
+		if(typeof(mb_languages["selectbox"+index])!='undefined' && mb_languages["selectbox"+index]!=""){
 			jQuery("#"+id).append('<option value="">'+mb_languages["selectbox"+index]+'</option>');
-
-		if(typeof(data)==='object'){		
-			var add_html		= "";
-			jQuery.each(data, function(key, entry) {
-				if(value!="" && key==value){
-					add_html	+= '<option value="'+key+'" selected>'+key+'</option>';
+		}
+		if(typeof(data)==='object'){
+			var add_html			= "";
+			var category_text	= "";
+			jQuery.each(data, function(key, entry){
+				category_text	= replaceCategoryText(key);
+				if(value!="" && (key==value || category_text==value)){
+					add_html	+= '<option value="'+category_text+'" selected>'+category_text+'</option>';
 				}else{
-					add_html	+= '<option value="'+key+'">'+key+'</option>';
-				}			 
+					add_html	+= '<option value="'+category_text+'">'+category_text+'</option>';
+				}
 			});
 			if(add_html!=""){
 				jQuery("#"+id).append(add_html);
@@ -168,23 +170,84 @@ function set_category_data(data, id,value){
 		}else{
 			jQuery("#"+id).html('<option value=""></option>');
 			jQuery("#"+id).hide();
-		}	
+		}
 	}else{
 		jQuery("#"+id).html('<option value=""></option>');
 		jQuery("#"+id).hide();
 	}
 }
+
+
+function category_select(index){
+	var value1			= "";
+	var value2			= "";
+	var theme_type		= "type1";
+
+	if(typeof(category_text)!=='undefined' && category_text!="" && category_text.indexOf('&#038;')!=-1){
+		theme_type	= "type2";
+	}
+	if(index==0){
+		set_category_data(category_data,mb_options["board_name"]+"_category1",mb_categorys["value1"]);
+		value1		= jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val();
+		if(theme_type=="type2" && value1.indexOf('&')!=-1){
+			value1		= value1.replace(/&/g, "&#038;");
+		}		
+		if(mb_categorys["value1"]!=undefined && mb_categorys["value1"]!="" && value1!=''){
+			set_category_data(category_data[value1],mb_options["board_name"]+"_category2",mb_categorys["value2"]);
+		}else{
+			jQuery("#"+mb_options["board_name"]+"_category2").hide();
+		}
+
+		value2		= jQuery("#"+mb_options["board_name"]+"_category2 option").filter(":selected").val();
+		if(theme_type=="type2" && value2!="" && value2.indexOf('&')!=-1){
+			value2		= value2.replace(/&/g, "&#038;");
+		}
+		if(mb_categorys["value2"]!=undefined && mb_categorys["value2"]!="" && value2!=''){
+			set_category_data(category_data[value1][value2],mb_options["board_name"]+"_category3",mb_categorys["value3"]);
+		}else{
+			jQuery("#"+mb_options["board_name"]+"_category3").hide();
+		}
+	}else{
+		value1		= jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val();
+		value2		= jQuery("#"+mb_options["board_name"]+"_category2 option").filter(":selected").val();
+		if(theme_type=="type2"){
+			if(value1!="" && value1.indexOf('&')!=-1){
+				value1		= value1.replace(/&/g, "&#038;");
+			}
+			if(value2!="" && value2.indexOf('&')!=-1){
+				value2		= value2.replace(/&/g, "&#038;");
+			}
+		}
+		if(index==1){
+			if(value1!=""){
+				set_category_data(category_data[value1],mb_options["board_name"]+"_category2","");
+			}else{
+				set_category_data("",mb_options["board_name"]+"_category2","");
+			}
+			set_category_data("",mb_options["board_name"]+"_category3","");
+		}else if(index==2){
+			if(value1!=""){				
+				if(value2!=""){					
+					set_category_data(category_data[value1][value2],mb_options["board_name"]+"_category3","");
+				}else{
+					set_category_data("",mb_options["board_name"]+"_category3","");
+				}
+			}else{
+				set_category_data("",mb_options["board_name"]+"_category3","");
+			}
+		}
+	}
+}
+
 function movePage(url, param){	
 	moveURL(url, param)
 }
-
 function moveViewPage(pid,board_name,page){
 	var param		= "vid="+pid;
 	if(typeof(board_name)!=='undefined'&& board_name!="") param		= param+"&board_name="+board_name;
 	if(typeof(page)!=='undefined' && page!="") param			= param+"&page="+page;
 	moveURL("", param)
 }
-
 function moveURL(url, param, loading){
 	var isLoading		= false;
 	if(typeof(loading)!=='undefined') isLoading = loading;
@@ -267,32 +330,6 @@ function openWindow(url,name,option){
 	return objPopup;
 }
 
-function category_select(index){
-	if(index==0){
-		set_category_data(category_data,mb_options["board_name"]+"_category1",mb_categorys["value1"]);			
-		if(mb_categorys["value1"]!=undefined && mb_categorys["value1"]!="" && jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()!=''){
-			set_category_data(category_data[jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()],mb_options["board_name"]+"_category2",mb_categorys["value2"]);
-		}else jQuery("#"+mb_options["board_name"]+"_category2").hide();
-		if(mb_categorys["value2"]!=undefined && mb_categorys["value2"]!="" && jQuery("#"+mb_options["board_name"]+"_category2 option").filter(":selected").val()!=''){
-			set_category_data(category_data[jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()][jQuery("#"+mb_options["board_name"]+"_category2 option").filter(":selected").val()],mb_options["board_name"]+"_category3",mb_categorys["value3"]);
-		}else jQuery("#"+mb_options["board_name"]+"_category3").hide();
-	}else if(index==1){
-
-		set_category_data(category_data[jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()],mb_options["board_name"]+"_category2","");
-		if (jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()!=""){
-			set_category_data(category_data[jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()][jQuery("#"+mb_options["board_name"]+"_category2 option").filter(":selected").val()],mb_options["board_name"]+"_category3","");
-		}else{
-			set_category_data("",mb_options["board_name"]+"_category3","");
-		}
-
-	}else if(index==2){
-		if (jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()!=""){
-			set_category_data(category_data[jQuery("#"+mb_options["board_name"]+"_category1 option").filter(":selected").val()][jQuery("#"+mb_options["board_name"]+"_category2 option").filter(":selected").val()],mb_options["board_name"]+"_category3","");
-		}else{
-			set_category_data("",mb_options["board_name"]+"_category3","");
-		}		
-	}
-}
 var mb_selectFileName		= "";
 function sendBoardFileData(file_pid,file_name){
 	var data				= "mode=file&board_action=file_download&board_name="+mb_options["board_name"]+"&file_pid="+file_pid+"&file_name="+encodeURIComponent(file_name);

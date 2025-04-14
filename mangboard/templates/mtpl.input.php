@@ -145,6 +145,15 @@ if(!function_exists('mbw_get_input_template')){
 					}else if(isset($args["height"])){
 						$data['height']			= $args["height"];
 					}
+					if(isset($args["background_size"])){
+						$data["background-size"] = mbw_value_filter($args["background_size"],"attr");
+					}
+					if(isset($args["background_position"])){
+						$data["background-position"] = mbw_value_filter($args["background_position"],"attr");
+					}
+					if(isset($args["background_repeat"])){
+						$data["background-repeat"] = mbw_value_filter($args["background_repeat"],"attr");
+					}
 				}
 				if(empty($data["height"])) $data["height"]		= $data["width"];
 
@@ -199,9 +208,17 @@ if(!function_exists('mbw_get_input_template')){
 				$template_start	= '<div'.__STYLE("width:".$data["width"].";height:".$data["height"].";display:table;").' class=""><div style="display:table-cell;vertical-align:middle;">No image</div></div>';
 			}
 		}else if(strpos($item_type,'text')===0){
-			if($item_type!='textarea'){
-				if($data["value"]!="" && (strpos($data["value"],"'")!==false || strpos($data["value"],'"')!==false))
-					$data["value"]			= mbw_htmlspecialchars($data["value"]);
+			if($data["value"]!=""){
+				if(strpos($data["value"],"'")!==false || strpos($data["value"],'"')!==false){
+					if($item_type=='textarea'){
+						$data["value"]			= esc_textarea($data["value"]);
+					}else{
+						$data["value"]			= mbw_htmlspecialchars($data["value"]);
+					}
+				}
+				if($item_type=='textarea'){
+					$data["value"]			= strip_tags($data["value"]);
+				}
 			}
 			$add_attribute		= "";
 
@@ -242,9 +259,9 @@ if(!function_exists('mbw_get_input_template')){
 			if(empty($data["width"])) $data["width"]			= "99%";
 			$template_start	= '<input'.$data["ext"].__STYLE("width:".$data["width"].";".$data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'"'.$t_id.$add_attribute.' value="" autocomplete="off" type="password" />';
 		}else if($item_type=='hidden'){
-			if($data["value"]!="" && (strpos($data["value"],"'")!==false || strpos($data["value"],'"')!==false))
-					$data["value"]			= mbw_htmlspecialchars($data["value"]);
-
+			if($data["value"]!="" && (strpos($data["value"],"'")!==false || strpos($data["value"],'"')!==false)){
+				$data["value"]			= mbw_htmlspecialchars($data["value"]);
+			}
 			$template_start	= '<input'.$data["ext"].__STYLE("width:".$data["width"].";".$data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'"'.$t_id.' value="'.esc_attr($data["value"]).'" type="hidden" />';		
 		
 		//html5

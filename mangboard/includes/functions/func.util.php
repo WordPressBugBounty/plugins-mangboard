@@ -292,12 +292,12 @@ if(!function_exists('mbw_htmlspecialchars')){
 		if(is_array($data)){
 			foreach($data as $key => $value){
 				if(!empty($value)){
-					$data[$key]			= htmlspecialchars(stripslashes($value), $flags, "UTF-8");
+					$data[$key]			= htmlspecialchars(stripslashes($value), $flags, mbw_get_option("encoding"));
 				}
 			}
 		}else{
 			if(!empty($data)){
-				$data			= htmlspecialchars(stripslashes($data), $flags, "UTF-8");
+				$data			= htmlspecialchars(stripslashes($data), $flags, mbw_get_option("encoding"));
 			}
 		}
 		return $data;
@@ -308,12 +308,12 @@ if(!function_exists('mbw_htmlspecialchars2')){
 		if(is_array($data)){
 			foreach($data as $key => $value){
 				if(!empty($value)){
-					$data[$key]			= htmlspecialchars($value, $flags, "UTF-8");
+					$data[$key]			= htmlspecialchars($value, $flags, mbw_get_option("encoding"));
 				}
 			}
 		}else{
 			if(!empty($data)){
-				$data			= htmlspecialchars($data, $flags, "UTF-8");
+				$data			= htmlspecialchars($data, $flags, mbw_get_option("encoding"));
 			}
 		}
 		return $data;
@@ -736,6 +736,8 @@ if(!function_exists('mbw_value_filter')){
 			$pattern		= "/[^0-9a-zA-Z\_\-]/";		//영문,숫자,-,_
 		}else if($type=='class'){
 			$pattern		= "/[^0-9a-zA-Z\s\_\-]/";		//영문,숫자,공백,-,_
+		}else if($type=='attr'){
+			$pattern		= "/[^0-9a-zA-Z\s\_\-\%\.\!\;\:\(\)]/";		//영문,숫자,공백,특수기호
 		}else if($type=='color'){
 			$pattern		= "/[^0-9a-zA-Z\#\,\.\(\)]/";		//16진수 컬러 코드, rgba 값
 		}else if($type=='int'){

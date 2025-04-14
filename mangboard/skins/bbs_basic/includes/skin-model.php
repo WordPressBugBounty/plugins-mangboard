@@ -96,7 +96,7 @@ mbw_set_filter("filter_admin","admin,administrator,관리자,운영자");
 
 //Pattern 사용방법 : 입력된 데이타가 요구 패턴에 맞지 않으면 에러 출력 
 //{"field":"fn_user_email","name":"W_EMAIL","width":"100px","required":"(*)","pattern":"email","pattern_error":"MSG_EMAIL_FILTER_ERROR"}
-mbw_set_pattern("email","/^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i");
+mbw_set_pattern("email","/^[a-zA-Z0-9._-]*@[a-zA-Z0-9.-]*\.[a-zA-Z]{2,4}$/i");
 
 
 if(mbw_get_request_mode()=="Frontend"){		// 게시판 모드일 경우에만

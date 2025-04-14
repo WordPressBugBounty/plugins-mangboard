@@ -359,16 +359,13 @@ if(!function_exists('mbw_get_list_template')){
 				}
 
 				if(mbw_get_vars("device_type")=="mobile" && $data["type"]!='title2'){
-
 					if(mbw_get_param("list_type")=="list"){
-						$reg_date		= mbw_get_board_item("fn_reg_date");
-					
-						if( strpos($reg_date, date("Y-m-d", mbw_get_timestamp())) !== false){
+						$reg_date		= mbw_get_board_item("fn_reg_date");					
+						if(strpos($reg_date, date("Y-m-d", mbw_get_timestamp())) !== false){
 							$reg_date	= substr($reg_date,11,5);
 						}else{
 							$reg_date	= substr($reg_date,0,10);
-						}						
-			
+						}			
 						$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><div><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span><br>';
 						$template_start	.= '<span class="info-group">';
 							$title_format	= 'name_date_hit';
@@ -390,11 +387,9 @@ if(!function_exists('mbw_get_list_template')){
 							}
 						$template_start	.= '</span>';
 						$template_start	.= '</div></a>';
-
-						//$template_start	.= '<div class="cmt-box"><a href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'" title="comment">'.$add_comment.'</a></div>';
-					}else 
+					}else{
 						$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
-						
+					}						
 				}else if(mbw_get_vars("device_type")=="tablet"){
 					$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
 				}else{

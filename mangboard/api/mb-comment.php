@@ -74,7 +74,7 @@ if(mbw_get_param("mode")=="comment"){
 		$where_data[$api_fields["fn_pid"]]					= $comment_pid;
 	}else if(mbw_get_param("board_action")=="vote_good"){
 		if(isset($api_fields["fn_vote_good_count"])){		
-			$cookie_check		= mbw_check_cookie(array("type"=>"mb_comment_vote","save"=>"db","name"=>"comment_pid","value"=>$comment_pid));
+			$cookie_check		= mbw_check_cookie(array("type"=>"mb_comment_vote","save"=>"db","name"=>"good_pid","value"=>$comment_pid));
 			if($cookie_check=="success"){
 				$query_data[]		= $mdb->prepare( "update ".$mb_comment_table_name." set ".$api_fields["fn_vote_good_count"]."=".$api_fields["fn_vote_good_count"]."+1 where ".$api_fields["fn_pid"]."=%d",$comment_pid);
 			}else if($cookie_check=="exist"){
@@ -85,7 +85,7 @@ if(mbw_get_param("mode")=="comment"){
 		}
 	}else if(mbw_get_param("board_action")=="vote_bad"){
 		if(isset($api_fields["fn_vote_bad_count"])){
-			$cookie_check		= mbw_check_cookie(array("type"=>"mb_comment_vote","save"=>"db","name"=>"comment_pid","value"=>$comment_pid));
+			$cookie_check		= mbw_check_cookie(array("type"=>"mb_comment_vote","save"=>"db","name"=>"bad_pid","value"=>$comment_pid));
 			if($cookie_check=="success"){
 				$query_data[]		= $mdb->prepare( "update ".$mb_comment_table_name." set ".$api_fields["fn_vote_bad_count"]."=".$api_fields["fn_vote_bad_count"]."+1 where ".$api_fields["fn_pid"]."=%d",$comment_pid);
 			}else if($cookie_check=="exist"){

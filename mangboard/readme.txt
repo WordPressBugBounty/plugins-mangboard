@@ -3,9 +3,9 @@ Contributors: kitae-park
 Donate link: http://www.mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 5.5.1
-Stable tag: 1.8.6
+Stable tag: 1.8.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,20 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.3.5 (1.8.7) =
+* 워드프레스 설정파일(wp-config.php)에 DISALLOW_UNFILTERED_HTML 설정이 true로 설정되어 있을 경우 관리자도 게시판 설정 페이지에서 게시판 상단내용(board_header), 하단내용(board_footer)에 스크립트를 사용할 수 없도록 수정 [Wordfence 보안점검 지적사항]
+  => DISALLOW_UNFILTERED_HTML 설정은 멀티 사이트에서 일반 관리자의 스크립트 작성 권한을 제한하는 용도로 사용
+* 당일에 게시물 등록으로 획득할 수 있는 포인트를 제한하는 기능이 전체기간 획득한 포인트를 기준으로 설정되어 최대 포인트를 넘어가면 게시물 등록 포인트가 지급되지 않는 문제 수정 
+  => 망보드 2.3.2 이상 버전에서 비즈니스 패키지 최대 포인트 적립(1일) 기능을 사용하고 있을 경우에만 해당
+* 멀티 사이트 사용자 권한 수정 (슈퍼 관리자 기능은 그대로 유지하고 일반 관리자 기능 축소)
+* 게시물 추천 및 비추천 데이터 저장 방식 수정
+* minor bug 수정
+
+= 2.3.4 =
+* 일부환경에서 전환추적 기능 호환성 문제 때문에 커머스 패키지 장바구니 버튼이 동작하지 않는 문제 수정
+* 데이터 보안 필터 기능 수정
+* minor bug 수정
 
 = 2.3.3 (1.8.6) =
 * 관리자 회원관리 기능에 회원레벨 0 설정 기능 추가 (스팸 게시물 작성자를 차단하기 위한 용도)
@@ -265,7 +279,7 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 * minor bug 수정
 
 = 2.0.9 =
-* 데이타 보안 필터 기능 수정
+* 데이터 보안 필터 기능 수정
 * mac OS 로컬 서버환경에서 사용시 정상적으로 동작하지 않는 문제 수정
 * minor bug 수정
 
@@ -315,7 +329,7 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 = 2.0.0 =
 * 보안 취약점 수정 [KISA에서 보안점검을 통해 알려주신 취약점 수정]
-* 데이타 전송시 데이타 검증 기능 수정
+* 데이터 전송시 데이터 검증 기능 수정
 * minor bug 수정
 
 = 1.9.9 =
@@ -431,7 +445,7 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
    - use_list_title : 목록 제목바 표시 설정 (사용:1, 사용안함: 0)   
    - use_secret : 비밀글 기능 설정 (사용(선택):1, 사용(필수): 2, 사용안함: 0)
    - use_comment : 댓글 기능 설정 (사용:1, 사용안함: 0)
-   - category_data : 카테고리 데이타 설정
+   - category_data : 카테고리 데이터 설정
    => 모바일 및 태블릿에서 속성을 다르게 적용할 경우 "mobile_","tablet_" 접두사를 붙여서 "mobile_page_size","tablet_page_size","mobile_use_comment" 형태로 설정 가능
    => 데스크탑 목록 개수 20개, 태블릿 목록 개수 15개, 모바일 목록 개수 10개로 설정하는 숏코드
      [mb_board name="board1" page_size="20" tablet_page_size="15" mobile_page_size="10"]
