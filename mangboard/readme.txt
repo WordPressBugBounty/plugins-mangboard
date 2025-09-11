@@ -5,7 +5,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
 Tested up to: 6.8
 Requires PHP: 5.5.1
-Stable tag: 1.8.7
+Stable tag: 2.3.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,8 +50,9 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 * Homepage: [https://www.mangboard.com](https://www.mangboard.com)
 * Store: [https://www.mangboard.com/store/](https://www.mangboard.com/store/)
-* Demo: [http://demo.mangboard.com](http://demo.mangboard.com)
-* Manual: [http://www.mangboard.com/manual/](http://www.mangboard.com/manual/)
+* Demo1: [https://demo.mangboard.com](https://demo.mangboard.com)
+* Demo2: [https://demo2.mangboard.com](https://demo2.mangboard.com)
+* Manual: [https://www.mangboard.com/manual/](https://www.mangboard.com/manual/)
 
 == Installation ==
 
@@ -112,6 +113,21 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.3.8 (2.3.0) =
+* 페이지네이션 페이지 블럭 이전/다음 버튼 기능 개선
+  => 페이지 개수가 설정된 페이지 블럭 개수보다 작을 경우에는 이전/다음 페이지로 이동하고, 블럭 개수보다 클 경우에는 블럭 크기 단위로 이동하도록 수정
+* 망보드 호환성 향상을 위한 CSS 코드 수정
+
+= 2.3.7 =
+* 모델링 및 템플릿 확장 기능 수정
+* 최적화 및 안정성 개선을 위한 코드 수정
+* 망보드 호환성 향상을 위한 CSS 코드 수정
+
+= 2.3.6 =
+* 모델링 및 템플릿 확장 기능 수정
+* 망보드 호환성 향상을 위한 CSS 코드 수정
+* minor bug 수정
 
 = 2.3.5 (1.8.7) =
 * 워드프레스 설정파일(wp-config.php)에 DISALLOW_UNFILTERED_HTML 설정이 true로 설정되어 있을 경우 관리자도 게시판 설정 페이지에서 게시판 상단내용(board_header), 하단내용(board_footer)에 스크립트를 사용할 수 없도록 수정 [Wordfence 보안점검 지적사항]

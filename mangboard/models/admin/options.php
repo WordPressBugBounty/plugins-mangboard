@@ -5,10 +5,10 @@ $mobile_model				= array();
 $desktop_model['version']		= "1.0.0";
 
 $desktop_model['list']		= '
-{"type":"list_check","width":"50px","level":"10","class":"list_check"},
+{"type":"list_check","width":"50px","level":"10","class":"list_check","mobile_width":"30px"},
 {"field":"fn_option_title","name":"W_TYPE","width":"200px","mobile_width":"80px","type":"title","td_class":"text-left","translate":"true"},
 {"field":"fn_option_value","name":"W_CONTENT","width":"","type":"db_type","type_field":"fn_option_type","data_field":"fn_option_data","label_field":"fn_option_label","style_field":"fn_option_style","class_field":"fn_option_class","event_field":"fn_option_event","attribute_field":"fn_option_attribute","description_field":"fn_description","td_class":"text-left"},
-{"field":"admin_btn","name":"","name_btn":"W_MODIFICATION","width":"70px","type":"admin_option_modify"}
+{"field":"admin_btn","name":"","name_btn":"W_MODIFICATION","width":"70px","mobile_width":"60px","type":"admin_option_modify"}
 ';
 
 

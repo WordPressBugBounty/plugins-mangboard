@@ -27,7 +27,11 @@
     margin: 0;
     padding: 0;
 }
-
+.mb-board .jcarousel ul::after{
+	content: ''; 
+	display: block; 
+	clear: both;
+}
 .mb-board .jcarousel li {
     float: left;
 	height:100% !important;

@@ -318,8 +318,11 @@ body.mb-mobile div.mb-error-message-box span,body.mb-mobile2 div.mb-error-messag
 .mb-board input[type="checkbox"],.mb-board input[type="radio"],.mb-board input[type="file"],.mb-board select,.mb-board label{cursor:pointer !important;}
 .mb-board .mb-style1 input[type="checkbox"]{ margin:-3px 3px 0 0 !important;min-width:14px;min-height:14px;vertical-align:middle !important;-webkit-border-radius:3px;-moz-border-radius:3px;-khtml-border-radius:3px;border-radius:3px;}
 .mb-board .mb-style1 input[type="radio"]{ margin:-3px 3px 0 0 !important;min-width:14px;min-height:14px;vertical-align:middle !important;}
+.mb-board span.mb-description{word-break: keep-all !important;}
 .mb-mobile .mb-board span.mb-description,.mb-mobile .mb-board span.description{margin-top:4px;display:block !important;line-height:1.5em;} 
 .mb-mobile .mb-board span.mb-description br,.mb-mobile .mb-board span.description br{display:none;} 
+.wp-admin .mb-board .mb-name-options .main-style1 select{min-width:176px;}
+.wp-admin .mb-mobile .mb-board .mb-name-options .main-style1 select{min-width:60px;}
 .wp-admin .mb-mobile .mb-board select,.wp-admin .mb-mobile .mb-board input{min-height:30px;}
 .wp-admin .mb-tablet .mb-board input[type="checkbox"], .wp-admin .mb-tablet .mb-board input[type="radio"]{ max-width:18px;max-height:18px;min-height:18px !important;min-width:18px !important; }
 .wp-admin .mb-tablet .mb-board input[type="radio"]:checked:before{width:8px;height:8px;margin:4px}

@@ -185,7 +185,7 @@ class MangBoard
 				echo '</div>';
 			echo '</div>';
 			echo '</div>';
-			echo '<div style="display:none !important;" class="mb-poweredby"><a href="https://www.mangboard.com" target="_blank" style="font-size:13px;" title="Powered by MangBoard">Powered by MangBoard</a></div>';
+			echo '<div style="display:none !important;" class="mb-poweredby"><a href="https://www.mangboard.com" rel="nofollow" target="_blank" style="font-size:13px;" title="Powered by MangBoard">Powered by MangBoard | 망보드 스토어</a></div>';
 		}
 	}
 }

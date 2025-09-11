@@ -29,3 +29,7 @@ body .cke_dialog a.cke_dialog_tab{
     -moz-box-sizing: border-box !important;
     -webkit-box-sizing: border-box !important;
 }
+body.mb-mobile .cke_dialog .ImagePreviewBox,
+body.mb-mobile2 .cke_dialog .ImagePreviewBox{
+	width:auto;
+}

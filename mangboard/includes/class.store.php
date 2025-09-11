@@ -925,7 +925,8 @@ Class MStore
 	}
 
 	public function is_login(){
-		if(mbw_get_user("fn_pid")==0) return false;			
+		$user_pid		= mbw_get_user("fn_pid");
+		if(empty($user_pid)) return false;
 		else if($this->user_login) return true;
 		return $this->is_login_cookie();
 	}
@@ -993,7 +994,7 @@ Class MStore
 	public function is_user_pid($mode="equal"){		  
 		global $mdb,$mb_board_table_name;
 		global $mb_admin_tables,$mb_table_prefix,$mb_fields;
-		$mb_user_pid		= $this->get_user("fn_pid");
+		$mb_user_pid		= intval($this->get_user("fn_pid"));
 		
 		if($mb_table_prefix.$this->get_param("board_name")==$mb_admin_tables["users"] || $mb_table_prefix.mbw_get_board_option("fn_table_link")==$mb_admin_tables["users"]){
 			if($this->get_param("board_pid")!=""){

@@ -172,6 +172,33 @@ if(!function_exists('mbw_check_url')){
 	}
 }
 
+if(!function_exists('mbw_get_permalink')){
+	function mbw_get_permalink($board_pid,$board_name,$type="view"){
+		$permalink			= "";
+		$board_pid			= intval($board_pid);
+		$board_name		= mbw_value_filter($board_name,"name");
+		if(!empty($board_pid) && !empty($board_name)){
+			global $mdb,$mb_fields,$mb_admin_tables;
+			$post_id			= $mdb->get_var($mdb->prepare("SELECT ".$mb_fields["board_options"]["fn_post_id"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_board_name2"]."=%s limit 1",$board_name));
+			if(!empty($post_id)){
+				$permalink			= get_permalink($post_id);
+				if(strpos($permalink, '?') === false)	$permalink		.= "?";
+				else $permalink		.= "&";
+				$permalink			.= "vid=".$board_pid;
+				if(mbw_get_param("mb_idx")!=""){
+					$permalink		.= "&idx=".mbw_value_filter(mbw_get_param("mb_idx"),"name");
+				}
+			}
+		}
+		if(empty($permalink)){
+			if($type=="view"){
+				$permalink	= admin_url('admin.php')."?page=mbw_board_options&board_name=".$board_name."&vid=".$board_pid;
+			}
+		}
+		return $permalink;
+	}
+}
+
 if(!function_exists('mbw_get_current_url')){
 	function mbw_get_current_url(){
 		if(!empty($_SERVER["HTTP_HOST"])){

@@ -97,9 +97,9 @@ if(!function_exists('mbw_user_synchronize')){
 		if(mbw_is_admin() && mbw_get_param("board_action")=="user_wp_synchronize"){
 			$synchronize_count		= mbw_synchronize_wp_user_data();
 			if($synchronize_count>0){
-				$mstore->set_result_data(array("message"=>$synchronize_count.__MM("MSG_USER_SYNCED")));
+				mbw_set_result_data(array("message"=>$synchronize_count.__MM("MSG_USER_SYNCED")));
 			}else{
-				$mstore->set_result_data(array("message"=>__MM("MSG_SYNC_NO_USERS")));
+				mbw_set_result_data(array("message"=>__MM("MSG_SYNC_NO_USERS")));
 			}
 		}
 	}
@@ -123,7 +123,7 @@ if(!function_exists('mbw_api_header_admin_modify_passwd')){
 					$user_id		= ($mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_id"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid)));
 					$wpdb->update( $wpdb->users, array( 'user_pass' => $hashed ), array( 'user_login' => $user_id ) );
 				}
-				$mstore->set_result_data(array("message"=>__MM('MSG_PASSWD_MODIFY')));
+				mbw_set_result_data(array("message"=>__MM('MSG_PASSWD_MODIFY')));
 			}	
 		}
 	}

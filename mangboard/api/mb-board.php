@@ -4,7 +4,7 @@ if(!defined('_MB_')) exit();
 
 do_action('mbw_board_api_init');
 if(!mbw_verify_nonce()){
-	if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode($mstore->result_data);exit;}	
+	if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode(mbw_get_result_array());exit;}	
 	mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
 }
 
@@ -29,8 +29,8 @@ if(mbw_get_param("mode")=="write"){
 	$upload_check		= mbw_check_api_file("board");
 }
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
 
@@ -115,17 +115,34 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 	$mdb->query($mdb->prepare("update %1s set %1s=%1s+1 where %1s=%d and %1s>%d;", $mb_board_table_name,$api_fields["fn_reply"],$api_fields["fn_reply"],$api_fields["fn_gid"],$board_gid,$api_fields["fn_reply"],$board_reply));
 
 }else if(mbw_get_param("board_action")=="delete"){
-	$query_command														= "DELETE";
-	$where_data[$api_fields["fn_pid"]]					= mbw_get_param("board_pid");	
+	if(mbw_get_param("board_name")!="" && !empty($board_pid)){
+		$query_command										= "DELETE";
+		$where_data[$api_fields["fn_pid"]]					= $board_pid;	
 
-	//게시물 삭제시 파일 연결 해제
-	$query_data[]		= $mdb->prepare( "UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d", $mb_board_table_name, mbw_get_param("board_pid"));
+		//게시물 삭제시 파일 연결 해제
+		$query_data[]		= $mdb->prepare( "UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d", $mb_board_table_name, $board_pid);
 
-	//게시물 삭제시 댓글도 삭제
-	if(!empty($mb_comment_table_name) && mbw_get_board_option("fn_use_comment") == 1 && $mstore->table_exists($mb_comment_table_name)){
-		$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]."=%d", mbw_get_param("board_pid") );
-		$query_data[]		= $mdb->prepare( "UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d", $mb_comment_table_name, mbw_get_param("board_pid"));
-	}	
+		//게시물 삭제시 게시물에 연결된 쿠키정보 삭제
+		$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_board_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]."=%d;", mbw_get_param("board_name"), $board_pid );
+
+		//게시물 삭제시 댓글도 삭제
+		if(!empty($mb_comment_table_name) && mbw_get_board_option("fn_use_comment") == 1 && $mstore->table_exists($mb_comment_table_name)){
+			$comment_items			= $mdb->get_results($mdb->prepare( "SELECT ".$mb_fields["select_comment"]["fn_pid"]." FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]."=%d", $board_pid ), ARRAY_A);
+			if(!empty($comment_items)){
+				$comment_pid_array		= array_column($comment_items, $mb_fields["select_comment"]["fn_pid"]);
+				if(!empty($comment_pid_array)){
+					$comment_pid_format			= array();
+					foreach($comment_pid_array as $key){
+						$comment_pid_format[]		= "%d";
+					}
+					//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
+					$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_comment_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$comment_pid_format).");", $comment_pid_array );
+				}
+			}
+			$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]."=%d", $board_pid );
+			$query_data[]		= $mdb->prepare( "UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d", $mb_comment_table_name, $board_pid);
+		}
+	}
 }else if((intval(mbw_get_board_option("fn_delete_level")) <= intval(mbw_get_user("fn_user_level"))) && mbw_get_param("board_action")=="multi_delete"){
 	$check_array	= mbw_get_param("check_array");
 	if(!empty($check_array)){
@@ -140,11 +157,28 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 
 		//게시물 삭제시 파일 연결 해제
 		$query_data[]		= $mdb->prepare("UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_board_table_name."' and ".$mb_fields["files"]["fn_board_pid"]." in (".implode(",",$pid_format).")", $pid_array );
+
+		//게시물 삭제시 게시물에 연결된 쿠키정보 삭제
+		$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).	$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_board_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$pid_format).");", $pid_array );
+		
 		
 		//게시물 삭제시 댓글도 삭제
 		if(!empty($mb_comment_table_name) && mbw_get_board_option("fn_use_comment") == 1 && $mstore->table_exists($mb_comment_table_name)){
+
+			$comment_items			= $mdb->get_results($mdb->prepare( "SELECT ".$mb_fields["select_comment"]["fn_pid"]." FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]." in (".implode(",",$pid_format).")", $pid_array ), ARRAY_A);
+			if(!empty($comment_items)){
+				$comment_pid_array		= array_column($comment_items, $mb_fields["select_comment"]["fn_pid"]);
+				if(!empty($comment_pid_array)){
+					$comment_pid_format			= array();
+					foreach($comment_pid_array as $key){
+						$comment_pid_format[]		= "%d";
+					}
+					//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
+					$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_comment_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$comment_pid_format).");", $comment_pid_array );					
+				}
+			}
 			$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_comment_table_name." WHERE `".$mb_fields["select_comment"]["fn_parent_pid"]."` in (".implode(",",$pid_format).")", $pid_array );
-			$query_data[]		= $mdb->prepare("UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_comment_table_name."' and ".$mb_fields["files"]["fn_board_pid"]." in (".implode(",",$pid_format).")", $pid_array );
+			$query_data[]		= $mdb->prepare("UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_comment_table_name."' and ".$mb_fields["files"]["fn_board_pid"]." in (".implode(",",$pid_format).")", $pid_array );			
 		}	
 	}
 }else if((intval(mbw_get_board_option("fn_manage_level")) <= intval(mbw_get_user("fn_user_level"))) && (mbw_get_param("board_action")=="multi_move" || mbw_get_param("board_action")=="multi_copy")){
@@ -257,6 +291,22 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 
 			//게시물 삭제시 파일 연결 해제
 			$query_data[]		= $mdb->prepare("UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_board_table_name."' and ".$mb_fields["files"]["fn_board_pid"]." in (".implode(",",$pid_format).")", $pid_array );
+
+			//게시물 삭제시 게시물에 연결된 쿠키정보 삭제
+			$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).	$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_board_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$pid_format).");", $pid_array );
+
+			$comment_items			= $mdb->get_results($mdb->prepare( "SELECT ".$mb_fields["select_comment"]["fn_pid"]." FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]." in (".implode(",",$pid_format).")", $pid_array ), ARRAY_A);
+			if(!empty($comment_items)){
+				$comment_pid_array		= array_column($comment_items, $mb_fields["select_comment"]["fn_pid"]);
+				if(!empty($comment_pid_array)){
+					$comment_pid_format			= array();
+					foreach($comment_pid_array as $key){
+						$comment_pid_format[]		= "%d";
+					}
+					//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
+					$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_comment_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$comment_pid_format).");", $comment_pid_array );					
+				}
+			}
 		}
 	}
 }else if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="write"){
@@ -281,7 +331,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 			$send_data[$api_fields["fn_gid"]]							= $board_pid;
 		}		
 	}
-	$mstore->set_result_data(array("data"=>array("pid"=>$board_pid)));
+	mbw_set_result_data(array("data"=>array("pid"=>$board_pid)));
 }else if(mbw_get_param("board_action")=="file_download"){	
 	$file_pid		= intval(mbw_get_param("file_pid"));
 	$file_name	= mbw_get_param("file_name");
@@ -290,8 +340,11 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 		if(!empty($file_data)){
 			$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_download_count"]."=".$mb_fields["files"]["fn_download_count"]."+1 where ".$mb_fields["files"]["fn_pid"]."=%d", $file_pid));
 			if(mbw_get_cookie("mb_access_device")=="ios"){ $file_data["file_path2"]		= ($file_data["file_path"]); }
+			if(has_filter('mf_file_download_data')){
+				$file_data			= apply_filters("mf_file_download_data",$file_data);
+			}
 			$file_data["file_path"]		= urlencode(base64_encode($file_data["file_path"]));
-			$mstore->set_result_data(array("data"=>$file_data));
+			mbw_set_result_data(array("data"=>$file_data));
 		}	
 	}
 }else if(mbw_get_param("board_action")=="board_hit"){
@@ -309,7 +362,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 		if($cookie_check=="success"){
 			$query_data[]		= $mdb->prepare( "update ".$mb_board_table_name." set ".$api_fields["fn_vote_good_count"]."=".$api_fields["fn_vote_good_count"]."+1 where ".$api_fields["fn_pid"]."=%d",$board_pid);
 			$vote_count		= intval($mdb->get_var($mdb->prepare( "select ".$api_fields["fn_vote_good_count"]." from `".$mb_board_table_name."` where ".$api_fields["fn_pid"]."=%d limit 1",$board_pid)))+1;
-			$mstore->set_result_data(array("count"=>$vote_count));
+			mbw_set_result_data(array("count"=>$vote_count));
 			do_action('mbw_board_vote_good');
 		}else if($cookie_check=="exist"){
 			mbw_error_message("MSG_VOTE_PARTICIPATE_ERROR","","1000");
@@ -323,7 +376,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 		if($cookie_check=="success"){
 			$query_data[]		= $mdb->prepare( "update ".$mb_board_table_name." set ".$api_fields["fn_vote_bad_count"]."=".$api_fields["fn_vote_bad_count"]."+1 where ".$api_fields["fn_pid"]."=%d",$board_pid);
 			$vote_count		= intval($mdb->get_var($mdb->prepare( "select ".$api_fields["fn_vote_bad_count"]." from `".$mb_board_table_name."` where ".$api_fields["fn_pid"]."=%d limit 1",$board_pid)))+1;
-			$mstore->set_result_data(array("count"=>$vote_count));
+			mbw_set_result_data(array("count"=>$vote_count));
 			do_action('mbw_board_vote_bad');
 		}else if($cookie_check=="exist"){
 			mbw_error_message("MSG_VOTE_PARTICIPATE_ERROR","","1000");
@@ -335,16 +388,16 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 
 do_action('mbw_board_api_body');
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
 
 //회원 포인트 지급
 mbw_set_user_point("board",mbw_get_param("board_action"));
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
 
@@ -368,27 +421,28 @@ if(!empty($query_command)){
 		if(mbw_get_param("content2")!=""){
 			mbw_file_check(mbw_get_param("content2"),$board_pid, $query_command);
 		}
+		//체크박스가 선택된 파일 항목만 삭제
+		$file_delete_pid	= mbw_get_param("file_delete_pid");
+		if(!empty($file_delete_pid)){
+			$file_check			= true;
+			$pid_data				= $file_delete_pid;
+			$pid_format			= array();
+			foreach($pid_data as $key){
+				$pid_format[]		= "%d";
+			}
+			$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_board_table_name."' and ".$mb_fields["files"]["fn_pid"]." in (".implode(",",$pid_format).")", $pid_data));
+		}
 
 		if(mbw_get_param("board_action")=="modify"){
-			//체크박스가 선택된 파일 항목만 삭제
-			if(mbw_get_param("file_delete_pid")!=""){
-				$file_check				= true;
-				$pid_data				= mbw_get_param("file_delete_pid");
-				$pid_format			= array();
-				foreach($pid_data as $key){
-					$pid_format[]		= "%d";
-				}
-				$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_board_table_name."' and ".$mb_fields["files"]["fn_pid"]." in (".implode(",",$pid_format).")", $pid_data));
-			}
-
 			//순서가 있는 파일 리스트를 사용할 경우 순서 확인
-			if(mbw_get_param("file_list_sequence")!=""){
-				$seq_data				= mbw_get_param("file_list_sequence");
-				$pid_data					= mbw_get_param("file_list_pid");
-				$count					= count($seq_data);
-
+			$file_list_sequence	= mbw_get_param("file_list_sequence");
+			$pid_data				= mbw_get_param("file_list_pid");
+			if(!empty($file_list_sequence) && !empty($pid_data)){
+				$count			= count($file_list_sequence);
 				for($i=0;$i<$count;$i++){
-					$mdb->query($mdb->prepare( "update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_file_sequence"]."=%d where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_pid"]."=%d", $seq_data[$i], $mb_board_table_name, $pid_data[$i] ));
+					if(!empty($pid_data[$i])){
+						$mdb->query($mdb->prepare( "update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_file_sequence"]."=%d where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_pid"]."=%d", $file_list_sequence[$i], $mb_board_table_name, $pid_data[$i] ));
+					}
 				}
 			}
 		}else if(mbw_get_param("board_action")=="reply"){
@@ -398,7 +452,6 @@ if(!empty($query_command)){
 			if(mbw_is_login())	 $query_data[]		= $mdb->prepare( "UPDATE ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_write_count"]."=".$mb_fields["users"]["fn_write_count"]."+1 where ".$mb_fields["users"]["fn_pid"]."=%d", mbw_get_user("fn_pid") );
 			if($mb_board_table_name!=$mb_admin_tables["users"]) mbw_analytics("today_write");
 		}
-
 
 		if(mbw_get_param("board_action")=="write" || mbw_get_param("board_action")=="reply" || mbw_get_param("board_action")=="modify"){
 
@@ -447,12 +500,12 @@ if(!empty($query_data)){
 	}
 }
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());
 	exit;
 }
 
 do_action('mbw_board_api_footer');
-echo mbw_data_encode($mstore->get_result_array(array("state"=>"success")));
+echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
 exit;
 ?>

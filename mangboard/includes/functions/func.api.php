@@ -563,7 +563,9 @@ if(!function_exists('mbw_check_upload_filename')){
 		$file_name		= str_replace('..','.',$file_name);
 		$file_name		= str_replace('#','＃',$file_name);
 		$file_name		= str_replace('%','％',$file_name);
-		if(strpos($file_name, '.php')!==false) exit;
+		if(strpos($file_name, '.php')!==false || strpos($file_name, '.phar')!==false || strpos($file_name, '.phtm')!==false){
+			exit;
+		}
 		return $file_name;
 	}
 }
@@ -585,7 +587,7 @@ if(!function_exists('mbw_file_upload')){
 				}
 			}
 		}
-		if($mstore->get_result_data("state")=="error"){
+		if(mbw_get_result_data("state")=="error"){
 			return array("name"=>"");
 		}else if(mbw_get_param("action")=="mb_uploader" && !mbw_verify_nonce()){
 			mbw_error_message("MSG_ERROR", "[NONCE] Upload","1500");

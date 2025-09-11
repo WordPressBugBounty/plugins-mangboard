@@ -383,10 +383,14 @@ if(!function_exists('mbw_get_input_template')){
 		}else if($item_type=='url_link'){
 			$link_url	= $data["value"];
 			if(!empty($link_url)){
-				$link_url	= str_replace(array('"', "'", '<', '>'), "", $link_url);
-				if(strpos($link_url, '//') === false && strpos($link_url, '?') === false && strpos($link_url, 'http') !== 0) $link_url	= "http://".$link_url;
-				$template_start	= make_clickable(esc_url($link_url));
-				if(!empty($data["link_target"])) $template_start	= str_replace('<a','<a target="'.esc_attr($data["link_target"]).'"',$template_start);
+				if($link_url=="#"){
+					$template_start	= $link_url;
+				}else{
+					$link_url	= str_replace(array('"', "'", '<', '>'), "", $link_url);
+					if(strpos($link_url, '//') === false && strpos($link_url, '?') === false && strpos($link_url, 'http') !== 0) $link_url	= "http://".$link_url;
+					$template_start	= make_clickable(esc_url($link_url));
+					if(!empty($data["link_target"])) $template_start	= str_replace('<a','<a target="'.esc_attr($data["link_target"]).'"',$template_start);
+				}
 			}
 		}else if($item_type=='tag_link'){
 			if(!empty($data["value"])){

@@ -81,14 +81,19 @@ if(count($items)==1) $items[]	= array("today_page_view"=>0,"today_write"=>0,"tod
 .mb-dash .mb-dash-panel-title{font-size: 16px;padding: 10px 0 0;margin: 0;line-height: 2.1;display: block;font-weight: 600;}
 .mb-dash .mb-dash-box-title{font-size: 14px;padding: 8px 12px;margin: 0;line-height: 1.4;border-bottom: 1px solid #eee;display: block;font-weight: 600;}
 
-.mb-dash .mb-welcome-panel{margin:0px 0 0px !important;padding: 12px 0px 0 !important;box-shadow:none !important;position: relative;overflow: auto;border: 1px solid #c3c4c7;box-shadow: 0 1px 1px rgb(0 0 0 / 4%);background: #fff;font-size: 13px;line-height: 1.7; }
+.mb-dash .mb-info-panel{margin:0px 0 0px !important;padding: 12px 0px 0 !important;box-shadow:none !important;position: relative;overflow: auto;border: 1px solid #c3c4c7;box-shadow: 0 1px 1px rgb(0 0 0 / 4%);background: #fff;font-size: 13px;line-height: 1.7; }
 .mb-dash .about-description{display:none !important;}
-.mb-dash .mb-welcome-panel .mb-welcome-panel-column:first-child {width: 36%;}
-.mb-dash .mb-welcome-panel .mb-welcome-panel-column {width: 32%;min-width: 200px;float: left;}
-body.mobile .mb-dash .mb-welcome-panel-column, body.mobile .mb-dash .mb-welcome-panel .mb-welcome-panel-column:first-child {display: block;float: none;width: 100%;}
-.mb-dash .mb-welcome-panel td{line-height:2.3 !important;}
-.mb-mobile.mb-dash .mb-welcome-panel td{line-height:1.3 !important;padding:7px 2px 7px;}
-.mb-dash .mb-welcome-panel-content{margin-left:13px;max-width:1500px;}
+.mb-dash .mb-info-panel .mb-info-panel-column:first-child {width: 36%;}
+.mb-dash .mb-info-panel .mb-info-panel-column {width: 32%;min-width: 300px;float: left;}
+@media all and (max-width:767px) {
+    .mb-dash .mb-info-panel .mb-info-panel-column {width: 100% !important;float: none;min-width: 200px;}
+}
+body.mobile .mb-dash .mb-info-panel-column, body.mobile .mb-dash .mb-info-panel .mb-info-panel-column:first-child {display: block;float: none;width: 100%;min-width: 200px;}
+
+
+.mb-dash .mb-info-panel td{line-height:2.3 !important;}
+.mb-mobile.mb-dash .mb-info-panel td{line-height:1.3 !important;padding:7px 2px 7px;}
+.mb-dash .mb-info-panel-content{margin-left:13px;max-width:1500px;}
 .mb-dash .mb-dash-box{border: 1px solid #e5e5e5;border-top:none;box-shadow: 0 1px 1px rgba(0,0,0,.04);background: #fff;}
 .mb-dash a{text-decoration: none !important;}
 .mb-dash .button{min-height:30px !important;line-height:2}
@@ -151,8 +156,8 @@ if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_versio
 <div id="wpbody" role="main" class="mb-dash mb-<?php echo mbw_get_vars("device_type");?>">
 <div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;">
 
-	<div id="mb-welcome-panel" class="mb-welcome-panel">
-	<div class="mb-welcome-panel-content">
+	<div id="mb-info-panel" class="mb-info-panel">
+	<div class="mb-info-panel-content">
 		
 		<div>
 			<div class="mb-dash-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_DASHBOARD');?></div>
@@ -165,8 +170,8 @@ if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_versio
 		
 		
 		<p class="about-description"></p>
-		<div class="mb-welcome-panel-column-container">
-			<div class="mb-welcome-panel-column">
+		<div class="mb-info-panel-column-container">
+			<div class="mb-info-panel-column">
 				<div class="mb-dash-panel-title"><?php echo __MW('W_SUMMARY_STATISTICS'); ?></div>			
 				<div style="text-align:center;width:90%;">
 					<?php
@@ -185,7 +190,7 @@ if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_versio
 				</div>
 				<div style="padding:6px 0px;"></div>
 			</div>
-			<div class="mb-welcome-panel-column mb-welcome-panel-last">
+			<div class="mb-info-panel-column mb-info-panel-last">
 				<div class="mb-dash-panel-title"><?php echo __MW('W_REFERER_LATESET'); ?><span style="font-size:12px;color:#999;line-height:1.2;"> (<?php echo __MW('W_ONE_WEEK'); ?>)</span></div>				
 				<div style="text-align:center;width:90%;">
 					<?php
@@ -206,7 +211,7 @@ if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_versio
 				</div>
 				<div style="padding:6px 0px;"></div>
 			</div>
-			<div class="mb-welcome-panel-column">
+			<div class="mb-info-panel-column">
 				<div class="mb-dash-panel-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_CURRENT_STATE');?></div>
 				<div style="text-align:center;width:90%;">
 					<?php					
@@ -296,7 +301,7 @@ if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_versio
 					$is_admin_page			= mbw_is_admin_page();
 
 					if(!empty($latest_data)){
-						$list_size						= 10;
+						$list_size						= 15;
 						$list_index					= 0;
 						foreach($latest_data as $data){						
 							$item		= array_merge( array("title"=>"","post_id"=>"","parent_pid"=>"","pid"=>"","table"=>"","name"=>"","time"=>""), $data);
@@ -343,7 +348,7 @@ if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_versio
 					if(!empty($latest_data) && is_array($latest_data)) $latest_data		= array_reverse($latest_data);
 					$is_admin_page			= mbw_is_admin_page();
 					if(!empty($latest_data)){
-						$list_size						= 10;
+						$list_size						= 15;
 						$list_index					= 0;
 						foreach($latest_data as $data){						
 							$item		= array_merge( array("title"=>"","post_id"=>"","parent_pid"=>"","pid"=>"","table"=>"","name"=>"","time"=>""), $data);

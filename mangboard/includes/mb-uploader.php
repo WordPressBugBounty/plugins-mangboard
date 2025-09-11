@@ -43,18 +43,18 @@ if($mode=="html5"){
 		$upload_data	= mbw_file_upload(array("board_name"=>"N","table_name"=>"N","board_pid"=>"0","type"=>"editor"));
 		$file_name		= $upload_data["name"];
 
-		if($mstore->get_result_data("state")=="error"){
-			echo mbw_data_encode($mstore->result_data);
+		if(mbw_get_result_data("state")=="error"){
+			echo mbw_data_encode(mbw_get_result_array());
 		}else if(!empty($upload_data["path"])){
 			$file_data					= array();
 			$file_data["name"]		= $file_name;
 			$file_data["url"]			= mbw_get_image_url("url",$upload_data["path"]);
 
-			$mstore->set_result_data(array("data"=>$file_data));
-			echo mbw_data_encode($mstore->get_result_array(array("state"=>"success")));	
-		}else echo mbw_data_encode($mstore->result_data);
-	}else if($mstore->get_result_data("state")=="error"){
-		echo mbw_data_encode($mstore->result_data);
+			mbw_set_result_data(array("data"=>$file_data));
+			echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));	
+		}else echo mbw_data_encode(mbw_get_result_array());
+	}else if(mbw_get_result_data("state")=="error"){
+		echo mbw_data_encode(mbw_get_result_array());
 	}
 }else if($mode=="plugin"){
 	do_action('mbw_uploader_plugin');
@@ -79,9 +79,9 @@ if($mode=="html5"){
 				$url .= "&bNewLine=true";
 				header('Location: '. $url);
 			}
-		}else echo $mstore->get_result_data("message");
-	}else if($mstore->get_result_data("state")=="error"){
-		echo $mstore->get_result_data("message");
+		}else echo mbw_get_result_data("message");
+	}else if(mbw_get_result_data("state")=="error"){
+		echo mbw_get_result_data("message");
 	}	
 }
 do_action('mbw_uploader_api_footer');

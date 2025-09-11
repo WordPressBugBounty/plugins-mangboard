@@ -77,9 +77,9 @@ if(!function_exists('mbw_check_request_size')){
 				mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_convert_to_bytes($upload_max,'mb'),"1503");
 
 				if(mbw_get_param('mode')=='basic' && mbw_get_param('action')=='mb_uploader'){
-					echo $mstore->get_result_data("message");
+					echo mbw_get_result_data("message");
 				}else{
-					echo mbw_data_encode($mstore->result_data);	
+					echo mbw_data_encode(mbw_get_result_array());	
 				}	
 				exit;			
 			}			
@@ -526,7 +526,7 @@ if(!function_exists('mbw_set_board_params')){
 			if(!empty($board_name)){
 				mbw_init_options($board_name,$is_reset);
 			}			
-			$mstore->set_result_data(array("mode"=>mbw_get_param("mode"),"board_action"=>mbw_get_param("board_action")));		
+			mbw_set_result_data(array("mode"=>mbw_get_param("mode"),"board_action"=>mbw_get_param("board_action")));		
 		}
 		if(!empty($args)){
 			$shortcode_args		= mbw_get_vars("shortcode_args");
@@ -1076,19 +1076,24 @@ if(!function_exists('mbw_get_empty_item')){
 }
 
 if(!function_exists('mbw_error_message')){
-	function mbw_error_message($message,$args=NULL,$code="1000",$target_name="",$count=1){
+	function mbw_error_message($message,$args=NULL,$code="1000",$target_name="",$count=1,$add_text=""){
 		global $mstore,$mb_error_message;
 
 		$error_message			= "";
-		if(is_array($message) && !empty($message)){			
-			foreach($message  as $key => $value)
+		if(is_array($message) && !empty($message)){
+			foreach($message  as $key => $value){
 				$error_message		.= __MM($message[$key],$args,$count)."<br>";
-		}else if(is_string($message))
+			}
+		}else if(is_string($message)){
 			$error_message		= __MM($message,$args,$count);
+		}
+		if(!empty($add_text)){
+			$error_message		.= $add_text;
+		}
 
 		$mb_error_message[]		= $error_message;
 		if(count($mb_error_message)==1){
-			$mstore->set_result_data(array("state"=>"error","code"=>$code,"target_name"=>$target_name,"message"=>$error_message));		
+			mbw_set_result_data(array("state"=>"error","code"=>$code,"target_name"=>$target_name,"message"=>$error_message));
 			//Error 로그 남기기
 			if(mbw_get_option("error_log")) mbw_set_log("error",$error_message);
 			return '<div class="mb-error-message-box">'.$error_message.'</div>';
@@ -1098,9 +1103,9 @@ if(!function_exists('mbw_error_message')){
 if(!function_exists('mbw_echo_error_message')){
 	function mbw_echo_error_message(){
 		global $mstore;
-		$html_message	= $mstore->get_result_data("message");
-		$script				= $mstore->get_result_data("script");
-		$html_tag			= $mstore->get_result_data("html");
+		$html_message	= mbw_get_result_data("message");
+		$script				= mbw_get_result_data("script");
+		$html_tag			= mbw_get_result_data("html");
 		$user_mode	= mbw_get_option("user_form_mode");
 		if(!empty($user_mode)) $user_mode	= strtoupper($user_mode);
 
@@ -1415,7 +1420,7 @@ if(!function_exists('mbw_get_move_script')){
 		$move_script		= "";
 		$site_url				= MBW_HOME_URL;
 
-		$mstore->set_result_data(array("state"=>"error"));
+		mbw_set_result_data(array("state"=>"error"));
 		if($type=="login"){			
 			$login_url		= mbw_get_url(array('redirect_to'=>rawurlencode(mbw_get_current_url())),mbw_get_user_url("login"),"");
 			$move_script	= 'alert("'.__MM('MSG_REQUIRE_LOGIN')." (".__MM('MSG_MOVE_LOGIN').')");moveURL("'.esc_url($login_url).'");';
@@ -1536,7 +1541,8 @@ if(!function_exists('mbw_refresh_auth_cookie')){
 		$hash2			= mbw_get_hash_key("cookie",$expiration,$user_id);
 		
 		if($hmac==$hash || $hmac==$hash2){
-			$expire		= mbw_get_timestamp() + 7776000;			
+			$expire		= mbw_get_timestamp() + 7776000;
+			mbw_clear_auth_cookie();
 			mbw_generate_auth_cookie($user_id,$user_mode,$expire);
 			$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_access_token"]."='".mbw_generate_access_token()."' where ".$mb_fields["users"]["fn_user_id"]."=%s;",$user_id));
 		}

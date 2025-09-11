@@ -473,6 +473,7 @@ if(!function_exists('mbw_set_wp_user_data')){
 						$send_data[$field["fn_user_name"]]					= $user->data->display_name;
 						$send_data[$field["fn_user_homepage"]]			= $user->data->user_url;
 						$send_data[$field["fn_user_picture"]]					= get_user_meta( $user->data->ID, "mb_thumbnail", true );
+						$send_data[$field["fn_user_phone"]]					= get_user_meta( $user->data->ID, "mb_user_phone", true );
 
 						$send_data[$field["fn_passwd"]]						= $user->data->user_pass;
 						$send_data[$field["fn_user_auth_key"]]				= mbw_get_user_auth_key();
@@ -701,6 +702,7 @@ if(!function_exists('mbw_join_user_phone')){
 }
 if(!function_exists('mbw_get_level_item')){
 	function mbw_get_level_item($level){
+		if(empty($level)) return "";
 		$level				= intval($level);
 		$level_icon		= 'images/icon_level'.$level.'.gif';
 		if(defined('MBW_SKIN_PATH') && is_file(MBW_SKIN_PATH.$level_icon)) return ' <img class="user-i-level mb-level-'.esc_attr($level).'" alt="Level '.esc_attr($level).'" src="'.esc_url(MBW_SKIN_URL.$level_icon).'" />';

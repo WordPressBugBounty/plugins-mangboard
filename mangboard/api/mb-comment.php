@@ -27,8 +27,8 @@ if(mbw_get_param("board_action")=="write" || mbw_get_param("board_action")=="mod
 	$upload_check		= mbw_check_api_file("board");
 }
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
 
@@ -70,8 +70,15 @@ if(mbw_get_param("mode")=="comment"){
 		if(isset($api_fields["fn_parent_pid"]) && empty($send_data[$api_fields["fn_parent_pid"]]))		unset($send_data[$api_fields["fn_parent_pid"]]);
 		$where_data[$api_fields["fn_pid"]]			= $comment_pid;
 	}else if(mbw_get_param("board_action")=="delete"){
-		$query_command												= "DELETE";
-		$where_data[$api_fields["fn_pid"]]					= $comment_pid;
+		if(!empty($comment_pid)){
+			$query_command									= "DELETE";
+			$where_data[$api_fields["fn_pid"]]				= $comment_pid;
+
+			if(mbw_get_param("board_name")!=""){				
+				//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
+				$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_comment_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]."=%d;", mbw_get_param("board_name"), $comment_pid );
+			}
+		}
 	}else if(mbw_get_param("board_action")=="vote_good"){
 		if(isset($api_fields["fn_vote_good_count"])){		
 			$cookie_check		= mbw_check_cookie(array("type"=>"mb_comment_vote","save"=>"db","name"=>"good_pid","value"=>$comment_pid));
@@ -98,8 +105,8 @@ if(mbw_get_param("mode")=="comment"){
 }
 
 do_action('mbw_comment_api_body');
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
 
@@ -115,8 +122,8 @@ if($mb_user_level>=mbw_get_option("admin_level") && $parent_pid==0) {
 	$comment_mode			= "list";
 	$where_query				= "";
 }
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
 if(!empty($query_command)){
@@ -142,7 +149,7 @@ if(!empty($query_command)){
 
 $select_query				= mbw_get_add_query(array("column"=>"count(*)","table"=>$mb_comment_table_name));
 $comment_total_count		= $mdb->get_var($select_query.$where_query);
-$mstore->set_result_data(array("total_count"=>$comment_total_count));
+mbw_set_result_data(array("total_count"=>$comment_total_count));
 
 if(!empty($query_command)){
 	//댓글 전체 리스트를 불러올 경우 해당 글의 댓글 카운팅을 다시해서 저장
@@ -259,14 +266,14 @@ if(!empty($comment_items)){
 	}
 }
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);	
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
-$mstore->set_result_data(array("data"=>$comment_data));
-$mstore->set_result_data(array("count"=>$comment_count));
+mbw_set_result_data(array("data"=>$comment_data));
+mbw_set_result_data(array("count"=>$comment_count));
 
 do_action('mbw_comment_api_footer');
-echo mbw_data_encode($mstore->get_result_array(array("state"=>"success")));
+echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
 exit;
 ?>

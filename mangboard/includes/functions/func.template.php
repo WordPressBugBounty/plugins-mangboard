@@ -82,7 +82,7 @@ if(!function_exists('mbw_init_item_data')){
 				$data["value"]			= mbw_set_format($data["value"],$data["format"]);
 			}
 			
-			if($data["value"]!=="" && ($data["type"]=="" || $data["type"]=="static" || $data["type"]=="view") && (!empty($data["label"]) || !empty($data["data"]))){
+			if($data["value"]!=="" && ($data["type"]=="" || $data["type"]=="static" || $data["type"]=="view") && (isset($data["label"]) || isset($data["data"]))){
 				if(!isset($data["label"]) && isset($data["data"])) $data["label"]		= $data["data"];
 				if(!isset($data["data"]) && isset($data["label"])) $data["data"]		= $data["label"];
 				$delimiter			= ",";
@@ -217,7 +217,7 @@ if(!function_exists('mbw_init_item_property')){
 
 		$key_data		= array("field","type","name","width","height","data","style","parent");
 		foreach($key_data as $key){
-			if(empty($data[$key])) $data[$key]		= "";
+			if(!isset($data[$key])) $data[$key]		= "";
 		}
 		$key_data		= array("attribute","event");
 		foreach($key_data as $key){
@@ -235,7 +235,7 @@ if(!function_exists('mbw_init_item_property')){
 			$device_data		= array("field","type","width","height","img_width","img_height","maxlength","content_maxlength","name","label","data","class","colspan","th_class","td_class","style","th_style","td_style","parent","display","event","title","description","add_start_html","add_end_html","add_middle_html","prepend_text","append_text");
 			$device_type		= mbw_get_vars("device_type");
 			foreach($device_data as $key){
-				if(!empty($data[$device_type."_".$key])){
+				if(isset($data[$device_type."_".$key])){
 					$data[$key]			= $data[$device_type."_".$key];
 				}
 			}
@@ -323,7 +323,7 @@ if(!function_exists('mbw_get_item_template')){
 							}
 						}
 
-						if($t_data["value"]!=="" && ($t_data["type"]=="" || $t_data["type"]=="static" || $t_data["type"]=="view") && (!empty($t_data["label"]) || !empty($t_data["data"]))){
+						if($t_data["value"]!=="" && ($t_data["type"]=="" || $t_data["type"]=="static" || $t_data["type"]=="view") && (isset($t_data["label"]) || isset($t_data["data"]))){
 							if(!isset($t_data["label"]) && isset($t_data["data"])) $t_data["label"]		= $t_data["data"];
 							if(!isset($t_data["data"]) && isset($t_data["label"])) $t_data["data"]		= $t_data["label"];
 							$delimiter			= ",";
@@ -350,8 +350,13 @@ if(!function_exists('mbw_get_item_template')){
 							$t_data["value"]			= $t_data["value"].$t_data["append_text"];
 						}
 
-						if(strpos(",".$combo_data["match_value"].",", ",".$value.",")===false){					
-							$style		= "display:none;";
+						if(strpos(",".$combo_data["match_value"].",", ",".$value.",")===false){
+							$style				= "display:none;";
+							if(empty($t_data["ext"])){
+								$t_data["ext"]			= " disabled";
+							}else{
+								$t_data["ext"]			.= " disabled";
+							}
 						}else{
 							$style		= "";
 						}						
@@ -420,7 +425,7 @@ if(!function_exists('mbw_get_item_template')){
 						}
 					}
 
-					if($data["value"]!=="" && ($data["type"]=="" || $data["type"]=="static" || $data["type"]=="view") && (!empty($data["label"]) || !empty($data["data"]))){
+					if($data["value"]!=="" && ($data["type"]=="" || $data["type"]=="static" || $data["type"]=="view") && (isset($data["label"]) || isset($data["data"]))){
 						if(!isset($data["label"]) && isset($data["data"])) $data["label"]		= $data["data"];
 						if(!isset($data["data"]) && isset($data["label"])) $data["data"]		= $data["label"];
 						$delimiter			= ",";
@@ -505,7 +510,7 @@ if(!function_exists('mbw_get_item_template')){
 							}
 						}
 
-						if($t_data["value"]!=="" && ($t_data["type"]=="" || $t_data["type"]=="static" || $t_data["type"]=="view") && (!empty($t_data["label"]) || !empty($t_data["data"]))){
+						if($t_data["value"]!=="" && ($t_data["type"]=="" || $t_data["type"]=="static" || $t_data["type"]=="view") && (isset($t_data["label"]) || isset($t_data["data"]))){
 							if(!isset($t_data["label"]) && isset($t_data["data"])) $t_data["label"]		= $t_data["data"];
 							if(!isset($t_data["data"]) && isset($t_data["label"])) $t_data["data"]		= $t_data["label"];
 							$delimiter			= ",";
@@ -583,7 +588,7 @@ if(!function_exists('mbw_get_item_template')){
 						}
 					}
 
-					if($data["value"]!=="" && ($data["type"]=="" || $data["type"]=="static" || $data["type"]=="view") && (!empty($data["label"]) || !empty($data["data"]))){
+					if($data["value"]!=="" && ($data["type"]=="" || $data["type"]=="static" || $data["type"]=="view") && (isset($data["label"]) || isset($data["data"]))){
 						if(!isset($data["label"]) && isset($data["data"])) $data["label"]		= $data["data"];
 						if(!isset($data["data"]) && isset($data["label"])) $data["data"]		= $data["label"];
 						$delimiter			= ",";

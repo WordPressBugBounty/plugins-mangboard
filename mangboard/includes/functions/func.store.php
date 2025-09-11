@@ -142,13 +142,16 @@ if(!function_exists('mbw_get_vars')){
 	}	
 }
 
-
-
-
 if(!function_exists('mbw_get_result_data')){
 	function mbw_get_result_data($key){
 		global $mstore;
 		return $mstore->get_result_data($key);
+	}	
+}
+if(!function_exists('mbw_get_result_array')){
+	function mbw_get_result_array($data=NULL){
+		global $mstore;
+		return $mstore->get_result_array($data);
 	}	
 }
 

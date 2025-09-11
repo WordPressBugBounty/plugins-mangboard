@@ -361,7 +361,7 @@ $mb_languages["W_AUTHORITY_LIST"]	= "Authority on List";
 
 $mb_languages["W_AUTHORITY_WRITE"]	= "Authority to Write";
 
-$mb_languages["W_AUTHORITY_VIEW"]	= "Authority to view messages";
+$mb_languages["W_AUTHORITY_VIEW"]	= "Authority to View";
 
 $mb_languages["W_AUTHORITY_REPLAY"]	= "Authority to Reply";
 

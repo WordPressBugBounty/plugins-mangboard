@@ -15,8 +15,8 @@ $query_data				= array();
 
 do_action('mbw_template_api_header');
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());
 	exit;
 }
 $mb_user_level			= intval(mbw_get_user("fn_user_level"));
@@ -64,7 +64,7 @@ if(mbw_get_param("mode")=="user"){
 		$menu_data["user"]		= array("name"=>$user_name,"point"=>$user_point,"level"=>$user_level);
 		$menu_data["body"]	= $menu_body;
 		$menu_data["foot"]		= "";		
-		$mstore->set_result_data(array("data"=>$menu_data));
+		mbw_set_result_data(array("data"=>$menu_data));
 	}
 }else if(mbw_get_param("mode")=="plugin"){
 	do_action('mbw_template_api_plugin');
@@ -93,7 +93,7 @@ if(mbw_get_param("mode")=="user"){
 					$modify_html		.= mbw_get_btn_template(array("name"=>"Send_Comment_Modify","onclick"=>"sendCommentData('modify')","class"=>"btn btn-default"));
 				$modify_html		.= '</div></div>';
 			$modify_html		.= '</div>';
-			$mstore->set_result_data(array("data"=>$modify_html));
+			mbw_set_result_data(array("data"=>$modify_html));
 		}else{
 			mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_MODIFY"]);
 		}
@@ -104,9 +104,9 @@ if(mbw_get_param("mode")=="user"){
 
 	global $mb_board_table_name;
 	if((mbw_is_admin_table($mb_board_table_name) || $board_type=="user" || $board_type=="commerce") && !mbw_is_admin_page()){
-		if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode($mstore->result_data);exit;}	
+		if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode(mbw_get_result_array());exit;}	
 		mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
-		echo mbw_data_encode($mstore->result_data);
+		echo mbw_data_encode(mbw_get_result_array());
 		exit;
 	}
 	
@@ -121,7 +121,7 @@ if(mbw_get_param("mode")=="user"){
 			$content		= mbw_get_board_item("fn_content");
 			mbw_analytics("today_page_view");
 		}
-		$mstore->set_result_data(array("data"=>$content));
+		mbw_set_result_data(array("data"=>$content));
 	}else if(mbw_get_param("board_action")=="content_reply" && intval(mbw_get_board_option("fn_view_level")) <= $mb_user_level){
 		do_action('mbw_template_api_content_reply');
 		$select_query		= mbw_get_add_query(array("column"=>$mb_fields["select_board"]["fn_content"].','.$mb_fields["select_board"]["fn_data_type"].','.$mb_fields["select_board"]["fn_is_secret"].','.$mb_fields["select_board"]["fn_user_pid"].','.$mb_fields["select_board"]["fn_parent_user_pid"].','.$mb_fields["select_board"]["fn_passwd"],"join"=>"none"), array(array("field"=>$mb_fields["select_board"]["fn_pid"],"value"=>mbw_get_param("board_pid"))));
@@ -166,7 +166,7 @@ if(mbw_get_param("mode")=="user"){
 			$content_html		= '<div class="mb-open-qa-box">'.$content_html.'</div>';
 			mbw_analytics("today_page_view");
 		}
-		$mstore->set_result_data(array("data"=>$content_html));
+		mbw_set_result_data(array("data"=>$content_html));
 	}else if(mbw_get_param("board_action")=="load" && intval(mbw_get_board_option("fn_list_level")) <= $mb_user_level){
 		do_action('mbw_template_api_load');
 		$list_html				= "";
@@ -240,16 +240,16 @@ if(mbw_get_param("mode")=="user"){
 			$board_data["options"]					= $list_data;
 			$board_data["pagination"]				= mbw_get_pagination_template(array("total_count"=>$list_data["total_count"]));
 		}
-		$mstore->set_result_data(array("data"=>$board_data));
+		mbw_set_result_data(array("data"=>$board_data));
 	}
 }
 
-if($mstore->get_result_data("state")=="error"){
-	echo mbw_data_encode($mstore->result_data);
+if(mbw_get_result_data("state")=="error"){
+	echo mbw_data_encode(mbw_get_result_array());
 	exit;
 }
 
 do_action('mbw_template_api_footer');
-echo mbw_data_encode($mstore->get_result_array(array("state"=>"success")));
+echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
 exit;
 ?>

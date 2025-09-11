@@ -22,10 +22,14 @@ if(!function_exists('mbw_get_pagination_template')){
 			}
 		}
 		
-		if(isset($data["page_type"])) $page_type			= ($data["page_type"]);
-		else if(mbw_get_param("page_type")!="")
-			$page_type			= mbw_get_param("page_type");
-		else $page_type		= "";
+		$page_type		= "";		
+		if(isset($data["page_type"])){
+			$page_type		= ($data["page_type"]);
+		}else if(mbw_get_param("page_type")!=""){
+			$page_type		= mbw_get_param("page_type");
+		}else if(mbw_get_board_option("fn_category_type")=="TAB_AJAX" || mbw_get_board_option("fn_category_type")=="SELECT_AJAX"){
+			$page_type		= "ajax";
+		}
 
 		$link_type			= "href";
 		if($page_type=="ajax") $link_type			= "onclick";
@@ -96,7 +100,9 @@ if(!function_exists('mbw_get_pagination_template')){
 					}else{
 						$move_index	= 1;
 					}
+					
 					if(($block_last+$move_index)>$total_page) $move_index	= 1;
+					if($block_size<=$move_index) $move_index	= 0;
 					$block_first	= $block_first+$move_index;
 					$block_last	= $block_last+$move_index;
 					if($block_last>$total_page) $block_last		= $total_page;
@@ -107,9 +113,10 @@ if(!function_exists('mbw_get_pagination_template')){
 						$move_index	= 2;
 					}else{
 						$move_index	= 1;
-					}
+					}					
 					if(($block_first-$move_index)<1) $move_index	= 1;
 					if(($block_first+$block_size-1)!=$block_last) $move_index	= 0;
+					if($block_size<=$move_index) $move_index	= 0;
 					$block_first	= $block_first-$move_index;
 					$block_last	= $block_last-$move_index;
 					if(($block_last-$block_first)<$block_size) $block_first		= $block_last-$block_size+1;
@@ -131,9 +138,15 @@ if(!function_exists('mbw_get_pagination_template')){
 					}
 				}
 				
-				if($block_first == 1) $page_link["prev"] = "";
-				else {
-					$prev_board_page		= $board_page-$block_size;
+				if($board_page==1){
+					$page_link["prev"] = "";
+				}else{
+					if($block_first==1){
+						$prev_board_page		= $board_page-1;
+					}else{
+						$prev_board_page		= $board_page-$block_size;
+					}
+					
 					if($prev_board_page<1) $prev_board_page		= 1;
 					if($link_type=="href"){
 						$page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$prev_board_page));
@@ -159,9 +172,15 @@ if(!function_exists('mbw_get_pagination_template')){
 					}
 				}
 				
-				if($block_last == $total_page) $page_link["next"] = "";
-				else {
-					$next_board_page		= $board_page+$block_size;
+				if($total_page==$board_page){
+					$page_link["next"] = "";
+				}else{
+					if($board_block==$total_block){
+						$next_board_page		= $board_page+1;
+					}else{
+						$next_board_page		= $board_page+$block_size;
+					}
+					
 					if($next_board_page>$total_page) $next_board_page		= $total_page;
 					if($link_type=="href"){
 						$page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$next_board_page));
