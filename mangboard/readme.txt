@@ -5,7 +5,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
 Tested up to: 6.8
 Requires PHP: 5.5.1
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,7 +114,7 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 == Changelog ==
 
-= 2.3.8 (2.3.0) =
+= 2.3.8 (2.3.1) =
 * 페이지네이션 페이지 블럭 이전/다음 버튼 기능 개선
   => 페이지 개수가 설정된 페이지 블럭 개수보다 작을 경우에는 이전/다음 페이지로 이동하고, 블럭 개수보다 클 경우에는 블럭 크기 단위로 이동하도록 수정
 * 망보드 호환성 향상을 위한 CSS 코드 수정

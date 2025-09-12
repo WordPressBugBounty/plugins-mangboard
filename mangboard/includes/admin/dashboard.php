@@ -113,7 +113,7 @@ if(function_exists('get_plugin_data')){
 		$mb_version2	= $plugin_data['Version'];
 	}
 }
-if(version_compare($mb_version2, '2.1.0', '>=')){
+if(version_compare($mb_version2, '2.3.7', '>=')){
 	echo '.mb-dash .mb-dash-update,.mb-dash .mb-dash-update2{display:none;}';
 }
 ?>
@@ -143,8 +143,8 @@ function mbw_send_language_form(){
 	}
 }
 <?php
-if(version_compare($mb_version2, '2.1.0', '<') && empty($_REQUEST["update_version"])){
-	if($mb_locale=="ko_KR"){		
+if(version_compare($mb_version2, '2.3.7', '<') && empty($_REQUEST["update_version"])){
+	if($mb_locale=="ko_KR"){
 		echo 'jQuery( document ).ready(function() {   if(confirm("'.__MM('MSG_UPDATE_LATEST_VERSION',$latest_version).'.\n'.__MM('MSG_UPDATE_CONFIRM2').'")){ mbw_send_update_form(); } });';
 	}
 }

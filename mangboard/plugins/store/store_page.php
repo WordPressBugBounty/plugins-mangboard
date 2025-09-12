@@ -81,7 +81,7 @@ if(!function_exists('curl_init')){
 $response			= mbw_request_store_api($send_data);
 
 $mb_version2	= mbw_get_option("mb_version");
-$check_version	= '2.1.0';
+$check_version	= '2.3.7';
 if(function_exists('get_plugin_data')){
 	$plugin_data		= get_plugin_data(MBW_PLUGIN_PATH.'mangboard.php',false,false);
 	if(!empty($plugin_data['Version'])){
@@ -95,7 +95,7 @@ if(!empty($_GET["install_product"])){
 	}else if(version_compare($mb_version2, $check_version, '<')){
 		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.admin_url('admin.php').'?page=mbw_store&category="'.rawurlencode($category1).');</script>';
 	}else{
-		echo '<div id="wpbody" role="main" class="mb-dash mb-'.mbw_get_vars("device_type").'">';
+		echo '<div id="wpbody" role="main" class="mb-dash mb-'.esc_attr(mbw_get_vars("device_type")).'">';
 		echo '<div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">';
 		$product_pid		= intval($_GET["install_product"]);
 		if(!empty($product_pid) && !empty($response[0]['product'])){
@@ -119,7 +119,7 @@ if(!empty($_GET["install_product"])){
 	}else if(version_compare($mb_version2, $check_version, '<')){
 		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.admin_url('admin.php').'?page=mbw_store&category="'.rawurlencode($category1).');</script>';
 	}else{
-		echo '<div id="wpbody" role="main" class="mb-dash mb-'.mbw_get_vars("device_type").'">';
+		echo '<div id="wpbody" role="main" class="mb-dash mb-'.esc_attr(mbw_get_vars("device_type")).'">';
 		echo '<div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">';
 		$product_pid		= intval($_GET["delete_product"]);
 		if(!empty($product_pid) && !empty($response[0]['product'])){
@@ -179,7 +179,7 @@ function mbw_set_store_category(category){
 
 <?php do_action('mbw_store_page_header'); ?>
 
-<div id="wpbody" role="main" class="mb-dash mb-<?php echo mbw_get_vars("device_type");?>">
+<div id="wpbody" role="main" class="mb-dash mb-<?php echo esc_attr(mbw_get_vars("device_type"));?>">
 <div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">
 
 <div id="store-panel" class="store-panel">
