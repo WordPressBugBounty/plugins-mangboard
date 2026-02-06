@@ -540,7 +540,7 @@ if(!function_exists('mbw_set_board_params')){
 }
 if(!function_exists('mbw_get_board_table_name')){
 	function mbw_get_board_table_name($board_name,$mode="board",$type=""){
-		$name	= mbw_value_filter($board_name,"name");
+		$name	= $board_name;
 		if($name == mbw_get_board_option("fn_board_name2") && mbw_get_board_option("fn_table_link")!="") $name	= mbw_get_board_option("fn_table_link");
 		return mbw_get_table_name($name,$mode,$type);
 	}
@@ -549,13 +549,15 @@ if(!function_exists('mbw_get_table_name')){
 	function mbw_get_table_name($board_name,$mode="board",$type=""){
 		if(empty($board_name)) return "";
 		global $mdb,$mstore,$mb_admin_tables,$mb_fields;
-		global $mb_table_prefix,$mb_table_board_suffix,$mb_table_comment_suffix;			
+		global $mb_table_prefix,$mb_table_board_suffix,$mb_table_comment_suffix;
 
+		$board_name	= mbw_value_filter($board_name,"name");
 		if(!empty($type)) $board_type		= $type;
 		else $board_type		= $mstore->get_board_type($board_name);
 
-		if($mode!="comment" && $board_type=="admin" && !empty($mb_admin_tables[$board_name]))
+		if($mode!="comment" && $board_type=="admin" && !empty($mb_admin_tables[$board_name])){
 			return $mb_admin_tables[$board_name];
+		}
 
 		if($mode=="comment"){
 			if($board_type=="custom"){
@@ -593,21 +595,22 @@ if(!function_exists('mbw_get_request_mode')){
 		return $mb_request_mode;
 	}
 }
-
 if(!function_exists('mbw_set_fields')){
 	function mbw_set_fields($type,$fields){
 		global $mb_fields;
-		$mb_fields[$type]		= $fields;
+		if(!empty($type)){
+			$mb_fields[$type]		= $fields;
+		}
 	}
 }
 if(!function_exists('mbw_get_fields')){
 	function mbw_get_fields($type){
 		global $mb_fields;
-		if(!empty($mb_fields[$type])) return $mb_fields[$type];
-		return "";
+		if(!empty($type) && isset($mb_fields[$type])){
+			return $mb_fields[$type];
+		}else return "";
 	}
 }
-
 
 if(!function_exists('mbw_get_table_list')){
 	function mbw_get_table_list($type=""){
@@ -1014,24 +1017,24 @@ if(!function_exists('mbw_set_log')){
 		global $mstore,$mdb;
 		global $mb_admin_tables,$mb_fields,$mb_vars,$mb_table_prefix;
 
-		$send_data				= array();
+		$send_data			= array();
 		$where_data			= array();		
 
-		if(!empty($args["mode"])) $send_data[$mb_fields["logs"]["fn_mode"]]		= $args["mode"];
+		if(!empty($args["mode"])) $send_data[$mb_fields["logs"]["fn_mode"]]		= mbw_htmlspecialchars($args["mode"]);
 		else $send_data[$mb_fields["logs"]["fn_mode"]]							= mbw_htmlspecialchars(mbw_get_param("mode"));
 
-		if(!empty($args["board_action"])) $send_data[$mb_fields["logs"]["fn_action"]]		= $args["board_action"];
+		if(!empty($args["board_action"])) $send_data[$mb_fields["logs"]["fn_action"]]		= mbw_htmlspecialchars($args["board_action"]);
 		else $send_data[$mb_fields["logs"]["fn_action"]]						= mbw_htmlspecialchars(mbw_get_param("board_action"));
 
 		if($send_data[$mb_fields["logs"]["fn_action"]]=="") return;
 
-		if(!empty($args["board_name"])) $send_data[$mb_fields["logs"]["fn_board_name"]]		= $args["board_name"];
+		if(!empty($args["board_name"])) $send_data[$mb_fields["logs"]["fn_board_name"]]		= mbw_htmlspecialchars($args["board_name"]);
 		else $send_data[$mb_fields["logs"]["fn_board_name"]]					= mbw_htmlspecialchars(mbw_get_param("board_name"));
 
-		if(!empty($args["user_pid"])) $send_data[$mb_fields["logs"]["fn_user_pid"]]		= $args["user_pid"];
+		if(!empty($args["user_pid"])) $send_data[$mb_fields["logs"]["fn_user_pid"]]		= mbw_htmlspecialchars($args["user_pid"]);
 		else $send_data[$mb_fields["logs"]["fn_user_pid"]]					= mbw_htmlspecialchars(mbw_get_param("user_pid"));
 
-		if(!empty($args["user_name"])) $send_data[$mb_fields["logs"]["fn_user_name"]]		= $args["user_name"];
+		if(!empty($args["user_name"])) $send_data[$mb_fields["logs"]["fn_user_name"]]		= mbw_htmlspecialchars($args["user_name"]);
 		else $send_data[$mb_fields["logs"]["fn_user_name"]]					= mbw_htmlspecialchars(mbw_get_param("user_name"));
 
 		if(strpos($send_data[$mb_fields["logs"]["fn_board_name"]], $mb_table_prefix)===0) $send_data[$mb_fields["logs"]["fn_board_name"]]		= str_replace($mb_table_prefix, "", $send_data[$mb_fields["logs"]["fn_board_name"]]);
@@ -1048,7 +1051,7 @@ if(!function_exists('mbw_set_log')){
 			}
 		}
 
-		$send_data[$mb_fields["logs"]["fn_type"]]								= $type;
+		$send_data[$mb_fields["logs"]["fn_type"]]							= mbw_htmlspecialchars($type);
 		if(empty($content)) $content		= $type;
 		$send_data[$mb_fields["logs"]["fn_content"]]						= mbw_htmlspecialchars($content);
 
@@ -1202,12 +1205,13 @@ if(!function_exists('mbw_init_javascript')){
 		$script		.= 'var mb_options = {};';
 		$script		.= 'var mb_languages = {};';
 		$script		.= 'var mb_categorys = {};';
-		$script		.= 'var mb_is_login = false;';
+		if(mbw_is_login()){
+			$script		.= 'var mb_is_login = true;';
+		}else{
+			$script		.= 'var mb_is_login = false;';
+		}
 		$script		.= 'var mb_hybrid_app = "";';
 		$script		.= 'if(typeof(mb_urls)==="undefined"){var mb_urls = {};};';
-
-		if(mbw_is_login()) $script		.= 'mb_is_login			= true; ';
-
 		$script		.= 'mb_options["device_type"]	= "'.esc_js(mbw_get_vars("device_type")).'";';
 		$script		.= 'mb_options["nonce"]		= "'.(mbw_create_nonce("param")).'";';
 		$script		.= 'mb_options["nonce2"]		= "'.(mbw_create_nonce("param")).'";';		//일부 테마에서 스킨의 헤더 파라미터값을 인코딩 하면서 충돌문제가 발생하여 변수를 분리

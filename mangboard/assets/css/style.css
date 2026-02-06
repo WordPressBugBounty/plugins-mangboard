@@ -199,8 +199,9 @@
 .mb-board .cursor_move{cursor:move !important;}
 
 .mb-board .height-0 {height:0px !important;}
-
-.mb-board .board-list .search-text,.mb-board .board-list .search-field{vertical-align:top !important;min-height:30px !important;}
+.mb-board .board-list .search-text,.mb-board .board-list .search-field,
+.mb-board .gallery-list .search-text,.mb-board .gallery-list .search-field,
+.mb-board .calendar-list .search-text,.mb-board .calendar-list .search-field{vertical-align:top !important;min-height:30px !important;}
 .mb-board .board-list select#search_field {width: auto !important;}
 .mb-board .board-list .list-search{white-space: nowrap;}
 .mb-board .board-list .list-search>div{display:inline-block !important;}
@@ -218,7 +219,7 @@
 .mb-board .mb-mode-list .list-btn.mb-btn-bottom-fixed .mb-btn-close:before{transform:rotate(45deg);}
 .mb-board .mb-mode-list .list-btn.mb-btn-bottom-fixed .mb-btn-close:after{transform:rotate(-45deg);}
 
-.mb-board .btn{vertical-align:top !important;width:initial;min-height:20px !important;outline: none !important;}
+.mb-board div .btn{vertical-align:top !important;width:initial;min-height:20px !important;outline: none !important;}
 .mb-board button.btn-more{width:100% !important;}
 .mb-board button{vertical-align:top !important;width:initial;}
 .mb-board .bold {font-weight:bold !important;}
@@ -298,7 +299,8 @@ body.mb-mobile div.mb-error-message-box,body.mb-mobile2 div.mb-error-message-box
 body div.mb-error-message-box span{font-size:14px;font-weight:normal;}
 body.mb-mobile div.mb-error-message-box span,body.mb-mobile2 div.mb-error-message-box span{font-size:13px;font-weight:normal;}
 .mb-board .mb-style1 .cmt-style1{font-size: 13px;line-height:1.6;}
-.mb-board .mb-style1 .pagination-box table.table-page,.mb-board .mb-style1 .pagination-box table.table-page td{border:none !important;}
+.mb-board .mb-style1 .cmt-style1 fieldset{min-inline-size: unset !important;}
+.mb-board .mb-style1 .pagination-box table.table-page,.mb-board .mb-style1 .pagination-box table.table-page tr,.mb-board .mb-style1 .pagination-box table.table-page td{border:none !important;}
 .mb-board .mb-style1 .table.table-prev-next .pn_user_name,.mb-board .mb-style1 .table.table-prev-next .pn_reg_date{text-align:center;}
 .mb-board .mb-style1 a.btn-user-picture, .mb-board .mb-style1 a.btn-user-info{display:inline;}
 .mb-board .mb-style1 .file-download{display: block;padding:1px 0 1px 0px;position:relative;margin-right: 0px !important;}

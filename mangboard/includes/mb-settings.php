@@ -134,9 +134,11 @@ if(!empty($require_files)){
  
 
 if((defined("MBW_REQUEST_MODE") && (MBW_REQUEST_MODE=="API")) || !empty($_REQUEST["action"])){
-	// Api mode	
-	error_reporting(0);
-	@ini_set('display_errors',0);
+	// Api mode
+	if(!defined('WP_DEBUG') || WP_DEBUG===false){
+		@error_reporting(0);
+		@ini_set('display_errors',0);
+	}
 	$mb_request_mode			= "API";
 	mbw_set_params();
 	mbw_check_request_size();	

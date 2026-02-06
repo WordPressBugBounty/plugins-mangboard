@@ -191,7 +191,7 @@ if(!function_exists('mbw_board_options_api_body')){
 				$items						= $mdb->get_results($select_query,ARRAY_A);
 
 				foreach($items as $item){
-					if($item[$field["fn_table_link"]]=="" && $item[$field["fn_board_type"]]=="board"){
+					if($item[$field["fn_table_link"]]=="" && strpos($item[$field["fn_board_type"]],"board")===0){
 						$board_table_name			= mbw_get_table_name($item[$field["fn_board_name2"]]);
 						$comment_table_name		= mbw_get_table_name($item[$field["fn_board_name2"]],"comment");
 

@@ -568,7 +568,7 @@ if(!function_exists('mbw_latest_api_body')){
 				}
 				$latest_data[]		= $data;
 				if(count($latest_data)>20) array_shift($latest_data);
-				update_option($option_name,$latest_data);
+				update_option($option_name,$latest_data, false);
 			}
 		}	
 	}
@@ -682,13 +682,14 @@ add_action('mbw_board_skin_search2', 'mbw_board_form_post_id',5);
 
 if(!function_exists('mbw_filter_board_model')){
 	function mbw_filter_board_model($model){
-		$args	= mbw_get_vars("shortcode_args");
-		$post_id		= "";
-		if(!empty($args)){
-			if(!empty($args["post_id"])){
-				$post_id		= $args["post_id"];
-			}else if(!empty($args["link_id"])){
-				$post_id		= $args["link_id"];
+		if(empty($model)) return $model;
+		$post_id				= "";
+		$shortcode_args		= mbw_get_vars("shortcode_args");
+		if(!empty($shortcode_args)){
+			if(!empty($shortcode_args["post_id"])){
+				$post_id		= $shortcode_args["post_id"];
+			}else if(!empty($shortcode_args["link_id"])){
+				$post_id		= $shortcode_args["link_id"];
 			}
 		}else if(mbw_get_param("link_post_id")!=""){
 			$post_id		= mbw_get_param("link_post_id");
@@ -698,11 +699,10 @@ if(!function_exists('mbw_filter_board_model')){
 			$model			= str_replace(',"link":"view"',$link_attr,$model);
 		}
 		$mode				= mbw_get_param('mode');
-		$model_key		= mbw_get_model_key();
+		$model_key			= mbw_get_model_key();
 		$model_data1		= mbw_json_decode($model);
 		$model_data2		= array();
-		$is_modify			= false;
-		$shortcode_args	= mbw_get_vars("shortcode_args");
+		$is_modify			= false;		
 		$key_name			= 'hide_'.$model_key;
 
 		if(mbw_get_vars("device_type")=="mobile" && !empty($shortcode_args["mobile_".$key_name])){

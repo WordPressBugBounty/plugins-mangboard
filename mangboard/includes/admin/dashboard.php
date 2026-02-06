@@ -31,7 +31,7 @@ if(!empty($_REQUEST["site_lang"]) && mbw_is_admin()){
 if(!empty($_REQUEST["lang"]) && mbw_is_admin()){
 	if(wp_verify_nonce(mbw_get_param('mbw-language-nonce'), 'mbw-language-key')){
 		$mb_admin_lang			= mbw_value_filter($_REQUEST["lang"]);
-		update_option("mb_admin_locale",$mb_admin_lang);
+		update_option("mb_admin_locale",$mb_admin_lang, false);
 	}
 }
 if(!empty($_REQUEST["update_version"])){
@@ -113,7 +113,7 @@ if(function_exists('get_plugin_data')){
 		$mb_version2	= $plugin_data['Version'];
 	}
 }
-if(version_compare($mb_version2, '2.3.7', '>=')){
+if(version_compare($mb_version2, '2.3.8', '>=')){
 	echo '.mb-dash .mb-dash-update,.mb-dash .mb-dash-update2{display:none;}';
 }
 ?>

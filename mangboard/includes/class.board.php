@@ -160,7 +160,9 @@ class MangBoard
 						echo '<div class="'.esc_attr($template_class).'">';
 					}
 					if(mbw_get_param("list_type")=="") mbw_set_param("list_type", $mstore->get_list_type());
-					require($file_path["base"]."_header.php");
+					if(is_file($file_path["base"]."_header.php")){
+						require($file_path["base"]."_header.php");
+					}
 					do_action('mbw_board_header');
 					$board_header		= mbw_get_board_option("fn_board_header");
 					if(defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML){
@@ -172,7 +174,9 @@ class MangBoard
 					}else if(is_file($file_path["base"].$file_path["prefix"].$file_path["mode"].".php")){
 						require($file_path["base"].$file_path["prefix"].$file_path["mode"].".php");
 					}
-					require($file_path["base"]."_footer.php");
+					if(is_file($file_path["base"]."_footer.php")){
+						require($file_path["base"]."_footer.php");
+					}
 					do_action('mbw_board_footer');
 					$board_footer		= mbw_get_board_option("fn_board_footer");
 					if(defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML){

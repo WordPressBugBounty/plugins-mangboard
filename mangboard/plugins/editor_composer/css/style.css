@@ -189,7 +189,8 @@
 	padding:5px 2px !important;
 }
 #mb_top .mb-editor-composer .mb-box-attr-bgcolor .mb-box-attr-option .evo-cp-wrap{width:100% !important;height:30px !important;min-height:30px !important;font-size:13px !important;}
-#mb_top .mb-editor-composer .mb-box-attr-option input,#mb_top .mb-editor-composer .mb-box-attr-option select {width:100% !important;height:30px !important;min-height:30px !important;font-size:13px !important;padding: 1px 5px 0 7px !important;}
+#mb_top .mb-editor-composer .mb-box-attr-option input{width:100% !important;height:30px !important;min-height:30px !important;font-size:13px !important;padding: 1px 5px 0 7px !important;}
+#mb_top .mb-editor-composer .mb-box-attr-option select{width:100% !important;height:30px !important;min-height:30px !important;font-size:13px !important;padding: 1px 20px 0 7px !important;}
 
 #mb_top .mb-editor-composer input,#mb_top .mb-editor-composer select{display:inline-block !important;vertical-align:top !important;-webkit-border-radius:0px !important;-moz-border-radius:0px !important;-khtml-border-radius:0px !important;border-radius:0px !important;border:1px solid #DDD !important;}
 #mb_top .mb-editor-composer .mb-box-attr-label{display:inline-block !important;width:98px !important;min-width:98px !important;font-size:13px !important;padding:4px 0px 4px 6px !important;border:1px solid #EEE;background-color:#F3F3F3;margin:0px 2px 9px 5px;font-weight:600;}
@@ -224,7 +225,7 @@
 
 #mb_top .mb-editor-composer.mb-editor-composer-narrow1 .mb-layout-btn-box .mb-layout-option-box,
 #mb_top.mb-mobile .mb-editor-composer .mb-layout-btn-box .mb-layout-option-box{display:block;width:100%;border-right:none;margin-right:0px;height:30px;}
-#mb_top .mb-editor-composer .mb-layout-btn-box .mb-layout-option-box select{background-color:#FDFDFD;padding:1px 4px !important;margin:6px -1px 0 0 !important;height:24px !important;min-height:24px !important;position:relative;font-size:13px !important;}
+#mb_top .mb-editor-composer .mb-layout-btn-box .mb-layout-option-box select{background-color:#FDFDFD;padding:1px 20px 1px 4px !important;margin:6px -1px 0 0 !important;height:24px !important;min-height:24px !important;position:relative;font-size:13px !important;}
 #mb_top .mb-editor-composer .mb-layout-btn-box .mb-layout-option-box select.mbc_editor_text_align{margin-right:4px !important;}
 #mb_top .mb-editor-composer .mb-layout-btn-box .mb-layout-option-box .mbc_editor_video{font-size:13px !important;line-height:1.6 !important;height:24px !important;min-height:24px !important;display:inline-block !important;border: 1px solid #DDD !important;background-color:#fff !important;padding:1px 3px !important;margin: 6px 0px 0 0 !important;}
 #mb_top .mb-editor-composer .mb-layout-btn-box .mb-editor-video-box{width:100%;position:absolute;bottom:100%;z-index:999;left:0px;display:none;;border-bottom:1px solid #DDD;background-color:#FFF;}

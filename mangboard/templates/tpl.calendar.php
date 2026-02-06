@@ -68,6 +68,7 @@ if(!function_exists('mbw_get_calendar_template')){
 
 		$write_level			= intval(mbw_get_board_option("fn_write_level"));
 		$user_level			= intval(mbw_get_user("fn_user_level"));
+		$board_items		= mbw_get_board_items();
 
 		for($i=0;$i<=$week_size;$i++){
 			$template_calendar	.= '<tr>';
@@ -109,7 +110,6 @@ if(!function_exists('mbw_get_calendar_template')){
 							$template_calendar	.= $date_text;
 						$template_calendar	.= '</div><div class="clear"></div>';
 
-						$board_items				= mbw_get_board_items();
 						if(!empty($board_items)){
 							$item_check		= true;
 							mbw_set_vars("calendar_date_ymd",$date_ymd);

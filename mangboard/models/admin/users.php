@@ -17,6 +17,7 @@ $desktop_model['list']		= '
 {"field":"fn_reply_count","name":"W_REPLY","width":"40px","responsive":"mb-hide-mobile"},
 {"field":"fn_comment_count","name":"W_COMMENT","width":"40px","responsive":"mb-hide-mobile"},
 {"field":"fn_user_point","name":"W_POINT","width":"70px","responsive":"mb-hide-mobile mb-hide-tablet"},
+{"field":"fn_allow_mailing","name":"W_ACCEPT_EMAIL","width":"70px","data":"1,0","label":"'.__MW('W_ON_OFF3').'","responsive":"mb-show-desktop-large"},
 {"field":"fn_last_login","name":"W_JOIN_LAST_DATE","width":"130px","type":"admin_reg_date_last_login","responsive":"mb-hide-mobile mb-hide-tablet","search":"false"},
 {"field":"fn_user_phone","name":"W_MOBILE","type":"search"},
 {"field":"admin_btn","name":"","name_btn":"W_MODIFICATION","width":"60px","type":"admin_option_modify"}
@@ -150,11 +151,28 @@ if(!function_exists('mbw_user_skin_footer')){
 }
 add_action('mbw_board_skin_footer', 'mbw_user_skin_footer',5); 
 
+if(!function_exists('mbw_get_user_date_search_template')){
+	function mbw_get_user_date_search_template(){
+		echo '<div class="border-bottom-ccc-1" style="margin-bottom:10px !important;padding:10px 0 !important;text-align:right;">';
+			echo '<div style="float:left;" class="mb-float-mnone padding-mbottom-10">';
+				echo '<input type="hidden" name="search_add_field1" value="fn_allow_mailing" />';
+				echo '<input type="hidden" name="se_field1" value="fn_user_level" />';
+				echo mbw_get_item_template("category",array("field"=>"search_add_text1","type"=>"select","item_name"=>"search_add_text1","class"=>"max-width-m100","style"=>"max-width:100px;","value"=>mbw_get_param('search_add_text1'),"event"=>"onchange=\"sendSearchData()\"","label"=>'이메일 수신,수신동의,수신안함',"data"=>',1,0'));
+				echo mbw_get_item_template("category",array("field"=>"se_text1","type"=>"select","item_name"=>"se_text1","class"=>"max-width-m100","style"=>"max-width:100px;","value"=>mbw_get_param('se_text1'),"event"=>"onchange=\"sendSearchData()\"","label"=>'레벨,0,1,2,3,4,5,6,7,8,9,10',"data"=>',0,1,2,3,4,5,6,7,8,9,10'));
+
+			echo '</div>';
+			mbw_create_search_template("date_range");
+		echo '</div>';
+	}
+}
+
 if(mbw_is_admin_page()){		//어드민 페이지에서만 실행
 	if(mbw_get_request_mode()=="Frontend"){		// 게시판 모드일 경우에만
 		if(strtoupper(mbw_get_option("user_mode"))=="WP"){			
 			add_action('mbw_board_skin_search', 'mbw_get_synchronize_template');
 		}
+		add_action('mbw_board_skin_search', 'mbw_get_user_date_search_template',10);		// 기간 설정 템플릿 추가
+
 		$button_html		= mbw_get_btn_template(array("name"=>"Modify","onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify'})","class"=>"btn btn-default"));
 		mbw_add_left_button("list",$button_html);
 	}

@@ -121,7 +121,7 @@ Class MStore
 	}
 	public function check_post_param(){
 		if(is_array($this->params)){
-			$check_param	= array("board_name","board_pid","page","board_page","mode","board_action","order_by","order_type","user_pid","parent_pid","parent_user_pid","page_size","lang","mb_locale","list_type","view_type","write_type","comment_type","page_id","start_price","end_price","template","template_name","idx","step","search_field","se_field1","se_field2","se_field3","se_field4","se_field5","search_add_field1","search_add_field2","search_add_field3","date_field");
+			$check_param	= array("board_name","board_pid","page","board_page","mode","board_action","order_by","order_type","user_pid","parent_pid","parent_user_pid","page_size","lang","mb_locale","list_type","view_type","write_type","comment_type","page_id","start_price","end_price","template","template_name","idx","step","search_field","se_field1","se_field2","se_field3","se_field4","se_field5","search_add_field1","search_add_field2","search_add_field3","date_field","billing_id","order_id","cart_id");
 
 			foreach($check_param as $key){
 				if(!empty($this->params[$key])){
@@ -147,6 +147,9 @@ Class MStore
 					}
 					if(is_string($this->params[$key])){
 						$this->params[$key]			= strip_tags($this->params[$key]);
+						if($key!="redirect_to"){
+							$this->params[$key]		= mbw_check_substr($this->params[$key],50);
+						}
 					}
 				}
 			}

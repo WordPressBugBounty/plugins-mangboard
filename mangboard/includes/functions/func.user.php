@@ -195,7 +195,7 @@ if(!function_exists('mbw_set_user_money2')){
 if(!function_exists('mbw_check_user_point_log')){
 	function mbw_check_user_point_log($data){
 		if(isset($data["title"])){
-			$data["title"]		= str_replace(array("\r\n","\n","\t","&nbsp;"," ","  "), " ", $data["title"]);
+			$data["title"]		= str_replace(array("\r\n","\n","\t","&nbsp;"," ","  "), " ", mbw_htmlspecialchars_decode($data["title"]));
 			$maxtext			= "...";
 			$maxlength		= 50;
 			if(function_exists('mb_strlen')) $title_length	= mb_strlen($data["title"], mbw_get_option("encoding"));
@@ -581,7 +581,7 @@ if(!function_exists('mbw_synchronize_wp_user_data')){
 				$synchronize_count++;
 			}
 		}		
-		update_option("mb_user_synchronize_index",($synchronize_index+count($wp_users)));
+		update_option("mb_user_synchronize_index",($synchronize_index+count($wp_users)), false);
 		return $synchronize_count;
 	}
 }

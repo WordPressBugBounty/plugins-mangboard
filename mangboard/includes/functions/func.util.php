@@ -296,7 +296,22 @@ if(!function_exists('mbw_is_search_engine')){
 	}
 }
 
-
+if(!function_exists('mbw_addslashes')){
+	function mbw_addslashes($data){
+		if(is_array($data)){
+			foreach($data as $key => $value){				
+				if(!empty($value)){
+					$data[$key]			= addslashes($value);
+				}
+			}
+		}else if(is_string($data)){
+			if(!empty($data)){
+				$data			= addslashes($data);
+			}
+		}
+		return $data;
+	}
+}
 if(!function_exists('mbw_stripslashes')){
 	function mbw_stripslashes($data){
 		if(is_array($data)){
@@ -305,7 +320,7 @@ if(!function_exists('mbw_stripslashes')){
 					$data[$key]			= stripslashes($value);
 				}
 			}
-		}else{
+		}else if(is_string($data)){
 			if(!empty($data)){
 				$data			= stripslashes($data);
 			}
@@ -322,7 +337,7 @@ if(!function_exists('mbw_htmlspecialchars')){
 					$data[$key]			= htmlspecialchars(stripslashes($value), $flags, mbw_get_option("encoding"));
 				}
 			}
-		}else{
+		}else if(is_string($data)){
 			if(!empty($data)){
 				$data			= htmlspecialchars(stripslashes($data), $flags, mbw_get_option("encoding"));
 			}
@@ -338,7 +353,7 @@ if(!function_exists('mbw_htmlspecialchars2')){
 					$data[$key]			= htmlspecialchars($value, $flags, mbw_get_option("encoding"));
 				}
 			}
-		}else{
+		}else if(is_string($data)){
 			if(!empty($data)){
 				$data			= htmlspecialchars($data, $flags, mbw_get_option("encoding"));
 			}
@@ -354,7 +369,7 @@ if(!function_exists('mbw_htmlspecialchars_decode')){
 					$data[$key]			= htmlspecialchars_decode($value, $flags);
 				}
 			}
-		}else{
+		}else if(is_string($data)){
 			if(!empty($data)){
 				$data			= htmlspecialchars_decode($data, $flags);
 			}
@@ -452,15 +467,17 @@ if(!function_exists('mbw_json_decode')){
 
 if(!function_exists('mbw_get_decryption')){
 	function mbw_get_decryption($data){
-		$get_params		= array();
+		$get_params			= array();
 		$temp_values		= array();
 		$decode_data		= base64_decode($data);
 		if(strpos($decode_data, '=')===false) return array();
+
 		$param_data		= explode("&", $decode_data);
 		foreach($param_data as $value){
 			$temp_values		= explode("=", $value);
-			if(count($temp_values)==2)
-				$get_params[$temp_values[0]]		= $temp_values[1];
+			if(count($temp_values)==2){
+				$get_params[$temp_values[0]]		= addslashes($temp_values[1]);
+			}
 		}
 		return $get_params;
 	}
@@ -750,6 +767,18 @@ if(!function_exists('mbw_board_date_format1')){
 		$date		= substr($value,0,-3);
 		if(has_filter('mf_board_date_format1')) $date	= apply_filters("mf_board_date_format1",$value,$mode);
 		return $date;
+	}
+}
+if(!function_exists('mbw_check_substr')){
+	function mbw_check_substr($value,$length,$start=0){
+		if(function_exists('mb_strlen')){
+			if(mb_strlen($value)>$length){
+				$value		= mb_substr($value, $start, $length);
+			}
+		}else if(strlen($value)>$length){
+			$value		= substr($value, $start, $length);
+		}
+		return $value;
 	}
 }
 if(!function_exists('mbw_value_filter')){

@@ -26,8 +26,8 @@ else if($mb_locale=='ko') $mb_locale	= 'ko_KR';
 else if($mb_locale=='zh' || $mb_locale=='ch' || $mb_locale=='zh-hans' || $mb_locale=='zh-hant') $mb_locale	= 'zh_CN';
 else if($mb_locale=='jp') $mb_locale	= 'ja';
 
-if(empty($mb_version)) $mb_version	= "2.3.7";
-if(empty($mb_index)) $mb_index	= "174";
+if(empty($mb_version)) $mb_version	= "2.4.2";
+if(empty($mb_index)) $mb_index	= "192";
 if(empty($mb_db_version)) $mb_db_version	= "1.0.7";
 
 //설정 데이타

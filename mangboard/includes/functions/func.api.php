@@ -151,12 +151,12 @@ if(!function_exists('mbw_set_api_params')){
 
 		//회원 로그인 상태이면 회원 정보 설정
 		if(mbw_is_login()){
-			$mb_user_pid				= "";
-			$board_user_pid			= "";
+			$mb_user_pid				= 0;
+			$board_user_pid			= 0;
 
 			//Modify 상태에서는 자신의 글일 경우에만 이름 수정 
 			if(mbw_get_param("board_action")=="modify" && isset($api_fields["fn_user_pid"])){	
-				$mb_user_pid							= intval(mbw_get_user("fn_pid"));
+				$mb_user_pid		= intval(mbw_get_user("fn_pid"));
 				if(mbw_get_param("mode")=="comment"){	
 					$table_name		= $mb_comment_table_name;
 					$pid				= mbw_get_param("comment_pid");			
@@ -164,11 +164,13 @@ if(!function_exists('mbw_set_api_params')){
 					$table_name		= $mb_board_table_name;
 					$pid				= mbw_get_param("board_pid");			
 				}
-				$board_user_pid	= $mdb->get_var($mdb->prepare("select %1s from %1s where %1s=%d limit 1",$api_fields["fn_user_pid"],$table_name,$api_fields["fn_pid"],$pid));				
+				$board_user_pid	= intval($mdb->get_var($mdb->prepare("select %1s from %1s where %1s=%d limit 1",$api_fields["fn_user_pid"],$table_name,$api_fields["fn_pid"],$pid)));
 			}
 
 			if(!$is_admin_table && $mb_user_pid==$board_user_pid){
-				if(isset($api_fields["fn_level"]))		$send_data[$api_fields["fn_level"]]				= mbw_get_user("fn_user_level");
+				if(isset($api_fields["fn_level"]) && !isset($send_data[$api_fields["fn_level"]])){
+					$send_data[$api_fields["fn_level"]]				= mbw_get_user("fn_user_level");
+				}
 				if(isset($api_fields["fn_user_pid"])){
 					if(mbw_is_admin() && mbw_get_param("user_pid")!=""){
 					}else{
@@ -678,25 +680,28 @@ if(!function_exists('mbw_file_upload')){
 								if(isset($api_fields["fn_file_type"]))				$send_data[$api_fields["fn_file_type"]]					= $file_data["type"][$i];
 								if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]					= $upload_data["path"];
 								
-								$file_name				= mbw_get_file_name($file_pid,$upload_data["name"]);
-								@move_uploaded_file($file_tmp, $uploadPath.$datePath.$file_name);
-								@chmod($uploadPath.$datePath.$file_name, 0644);
-								
-								if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
-								$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
+								$file_name	= mbw_get_file_name($file_pid,$upload_data["name"]);
+								if(move_uploaded_file($file_tmp, $uploadPath.$datePath.$file_name)){
+									@chmod($uploadPath.$datePath.$file_name, 0644);
+									
+									if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
+									$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
 
-								if(!empty($file_data["type"][$i]) && strpos($file_data["type"][$i],"image/")===0){
-									mbw_check_image_orientation($uploadPath.$datePath.$file_name);
-									do_action('mbw_file_api_image_upload',$uploadPath.$datePath.$file_name,$file_pid);
-									$img_small_size		= mbw_get_option("make_img_small_size");
-									$img_middle_size		= mbw_get_option("make_img_middle_size");
-									if(!empty($img_small_size)) mbw_create_image($uploadPath.$datePath.$file_name,"small");
-									if(!empty($img_middle_size)) mbw_create_image($uploadPath.$datePath.$file_name,"middle");
+									if(!empty($file_data["type"][$i]) && strpos($file_data["type"][$i],"image/")===0){
+										mbw_check_image_orientation($uploadPath.$datePath.$file_name);
+										do_action('mbw_file_api_image_upload',$uploadPath.$datePath.$file_name,$file_pid);
+										$img_small_size		= mbw_get_option("make_img_small_size");
+										$img_middle_size		= mbw_get_option("make_img_middle_size");
+										if(!empty($img_small_size)) mbw_create_image($uploadPath.$datePath.$file_name,"small");
+										if(!empty($img_middle_size)) mbw_create_image($uploadPath.$datePath.$file_name,"middle");
+									}
+									mbw_analytics("today_upload");
+									do_action('mbw_file_api_upload',$uploadPath.$datePath.$file_name,$file_pid);
+									$file_pid++;
+									$file_sequence++;
+								}else{
+									mbw_error_message("MSG_ERROR", "Upload","1500");
 								}
-								mbw_analytics("today_upload");
-								do_action('mbw_file_api_upload',$uploadPath.$datePath.$file_name,$file_pid);
-								$file_pid++;
-								$file_sequence++;								
 							}
 						}
 					}else{
@@ -732,23 +737,26 @@ if(!function_exists('mbw_file_upload')){
 							if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]					= $upload_data["path"];
 							
 							$file_name				= mbw_get_file_name($file_pid,$upload_data["name"]);
-							@move_uploaded_file($file_tmp, $uploadPath.$datePath.$file_name);
-							@chmod($uploadPath.$datePath.$file_name, 0644);
-							if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
-							$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
+							if(move_uploaded_file($file_tmp, $uploadPath.$datePath.$file_name)){
+								@chmod($uploadPath.$datePath.$file_name, 0644);
+								if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
+								$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
 
-							if(!empty($file_data["type"]) && strpos($file_data["type"],"image/")===0){
-								mbw_check_image_orientation($uploadPath.$datePath.$file_name);
-								do_action('mbw_file_api_image_upload',$uploadPath.$datePath.$file_name,$file_pid);
-								$img_small_size		= mbw_get_option("make_img_small_size");
-								$img_middle_size		= mbw_get_option("make_img_middle_size");
-								if(!empty($img_small_size)) mbw_create_image($uploadPath.$datePath.$file_name,"small");
-								if(!empty($img_middle_size)) mbw_create_image($uploadPath.$datePath.$file_name,"middle");
+								if(!empty($file_data["type"]) && strpos($file_data["type"],"image/")===0){
+									mbw_check_image_orientation($uploadPath.$datePath.$file_name);
+									do_action('mbw_file_api_image_upload',$uploadPath.$datePath.$file_name,$file_pid);
+									$img_small_size		= mbw_get_option("make_img_small_size");
+									$img_middle_size		= mbw_get_option("make_img_middle_size");
+									if(!empty($img_small_size)) mbw_create_image($uploadPath.$datePath.$file_name,"small");
+									if(!empty($img_middle_size)) mbw_create_image($uploadPath.$datePath.$file_name,"middle");
+								}
+								mbw_analytics("today_upload");
+								do_action('mbw_file_api_upload',$uploadPath.$datePath.$file_name,$file_pid);
+								$file_pid++;
+								$file_sequence++;
+							}else{
+								mbw_error_message("MSG_ERROR", "Upload","1500");
 							}
-							mbw_analytics("today_upload");
-							do_action('mbw_file_api_upload',$uploadPath.$datePath.$file_name,$file_pid);
-							$file_pid++;
-							$file_sequence++;
 						}
 					}
 				}
@@ -845,18 +853,35 @@ if(!function_exists('mbw_file_upload')){
 			}else if($file_size>$limit_size){
 				mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_get_option("upload_file_size"),"1503");
 			}else{
-				if(mbw_get_param("board_action") == "write"){
-					$upload_data["path"]							= $datePath.$file_name;
-					if(isset($api_fields["fn_pid"]))					$send_data[$api_fields["fn_pid"]]								= $file_pid;
-					if(isset($api_fields["fn_file_name"]))			$send_data[$api_fields["fn_file_name"]]					= $upload_data["name"];
-					if(isset($api_fields["fn_file_sequence"]))			$send_data[$api_fields["fn_file_sequence"]]			= $file_sequence;
-					if(isset($api_fields["fn_file_size"]))				$send_data[$api_fields["fn_file_size"]]					= $file_size;
-					if(isset($api_fields["fn_file_type"]))				$send_data[$api_fields["fn_file_type"]]					= $file_type;
-					if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]					= $upload_data["path"];
-					if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
-					$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);				
+				$file_item					= array();
+				$upload_data["path"]	= $datePath.$file_name;
+				if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify" && mbw_get_param("image_path")!=""){
+					$file_item				= $mdb->get_row($mdb->prepare("select * from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_file_path"]."=%s limit 1;", mbw_get_param("image_path")),ARRAY_A);
+				}				
+				if(!empty($file_item)){
+					$user_pid				= intval(mbw_get_user("fn_pid"));
+					$user_level			= intval(mbw_get_user("fn_user_level"));
+					if(($user_pid==intval($file_item[$mb_fields["files"]["fn_user_pid"]])) || ($user_level>=intval(mbw_get_board_option("fn_manage_level")))){
+						$file_pid					= $file_item[$mb_fields["files"]["fn_pid"]];
+						$upload_data["pid"]		= $file_pid;
+						$upload_data["path"]	= $file_item[$mb_fields["files"]["fn_file_path"]];
+						$datePath					= substr($upload_data["path"],0,11);
+						$file_name				= substr($upload_data["path"],11);
+						$upload_data["name"]	= $file_item[$mb_fields["files"]["fn_file_name"]];
+						$send_data2				= array();
+						if(isset($api_fields["fn_file_size"]))				$send_data2[$api_fields["fn_file_size"]]			= $file_size;
+						$where_data[$mb_fields["files"]["fn_pid"]]			= $file_pid;
+						$mdb->db_query("UPDATE",$mb_admin_tables["files"], $send_data2, $where_data);
+					}
 				}else{
-					$upload_data["path"]	= $mdb->get_var($mdb->prepare("select ".$mb_fields["files"]["fn_file_path"]." from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_file_name"]."=%s limit 1", $file_prefix.$args["board_pid"].".jpg"));
+					if(isset($api_fields["fn_pid"]))					$send_data[$api_fields["fn_pid"]]						= $file_pid;
+					if(isset($api_fields["fn_file_name"]))			$send_data[$api_fields["fn_file_name"]]				= $upload_data["name"];
+					if(isset($api_fields["fn_file_sequence"]))			$send_data[$api_fields["fn_file_sequence"]]		= $file_sequence;
+					if(isset($api_fields["fn_file_size"]))				$send_data[$api_fields["fn_file_size"]]					= $file_size;
+					if(isset($api_fields["fn_file_type"]))				$send_data[$api_fields["fn_file_type"]]				= $file_type;
+					if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]				= $upload_data["path"];
+					if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
+					$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
 				}
 				
 				$mime_type		= "";
@@ -929,16 +954,27 @@ if(!function_exists('mbw_check_image_orientation')){
 		}
 	}
 }
-if(!function_exists('mbw_create_image')){	
-	function mbw_create_image($path,$size="200"){
+if(!function_exists('mbw_create_image')){
+	function mbw_create_image($path,$size="200",$add_name=""){
 		if(function_exists("imagejpeg") || function_exists("imagepng")){		
 			global $mstore;
-			$add_name		= "_".$size;
+			if(!empty($add_name)){
+				$file_add_name		= $add_name;
+			}else{
+				$file_add_name		= "_".$size;
+			}
+			
 			if($size=="small") $size				= mbw_get_option("make_img_small_size");
 			else if($size=="middle") $size			= mbw_get_option("make_img_middle_size");
 
-			$max_size			= intval($size);
-			$file_path			= substr($path,0,strrpos($path, ".")).$add_name.substr($path,strrpos($path, "."),strlen($path));
+			if(!empty($size) && strpos($size,"x")!==false){
+				$temp_size		= explode("x",$size);
+				$max_width		= intval($temp_size[0]);
+				$max_height		= intval($temp_size[1]);
+			}else{
+				$max_width		= intval($size);
+				$max_height		= $max_width;
+			}			
 
 			$image_size		= @getimagesize($path);
 			if(empty($image_size)) return false;
@@ -949,16 +985,18 @@ if(!function_exists('mbw_create_image')){
 
 			if(!empty($mime) && strpos($mime,"image/")===0){
 				if($img_width>=$img_height){
-					if($img_width >$max_size){			
-						$create_width			= $max_size; 
+					if($img_width>$max_width){			
+						$create_width		= $max_width; 
 						$create_height		= intval($img_height * ($create_width	/$img_width));
 					}else return;			
 				}else{
-					if($img_height >$max_size){
-						$create_height		= $max_size; 
-						$create_width			= intval($img_width * ($create_height	/$img_height));
+					if($img_height>$max_height){
+						$create_height		= $max_height; 
+						$create_width		= intval($img_width * ($create_height	/$img_height));
 					}else return;
 				}			
+
+				$file_path			= substr($path,0,strrpos($path, ".")).$file_add_name.substr($path,strrpos($path, "."),strlen($path));
 
 				if($type==2 && function_exists("imagejpeg")){		//jpg
 					$create_img	= imagecreatetruecolor($create_width, $create_height);
@@ -993,36 +1031,51 @@ if(!function_exists('mbw_file_check')){
 		$index2			= 0;
 		if($type!="DELETE"){
 			$file_sequence		= intval($mdb->get_var($mdb->prepare("select ".$mb_fields["files"]["fn_file_sequence"]." from `".$mb_admin_tables["files"]."` WHERE ".$mb_fields["files"]["fn_board_pid"]."=%d and ".$mb_fields["files"]["fn_table_name"]."=%s ORDER BY ".$mb_fields["files"]["fn_file_sequence"]." DESC limit 1", $board_pid,$mb_board_table_name)))+1;
-
-			$image_url		= mbw_get_file_url();
-			$image_url		= str_replace(array("http://","https://"), "", $image_url);
+			
 			$pid_array		= array();
-
-			while(($index1= strpos($content,$image_url,$index1))!==false){
+			$file_path			= mbw_get_file_url();
+			$file_path			= str_replace(array("http://","https://"), "", $file_path);
+			while(($index1= strpos($content,$file_path,$index1))!==false){
 				if(strpos($content,"%2FF",$index1)!==false){
 					$index1		= strpos($content,"%2FF",$index1)+4;
-				}else if(strpos($content,"/F",$index1)!==false){
-					$index1		= strpos($content,"/F",$index1)+4;
 				}else break;
-
 				if(strpos($content,"_",$index1)!==false){
 					$index2		= strpos($content,"_",$index1);
 				}else break;
-
-				$file_pid				= intval(substr($content,$index1,$index2-$index1));
-				$table_name			= $mdb->get_var($mdb->prepare("select ".$mb_fields["files"]["fn_table_name"]." from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_pid"]."=%d", $file_pid));
-				$pid_array[]			= $file_pid;
-
-				if($table_name=="N"){
-					$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=%d, ".$mb_fields["files"]["fn_board_name"]."=%s, ".$mb_fields["files"]["fn_table_name"]."=%s, ".$mb_fields["files"]["fn_file_sequence"]."=%d where ".$mb_fields["files"]["fn_pid"]."=%d", $board_pid,mbw_get_param("board_name"),$mb_board_table_name,$file_sequence, $file_pid));
-				}else if(!empty($table_name) && $type!="UPDATE"){
-					$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_link_count"]."=".$mb_fields["files"]["fn_link_count"]."+1 where ".$mb_fields["files"]["fn_pid"]."=%d", $file_pid));
-				}
-				$file_sequence++;
+				$file_pid			= intval(substr($content,$index1,$index2-$index1));
+				$pid_array[]		= $file_pid;
 			}
-
-			if($type=="UPDATE" && !empty($pid_array) && !empty($board_pid) && function_exists('array_column')){
-				$select_query	= $mdb->prepare("SELECT pid,file_description FROM ".$mb_admin_tables["files"]." where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d and ".$mb_fields["files"]["fn_is_download"]."='0'", $mb_board_table_name, $board_pid );				
+			$file_path			= '/uploads/mangboard/';
+			while(($index1= strpos($content,$file_path,$index1))!==false){
+				if(strpos($content,"/F",$index1)!==false){
+					$index1		= strpos($content,"/F",$index1)+2;
+				}else break;
+				if(strpos($content,"_",$index1)!==false){
+					$index2		= strpos($content,"_",$index1);
+				}else break;
+				$file_pid			= intval(substr($content,$index1,$index2-$index1));
+				$pid_array[]		= $file_pid;
+			}
+			if(!empty($pid_array)){
+				$pid_array = array_unique($pid_array);
+				foreach($pid_array as $file_pid){
+					$file_item			= $mdb->get_row($mdb->prepare("select ".$mb_fields["files"]["fn_table_name"].",".$mb_fields["files"]["fn_board_pid"]." from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_pid"]."=%d;", $file_pid),ARRAY_A);
+					if(!empty($file_item)){
+						$table_name		= $file_item[$mb_fields["files"]["fn_table_name"]];
+						if($table_name=="N"){
+							$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=%d, ".$mb_fields["files"]["fn_board_name"]."=%s, ".$mb_fields["files"]["fn_table_name"]."=%s, ".$mb_fields["files"]["fn_file_sequence"]."=%d where ".$mb_fields["files"]["fn_pid"]."=%d;", $board_pid,mbw_get_param("board_name"),$mb_board_table_name,$file_sequence, $file_pid));
+						}else if(!empty($table_name)){
+							if($board_pid!=$file_item[$mb_fields["files"]["fn_board_pid"]]){
+								$mdb->query($mdb->prepare("update ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_link_count"]."=".$mb_fields["files"]["fn_link_count"]."+1 where ".$mb_fields["files"]["fn_pid"]."=%d;", $file_pid));
+							}
+						}
+						$file_sequence++;
+					}
+				}
+			}
+			
+			if($type=="UPDATE" && !empty($pid_array) && !empty($board_pid)){
+				$select_query	= $mdb->prepare("SELECT pid,file_description FROM ".$mb_admin_tables["files"]." where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d and ".$mb_fields["files"]["fn_is_download"]."='0';", $mb_board_table_name, $board_pid );				
 				$items				= $mdb->get_results($select_query,ARRAY_A);
 				if(!empty($items)){
 					$pid_array2		= array();

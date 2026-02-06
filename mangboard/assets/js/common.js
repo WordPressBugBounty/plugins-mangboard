@@ -383,7 +383,11 @@ function sendTabReload(data,idx){
 	}else if(idx==2 && data==''){
 		if(jQuery("input[name=category3]")) jQuery("input[name=category3]").val(data);
 	}
-	sendSearchData();
+	if(jQuery('.mb-board.mb-commerce').length>0){
+		sendSearchData();
+	}else{
+		sendSearchData("#mb_top");
+	}
 }
 
 function setEditorType(type){
@@ -438,10 +442,20 @@ function sendListTemplateDataHandler(response, state){
 				jQuery("#"+listTemplateBoard+"_board_body>div").remove();
 			}
 
-			if(response.data["body"]) jQuery("#"+listTemplateBoard+"_board_body").append(response.data["body"]);
-			if(response.data["pagination"]!="") jQuery('#'+listTemplateBoard+'_pagination_box').html(response.data["pagination"]);
-			else{
-				jQuery('#'+listTemplateBoard+'_pagination_box').html("");				
+			if(response.data["body"]){
+				jQuery("#"+listTemplateBoard+"_board_body").append(response.data["body"]);
+			}
+			if(response.data["pagination"]!=""){
+				jQuery('#'+listTemplateBoard+'_pagination_box').html(response.data["pagination"]);
+			}else{
+				jQuery('#'+listTemplateBoard+'_pagination_box').html("");
+			}
+			if(jQuery('div[id="mb_top"]').length==1 && mb_options["mode"]=="list"){
+				var nTop	= jQuery('#mb_top').offset().top-80;
+				if(nTop<0) nTop		= 0;
+				if(Math.abs(jQuery(window).scrollTop()-nTop)>100){
+					jQuery("html, body").animate({scrollTop: nTop}, 300);
+				}
 			}
 		}else{
 			showAlertPopup(response);
@@ -710,9 +724,9 @@ function setSearchDate(type){
 		}else if(type=="week"){
 			date.setTime(date.getTime() - (24 * 60 * 60 * 1000 * 7));
 		}else if(type=="last_year"){
-			date					= new Date(date.getFullYear()-1,date.getMonth()+1,0);
+			date					= new Date(date.getFullYear()-1,12,0);
 			end_date				= date.getFullYear()+"-"+(date.getMonth()+1).to2()+"-"+(date.getDate()).to2();
-			date					= new Date(date.getFullYear(),date.getMonth(),1);
+			date					= new Date(date.getFullYear(),0,1);
 		}else if(type=="last_month"){
 			date					= new Date(date.getFullYear(),date.getMonth(),0);
 			end_date			= date.getFullYear()+"-"+(date.getMonth()+1).to2()+"-"+(date.getDate()).to2();

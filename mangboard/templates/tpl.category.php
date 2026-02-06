@@ -34,12 +34,33 @@ if(!function_exists('mbw_get_category_template')){
 			}
 			
 			if(!$hierarchical){
+				$t_data		= $data;
+				$t_label		= $data;
+
+				if(strpos($data, "=>")!==false){
+					$t_data2		= array();
+					$t_label2		= array();
+					$t_array		= explode(",",$data);
+					foreach($t_array as $value){
+						if(strpos($value, "=>")!==false){
+							$value_array		= explode("=>",$value);
+							$t_data2[]			= $value_array[0];
+							$t_label2[]		= $value_array[1];
+						}else{
+							$t_data2[]			= $value;
+							$t_label2[]		= $value;
+						}
+					}
+					$t_data		= implode(",", $t_data2);
+					$t_label		= implode(",", $t_label2);
+				}
+
 				if(mbw_get_board_item("fn_category1")!="") $category1				= mbw_htmlspecialchars_decode(mbw_get_board_item("fn_category1"));
 				if(!empty($category1) && strpos($category1, ',') !== false){
 					$category1_array		= explode(',',$category1);
 					$category1		= $category1_array[0];
 				}
-				$template_category	.= mbw_get_item_template("search",array("field"=>"fn_category1","item_id"=>$board_name."_category1","event"=>"onchange='".$add_event."'","type"=>"select","title"=>$t_name.'1',"data"=>",".$data,"label"=>__MW("W_ALL").",".$data,"value"=>$category1));
+				$template_category	.= mbw_get_item_template("search",array("field"=>"fn_category1","item_id"=>$board_name."_category1","event"=>"onchange='".$add_event."'","type"=>"select","title"=>$t_name.'1',"data"=>",".$t_data,"label"=>__MW("W_ALL").",".$t_label,"value"=>$category1));
 				$template_category	.= '<input type="hidden" name="'.esc_attr(mbw_set_form_name("category2")).'" value="'.esc_attr($category2).'" />';
 				$template_category	.= '<input type="hidden" name="'.esc_attr(mbw_set_form_name("category3")).'" value="'.esc_attr($category3).'" />';
 			}else{

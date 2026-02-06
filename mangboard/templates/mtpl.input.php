@@ -191,6 +191,10 @@ if(!function_exists('mbw_get_input_template')){
 					}else if($item_type=='img_masonry'){
 						$template_start	= '<img'.$data["ext"].__STYLE("width:".$data["width"].";min-height:".$data["height"].";".$data["style"]).' src="'.esc_url($img_url).'"'.$file_attr.'/>';
 					}else if($item_type=='img_ratio_link'){
+						//이미지 에디터가 설치되어 있으면 링크 주소 변경 2025-11-17
+						if(mbw_is_admin_page() && mbw_get_param("page")=="mbw_files" && defined('MBW_IMAGE_EDITOR')){
+							$img_link		= admin_url('admin.php')."?page=mbw_image_editor&mode=write&board_action=write&file_pid=".mbw_get_board_item('fn_pid');
+						}
 						$add_attr		= "";
 						if(mbw_get_board_item('fn_title',false)!="") $add_attr	= 'title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'"';
 						$template_start	= '<a href="'.esc_url($img_link).'" target="_blank"'.$add_attr.'><img'.$data["ext"].__STYLE("max-width:".$data["width"].";max-height:".$data["height"].";".$data["style"]).' src="'.esc_url($img_url).'"'.$file_attr.'/></a>';
@@ -205,7 +209,11 @@ if(!function_exists('mbw_get_input_template')){
 				if(empty($data["width"])) $data["width"]			= "50px";
 				if(empty($data["height"])) $data["height"]		= $data["width"];
 
-				$template_start	= '<div'.__STYLE("width:".$data["width"].";height:".$data["height"].";display:table;").' class=""><div style="display:table-cell;vertical-align:middle;">No image</div></div>';
+				$add_style		= '';
+				if(mbw_get_param("mode")=="" || mbw_get_param("mode")=="list"){
+					$add_style		= 'margin:0 auto;';				
+				}
+				$template_start	= '<div'.__STYLE("width:".$data["width"].";height:".$data["height"].';'.$add_style.'display:table;').'><div style="display:table-cell;vertical-align:middle;">No image</div></div>';
 			}
 		}else if(strpos($item_type,'text')===0){
 			if($data["value"]!=""){

@@ -1,12 +1,18 @@
 <?php
 $desktop_model					= array();
-$tablet_model						= array();
+$tablet_model					= array();
 $mobile_model					= array();
 $desktop_model['version']		= "1.0.0";
 $layout_type		= 'responsive-box2';		// responsive-box1, responsive-box2, responsive-box3, responsive-box4
-mbw_set_vars("write_layout_type",$layout_type);
-mbw_set_vars("mobile_write_layout_type",'responsive-box4');
-mbw_set_vars("write_layout_class",'mb-max-width-1000');
+if(mbw_get_vars("write_layout_type")==""){
+	mbw_set_vars("write_layout_type",$layout_type);
+}
+if(mbw_get_vars("mobile_write_layout_type")==""){
+	mbw_set_vars("mobile_write_layout_type",'responsive-box4');
+}
+if(mbw_get_vars("write_layout_class")==""){
+	mbw_set_vars("write_layout_class",'mb-max-width-1000');
+}
 
 // Board Model
 $desktop_model['list']		= '

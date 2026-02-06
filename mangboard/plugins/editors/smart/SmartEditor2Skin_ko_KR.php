@@ -16,7 +16,7 @@
 <script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/js/smarteditor2.min.js?ver=1.5.1" charset="utf-8"></script>
 <!-- 사진첨부기능 edit --> 
 <script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/sample/js/plugin/hp_SE2M_AttachQuickPhoto.js?ver=1.5.1" charset="utf-8"></script>
-<script type="text/javascript">var mb_editor_url = "<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/";var board_name = "<?php echo mbw_get_param('board_name');?>"; </script>
+<script type="text/javascript">var mb_editor_url = "<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/";var board_name = "<?php echo esc_js(mbw_get_param('board_name'));?>"; </script>
 </head>
 <body>
 

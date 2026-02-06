@@ -4,8 +4,15 @@ $mb_image_upload_files			= array("jpg","jpeg","png","gif","bmp");
 $mb_words							= array();
 $mb_languages						= array();
 
-$mb_table_prefix					= "mb_";
-
+if ( ! defined( 'MB_TABLE_PREFIX' ) ) {
+	$mb_table_prefix					= "mb_";
+}else{
+	// wp-config.php 파일에 접두사 설정(MB_TABLE_PREFIX) 있으면 해당 설정으로 변경 // define('MB_TABLE_PREFIX', "mb2_");
+	$mb_table_prefix					= MB_TABLE_PREFIX;
+}
+if(empty($mb_table_prefix)){
+	$mb_table_prefix					= "mb_";
+}
 
 $mb_table_board_suffix			= "_board";
 $mb_table_comment_suffix			= "_comment";

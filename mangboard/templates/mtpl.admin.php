@@ -66,6 +66,9 @@ if(!function_exists('mbw_get_admin_template')){
 						if(strpos($check_skin,','.$value.',')!==false) unset($skin_entry[$key]);
 					}
 				}
+				$skin_count	= count($skin_entry);
+				mbw_set_vars("skin_count",$skin_count);
+
 				$data["data"]		= implode(",",$skin_entry);
 				$data["label"]		= $data["data"];
 			}else if($item_type=='admin_select_model_list'){
@@ -86,8 +89,13 @@ if(!function_exists('mbw_get_admin_template')){
 				
 				foreach($select_data as $value){
 					$t_data[]		= $dir_name.$value;
-					$t_label[]		= $dir_name.$value;		
+					$t_label[]		= $dir_name.$value;
 				}
+
+				$model_count	= count($t_data);
+				$skin_count		= intval(mbw_get_vars("skin_count"));
+				update_option("mb_skin_model",$skin_count.":".$model_count, false);
+
 				$data["data"]		= implode(",",$t_data);
 				$data["label"]		= implode(",",$t_label);
 		

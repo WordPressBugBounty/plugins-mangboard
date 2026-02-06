@@ -323,10 +323,17 @@ if(!function_exists('mbw_set_board_option')){
 if(!function_exists('mbw_get_board_option')){
 	function mbw_get_board_option($field){
 		global $mstore;
-		return mbw_htmlspecialchars_decode($mstore->get_board_option($field));
-	}	
+		$value		= $mstore->get_board_option($field);
+		if(is_string($value) && $value!=""){
+			if($field=="fn_board_header" || $field=="fn_board_footer" || $field=="fn_board_content_form"){
+				$value		= (mbw_htmlspecialchars_decode($value));
+			}else{
+				$value		= strip_tags(mbw_htmlspecialchars_decode($value));
+			}
+		}
+		return $value;
+	}
 }
-
 if(!function_exists('mbw_set_category_field')){
 	function mbw_set_category_field($key,$value){
 		global $mstore;
@@ -334,9 +341,9 @@ if(!function_exists('mbw_set_category_field')){
 	}	
 }
 if(!function_exists('mbw_set_category_fields')){
-	function mbw_set_category_fields($params){
+	function mbw_set_category_fields($data){
 		global $mstore;
-		$mstore->set_category_fields($params);
+		$mstore->set_category_fields($data);
 	}	
 }
 if(!function_exists('mbw_get_category_fields')){
@@ -346,13 +353,61 @@ if(!function_exists('mbw_get_category_fields')){
 	}	
 }
 if(!function_exists('mbw_set_board_fields')){
-	function mbw_set_board_fields($fields){
+	function mbw_set_board_fields($data){
 		global $mstore;
-		$mstore->set_board_fields($fields);
+		$mstore->set_board_fields($data);
+	}
+}
+if(!function_exists('mbw_get_board_fields')){
+	function mbw_get_board_fields(){
+		global $mstore;
+		$mstore->get_board_fields();
+	}
+}
+if(!function_exists('mbw_set_comment_fields')){
+	function mbw_set_comment_fields($data){
+		global $mstore;
+		$mstore->set_comment_fields($data);
+	}
+}
+if(!function_exists('mbw_get_comment_fields')){
+	function mbw_get_comment_fields(){
+		global $mstore;
+		$mstore->get_comment_fields();
 	}
 }
 
+if(!function_exists('mbw_set_user_fields')){
+	function mbw_set_user_fields($data){
+		global $mstore;
+		$mstore->set_user_fields($data);
+	}
+}
 
+if(!function_exists('mbw_set_board_field')){
+	function mbw_set_board_field($key,$value){
+		global $mstore;
+		$mstore->set_board_field($key,$value);
+	}	
+}
+if(!function_exists('mbw_get_board_field')){
+	function mbw_get_board_field($key,$fields=null){
+		global $mstore;
+		return $mstore->get_board_field($key,$fields);
+	}
+}
+if(!function_exists('mbw_set_comment_field')){
+	function mbw_set_comment_field($key,$value){
+		global $mstore;
+		$mstore->set_comment_field($key,$value);
+	}	
+}
+if(!function_exists('mbw_get_comment_field')){
+	function mbw_get_comment_field($key,$fields=null){
+		global $mstore;
+		return $mstore->get_comment_field($key,$fields);
+	}	
+}
 if(!function_exists('mbw_set_filter')){
 	function mbw_set_filter($key,$value){
 		global $mstore;

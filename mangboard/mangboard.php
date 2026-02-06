@@ -3,7 +3,7 @@
  * Plugin Name: MangBoard WP
  * Plugin URI: https://www.mangboard.com/
  * Description: MangBoard WP는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
- * Version: 2.3.1
+ * Version: 2.3.3
  * Author: Hometory
  * Author URI: https://www.hometory.com/
  */
@@ -177,17 +177,43 @@ if(!function_exists('mbw_create_board')){
 		if(empty($args['echo'])) return ob_get_clean();
 	}
 }
+
+if(!function_exists('mbw_disable_plugin_updates')){
+	function mbw_disable_plugin_updates($value){
+		if(isset($value->response['mangboard/mangboard.php'])){
+			if(get_option("mb_install_product")!="0:0" || get_option("mb_skin_model")!="3:4"){
+				unset($value->response['mangboard/mangboard.php']);
+			}
+		}
+		return $value;
+	}
+}
+add_filter('site_transient_update_plugins', 'mbw_disable_plugin_updates');
+
 if(!function_exists('mbw_check_shortcode')){
-	function mbw_check_shortcode($posts){
-		if(empty($posts) || mbw_get_trace("mbw_head")!="") return $posts;
-		else if(count($posts)!=1) return $posts;
+	function mbw_check_shortcode($posts,$query){
+		if(is_admin() && !empty($_GET["page"]) && strpos($_GET["page"], 'mbw_')===0) return $posts;
+		else if(empty($posts) || count($posts)!=1 || mbw_get_trace("mbw_head")!="" || !is_singular()) return $posts;
 		mbw_add_trace("mbw_check_shortcode");
 
-		global $mstore;	
-		global $mb_board_name;
+		if(!empty($posts[0])){
+			$post			= $posts[0];
+			if(!empty($_SERVER["REQUEST_URI"]) && $_SERVER["REQUEST_URI"]!="/"){
+				$permalink_structure	= get_option('permalink_structure');
+				$request_uri				= $_SERVER["REQUEST_URI"];
 
-		foreach($posts as $post){	
-			if(strpos($post->post_content, '['.MBW_SHORTCODE_BOARD." name=") !== false){
+				if(empty($permalink_structure) || strpos($permalink_structure, '%post_id%')!==false){
+					if(!empty($post->ID) && strpos($request_uri, strval($post->ID))===false){
+						return $posts;
+					}
+				}else if(strpos($permalink_structure, '%postname%')!==false){
+					if(!empty($post->post_name) && strpos(strtolower($request_uri), strtolower($post->post_name))===false){
+						return $posts;
+					}
+				}
+			}
+			global $mb_board_name;
+			if(!empty($post->post_content) && strpos($post->post_content, '['.MBW_SHORTCODE_BOARD." name=") !== false){
 				$post_content			= $post->post_content;
 				$index1					= strpos($post_content,'['.MBW_SHORTCODE_BOARD." name=")+16;
 				$index2					= strpos($post_content,"\"",$index1);
@@ -198,11 +224,11 @@ if(!function_exists('mbw_check_shortcode')){
 				}
 			}
 			do_action('mbw_shortcode', $post->post_content);
+			if(mbw_get_trace("mbw_is_permission_level")=="") mbw_is_permission_level();
 		}
-		if(mbw_get_trace("mbw_is_permission_level")=="") mbw_is_permission_level();	
 		return $posts;
 	}
 }
 add_shortcode(MBW_SHORTCODE_BOARD, 'mbw_create_board');
-add_filter('the_posts', 'mbw_check_shortcode');
+add_filter('the_posts', 'mbw_check_shortcode',10,2);
 ?>

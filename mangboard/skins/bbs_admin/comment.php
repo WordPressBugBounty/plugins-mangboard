@@ -247,7 +247,7 @@
 	}
 </script>
 <div class="cmt-style1">
-	<fieldset>
+	<div>
 		<div style="width:100%;min-height:32px;">
 			<p class='cmt-count-box bold' style="display:none;">
 				<?php echo __MW("W_COMMENT"); ?><span class="cmt-count"> [<span class="cmt-count-num" id='mb_comment_totalcount'><?php echo esc_attr($comment_total_count);?></span>]</span>
@@ -276,7 +276,7 @@
 		
 		<?php } ?>		
 		<ul id='comment_list_box' class='cmt-list-box list-unstyled' style="display:none;"></ul>		
-	</fieldset>	
+	</div>	
 </div>
 <?php
 	echo '<div id="comment_add_list" class="cmt-add-list" style="display:none;">'.mbw_get_btn_template(array("name"=>"More","onclick"=>"sendCommentList()","class"=>"btn btn-default btn-more"))."</div>";

@@ -80,11 +80,15 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 			$modify_data		= array();
 			if(!empty($pid_data[$i]) && strpos($checked_pid, ",".$pid_data[$i].",")!==false){			
 				foreach($send_data as $key => $value){
-					if(is_array($send_data[$key])){						
-						$modify_data[$key]										= $send_data[$key][$i];						
+					if(is_array($send_data[$key])){
+						if((defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) || !mbw_is_admin()){
+							$modify_data[$key]			= strip_tags(mbw_htmlspecialchars_decode($send_data[$key][$i]));
+						}else{
+							$modify_data[$key]			= ($send_data[$key][$i]);
+						}
 					}
 				}
-				$where_data[$api_fields["fn_pid"]]					= $pid_data[$i];
+				$where_data[$api_fields["fn_pid"]]		= $pid_data[$i];
 				if(isset($api_fields["fn_modify_date"]))	$modify_data[$api_fields["fn_modify_date"]]	= mbw_get_current_time();
 				if(!empty($where_data)){
 					$mdb->db_query("UPDATE",$mb_board_table_name, $modify_data, $where_data);
@@ -207,16 +211,18 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 		//선택된 게시물 복사
 		foreach($board_items as $item){
 
-			if(empty($match_board[$item[$api_fields["fn_pid"]]])) 
+			if(empty($match_board[$item[$api_fields["fn_pid"]]])){
 				$match_board[$item[$api_fields["fn_pid"]]]			= $board_pid;
+			}
 
 			$item[$api_fields["fn_pid"]]							= $board_pid;
-			if(!empty($match_board[$item[$api_fields["fn_gid"]]])) 
+			if(!empty($match_board[$item[$api_fields["fn_gid"]]])){
 				$item[$api_fields["fn_gid"]]							= $match_board[$item[$api_fields["fn_gid"]]];
-			else
+			}else{
 				$item[$api_fields["fn_gid"]]							= $board_pid;
-
-			$query_keys			= " (".implode(",",array_keys($item)).")";
+			}
+			$item						= mbw_addslashes($item);
+			$query_keys				= " (".implode(",",array_keys($item)).")";
 			$query_values			= " ('".implode("','",$item)."')";
 
 			$query					= "INSERT INTO ".$select_board_table_name.$query_keys." VALUES ".$query_values;
@@ -232,19 +238,21 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 
 			//선택된 게시물의 댓글  복사
 			foreach($comment_items as $item){
-				if(!empty($match_board[$item[$comment_field["fn_parent_pid"]]])) 
+				if(!empty($match_board[$item[$comment_field["fn_parent_pid"]]])){
 					$item[$comment_field["fn_parent_pid"]]							= $match_board[$item[$comment_field["fn_parent_pid"]]];
-
-				if(empty($match_comment[$item[$comment_field["fn_pid"]]])) 
+				}
+				if(empty($match_comment[$item[$comment_field["fn_pid"]]])){
 					$match_comment[$item[$comment_field["fn_pid"]]]			= $comment_pid;
+				}
 
 				$item[$comment_field["fn_pid"]]							= $comment_pid;
-				if(!empty($match_comment[$item[$comment_field["fn_gid"]]])) 
+				if(!empty($match_comment[$item[$comment_field["fn_gid"]]])){
 					$item[$comment_field["fn_gid"]]							= $match_comment[$item[$comment_field["fn_gid"]]];
-				else
+				}else{
 					$item[$comment_field["fn_gid"]]							= $comment_pid;
-
-				$query_keys			= " (".implode(",",array_keys($item)).")";
+				}
+				$item						= mbw_addslashes($item);
+				$query_keys				= " (".implode(",",array_keys($item)).")";
 				$query_values			= " ('".implode("','",$item)."')";
 
 				$query					= "INSERT INTO ".$select_comment_table_name.$query_keys." VALUES ".$query_values;
@@ -264,15 +272,17 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 			$file_items		= $mdb->get_results($select_query,ARRAY_A);
 
 			foreach($file_items as $item){
-				if(!empty($match_board[$item[$file_field["fn_board_pid"]]])) 
+				if(!empty($match_board[$item[$file_field["fn_board_pid"]]])){
 					$item[$file_field["fn_board_pid"]]							= $match_board[$item[$file_field["fn_board_pid"]]];
+				}
 
 				$item[$file_field["fn_pid"]]					= $file_pid;
 				$item[$file_field["fn_board_name"]]		= $select_board_name;
 				$item[$file_field["fn_table_name"]]			= $select_board_table_name;
 				$item[$file_field["fn_link_count"]]			= 1;
 
-				$query_keys			= " (".implode(",",array_keys($item)).")";
+				$item						= mbw_addslashes($item);
+				$query_keys				= " (".implode(",",array_keys($item)).")";
 				$query_values			= " ('".implode("','",$item)."')";
 
 				$query_data[]			= "INSERT INTO ".$mb_admin_tables["files"].$query_keys." VALUES ".$query_values;
@@ -415,11 +425,18 @@ if(!empty($query_command)){
 		}
 
 		//에디터에서 업로드된 파일 등록
+		$t_content	= "";
 		if(isset($api_fields["fn_content"]) && isset($send_data[$api_fields["fn_content"]])){
-			mbw_file_check($send_data[$api_fields["fn_content"]],$board_pid, $query_command);
+			$t_content		.= $send_data[$api_fields["fn_content"]];
 		}
 		if(mbw_get_param("content2")!=""){
-			mbw_file_check(mbw_get_param("content2"),$board_pid, $query_command);
+			$t_content		.= mbw_get_param("content2");
+		}
+		if(mbw_get_param("text")!=""){
+			$t_content		.= mbw_get_param("text");
+		}
+		if(!empty($t_content)){
+			mbw_file_check($t_content,$board_pid, $query_command);
 		}
 		//체크박스가 선택된 파일 항목만 삭제
 		$file_delete_pid	= mbw_get_param("file_delete_pid");

@@ -498,14 +498,29 @@ if(!function_exists('mbw_get_view_template')){
 					$category_data		= mbw_get_board_option("fn_category_data");
 					if(empty($category_data)) return;
 
-					if(mbw_get_board_item("fn_category1")!=""){
-						$template_start	.= '<span>'.mbw_get_board_item("fn_category1").'</span>';
+					$category1		= mbw_get_board_item("fn_category1");
+					$category2		= mbw_get_board_item("fn_category2");
+					$category3		= mbw_get_board_item("fn_category3");
+
+					if($category1!=""){
+						if(strpos($category_data, "=>")!==false){
+							$t_array		= explode(",",$category_data);
+							foreach($t_array as $value){
+								if(strpos($value, "=>")!==false){
+									$value_array		= explode("=>",$value);
+									if($category1==$value_array[0]){
+										$category1 = $value_array[1];
+									}
+								}
+							}
+						}
+						$template_start	.= '<span>'.$category1.'</span>';
 					}
-					if(mbw_get_board_item("fn_category2")!=""){
-						$template_start	.= '<span> &gt; '.mbw_get_board_item("fn_category2").'</span>';
+					if($category2!=""){
+						$template_start	.= '<span> &gt; '.$category2.'</span>';
 					}
-					if(mbw_get_board_item("fn_category3")!=""){
-						$template_start	.= '<span> &gt; '.mbw_get_board_item("fn_category3").'</span>';
+					if($category3!=""){
+						$template_start	.= '<span> &gt; '.$category3.'</span>';
 					}
 				}else if($data["type"]=='date'){
 					$template_start	.= '<span>'.$data["value"].'</span>';

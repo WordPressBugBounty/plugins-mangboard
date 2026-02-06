@@ -81,7 +81,7 @@ if(!function_exists('curl_init')){
 $response			= mbw_request_store_api($send_data);
 
 $mb_version2	= mbw_get_option("mb_version");
-$check_version	= '2.3.7';
+$check_version	= '2.3.8';
 if(function_exists('get_plugin_data')){
 	$plugin_data		= get_plugin_data(MBW_PLUGIN_PATH.'mangboard.php',false,false);
 	if(!empty($plugin_data['Version'])){
@@ -228,6 +228,9 @@ function mbw_set_store_category(category){
 	$html	= "";
 	$html	.= '<div class="mb-style1 gallery-list"><div class="gallery-list-body" style="padding-top:8px;">';
 
+	$install_product_count1	= 0;
+	$install_product_count2	= 0;
+
 	if(!empty($product_items)){
 		foreach($product_items as $product) {
 			$title							= $product['title'];
@@ -255,10 +258,12 @@ function mbw_set_store_category(category){
 			}else{	//dev2
 				if(is_dir(WP_CONTENT_DIR.'/'.$product['check_dir']) && !empty($product['btn_text4'])){		//미등록된 설치 상품이 있는지 체크
 					$product_status	= '<div style="position:absolute;top:0;left:0;">'.$product['btn_text4'].'</div>';
+					$install_product_count2++;
 				}
 			}
 			if(!empty($product['check_dir']) && is_dir(WP_CONTENT_DIR.'/'.$product['check_dir']) && !empty($product['btn_html5'])){
 				$product['btn_html3']		= $product['btn_html5'].$product['btn_html3'];
+				$install_product_count1++;
 			}			
 			$html	.= '<div class="mc-gallery-item-box-432" style="display:inline-block;width:220px;padding:0 !important;"><div class="mc-gallery-item-wrap">';
 			$html	.= '<div class="mc-gallery-item-img-432" style="">
@@ -283,6 +288,8 @@ function mbw_set_store_category(category){
 			$html	.= '</div></div>';
 		}
 	}
+	update_option("mb_install_product",$install_product_count1.":".$install_product_count2, false);
+
 	$html	.= '</div></div>';
 	echo $html;
 	?>

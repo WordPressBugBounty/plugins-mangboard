@@ -8,24 +8,26 @@ if(!function_exists('mbw_get_admin_board_name')){
 		}else{
 			$name		= "board_options";
 		}
-		return mbw_value_filter($name,"name");
+		$name	= mbw_value_filter($name,"name");
+		mbw_set_param("board_name",$name);
+		return $name;
 	}
 }
 if(!function_exists('mbw_manage_custom')){
 	function mbw_manage_custom(){
 		mbw_add_trace("mbw_manage_custom");
-		echo "<div style='margin-top:20px;padding:0 15px 0 0;'><div style='background-color:#FFF;padding:20px 15px;border:1px solid #EEE;overflow-x:auto;'>";
-		do_action('mbw_manage_custom');
-		echo "</div></div>";
+		echo '<div class="mb-admin-custom" style="margin-top:20px;padding:0 15px 0 0;"><div style="background-color:#FFF;padding:20px 15px;border:1px solid #EEE;overflow-x:auto;">';
+			do_action('mbw_manage_custom');
+		echo '</div></div>';
 	}
 }
 if(!function_exists('mbw_manage_board')){
 	function mbw_manage_board(){
 		mbw_add_trace("mbw_manage_board");
 		do_action('mbw_manage_board_header');
-		echo "<div style='margin-top:20px;padding:0 15px 0 0;'><div style='background-color:#FFF;padding:20px 15px;border:1px solid #EEE;overflow-x:auto;'>";
-		mbw_create_board(array("name"=>mbw_get_admin_board_name(),"echo"=>"true"));
-		echo "</div></div>";
+		echo '<div class="mb-admin-board" style="margin-top:20px;padding:0 15px 0 0;"><div style="background-color:#FFF;padding:20px 15px;border:1px solid #EEE;overflow-x:auto;">';
+			mbw_create_board(array("name"=>mbw_get_admin_board_name(),"echo"=>"true"));
+		echo '</div></div>';
 		do_action('mbw_manage_board_footer');
 	}
 }
@@ -36,21 +38,24 @@ if(!function_exists('mbw_manage_page')){
 		global $mb_admin_tables,$mb_board_table_name,$mb_comment_table_name;
 
 		do_action('mbw_manage_page_header');
-		echo "<div style='margin-top:0px;padding:0 15px 0 0;'>";
-		$page				= str_replace( "mbw_", "", mbw_get_param("page"));
-		$page				= mbw_value_filter($page,"name");		
-		$page_path		= MBW_PLUGIN_PATH."includes/admin/".$page.".php";
+		echo '<div class="mb-admin-page" style="margin-top:0px;padding:0 15px 0 0;">';
+			$page				= str_replace( "mbw_", "", mbw_get_param("page"));
+			$page				= mbw_value_filter($page,"name");		
+			$page_path		= MBW_PLUGIN_PATH."includes/admin/".$page.".php";
 
-		if(has_filter('mf_admin_menu_page')) $page_path			= apply_filters("mf_admin_menu_page",$page_path,$page);
-		if(is_file($page_path))
-			require($page_path);
-		echo "</div>";
+			if(has_filter('mf_admin_menu_page')){
+				$page_path			= apply_filters("mf_admin_menu_page",$page_path,$page);
+			}
+			if(is_file($page_path)){
+				require($page_path);
+			}
+		echo '</div>';
 		do_action('mbw_manage_page_footer');
 	}
 }
 if(!function_exists('mbw_get_dps')){
 	function mbw_get_dps(){
-		$ps_entry	= "p=".implode(",",mbw_get_dir_entry("plugins",array('datepicker','editors','htmlpurifier','kcaptcha','popup','widgets','store','conversion_tracking','optimize_css','board_item','editor_composer')))."&s=".implode(",",mbw_get_dir_entry("skins",array('bbs_admin','bbs_basic','bbs_withdrawal','bbs_notice_m1')))."&w=".implode(",",mbw_get_dir_entry("plugins/widgets",array('latest_mb_basic')))."&e=".implode(",",mbw_get_dir_entry("plugins/editors",array('ck','wp','smart')));
+		$ps_entry	= "c=".get_option("mb_install_product")."&p=".implode(",",mbw_get_dir_entry("plugins",array('datepicker','editors','htmlpurifier','kcaptcha','popup','widgets','store','conversion_tracking','optimize_css','board_item','editor_composer')))."&s=".implode(",",mbw_get_dir_entry("skins",array('bbs_admin','bbs_basic','bbs_withdrawal','bbs_notice_m1')))."&w=".implode(",",mbw_get_dir_entry("plugins/widgets",array('latest_mb_basic')))."&e=".implode(",",mbw_get_dir_entry("plugins/editors",array('ck','wp','smart')));
 		return base64_encode($ps_entry);
 	}
 }
