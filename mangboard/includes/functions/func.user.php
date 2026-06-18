@@ -67,6 +67,7 @@ if(!function_exists('mbw_set_user_point2')){
 				$point		= $add_point;
 			}
 			if(empty($user_pid)){
+				if($action=="delete") return;
 				$user_pid			= mbw_get_user("fn_pid");
 				$user_name		= mbw_get_user("fn_user_name");
 				$user_point		= intval(mbw_get_user("fn_user_point"));
@@ -147,6 +148,7 @@ if(!function_exists('mbw_set_user_money2')){
 			}
 
 			if(empty($user_pid)){
+				if($action=="delete") return;
 				$user_pid			= mbw_get_user("fn_pid");
 				$user_name		= mbw_get_user("fn_user_name");
 				$user_money		= intval(mbw_get_user("fn_user_money"));
@@ -277,6 +279,7 @@ if(!function_exists('mbw_set_user_point')){
 				$point		= $add_point;
 			}
 			if(empty($user_pid)){
+				if($action=="delete") return;
 				$user_pid			= mbw_get_user("fn_pid");
 				$user_name		= mbw_get_user("fn_user_name");
 				$user_point		= intval(mbw_get_user("fn_user_point"));
@@ -359,6 +362,7 @@ if(!function_exists('mbw_set_user_money')){
 			}
 
 			if(empty($user_pid)){
+				if($action=="delete") return;
 				$user_pid			= mbw_get_user("fn_pid");
 				$user_name		= mbw_get_user("fn_user_name");
 				$user_money		= intval(mbw_get_user("fn_user_money"));

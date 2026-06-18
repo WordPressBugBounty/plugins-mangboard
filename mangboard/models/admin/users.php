@@ -173,6 +173,11 @@ if(mbw_is_admin_page()){		//어드민 페이지에서만 실행
 		}
 		add_action('mbw_board_skin_search', 'mbw_get_user_date_search_template',10);		// 기간 설정 템플릿 추가
 
+		if(mbw_is_admin()){
+			$titles	= "번호,아이디,이름,레벨,그룹,이메일,휴대폰,포인트,우편번호,집주소,집 전화,메일링 수신,로그인수,글쓰기수,답변수,댓글수,가입 시간,최종 접속일";
+			$fields	= "fn_pid,fn_user_id,fn_user_name,fn_user_level,fn_user_group,fn_user_email,fn_user_phone,fn_user_point,fn_home_postcode,fn_home_address,fn_home_tel,fn_allow_mailing,fn_login_count,fn_write_count,fn_reply_count,fn_comment_count,fn_reg_date,fn_last_login";
+			mbw_add_left_button("list",mbw_get_btn_template(array("name"=>"Excel 저장하기","onclick"=>"sendAdminExcelData('".$fields."','".$titles."')","class"=>"btn btn-default","title"=>"검색 또는 선택된 회원을 Excel 파일로 저장합니다")));
+		}
 		$button_html		= mbw_get_btn_template(array("name"=>"Modify","onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify'})","class"=>"btn btn-default"));
 		mbw_add_left_button("list",$button_html);
 	}

@@ -450,12 +450,8 @@ function sendListTemplateDataHandler(response, state){
 			}else{
 				jQuery('#'+listTemplateBoard+'_pagination_box').html("");
 			}
-			if(jQuery('div[id="mb_top"]').length==1 && mb_options["mode"]=="list"){
-				var nTop	= jQuery('#mb_top').offset().top-80;
-				if(nTop<0) nTop		= 0;
-				if(Math.abs(jQuery(window).scrollTop()-nTop)>100){
-					jQuery("html, body").animate({scrollTop: nTop}, 300);
-				}
+			if(listTemplateMode!="append" && typeof(scrollToBoardTop)==='function'){
+				scrollToBoardTop();
 			}
 		}else{
 			showAlertPopup(response);
@@ -464,10 +460,22 @@ function sendListTemplateDataHandler(response, state){
 	}
 }
 
+function scrollToBoardTop(mode, id, offset){
+	if(typeof(mode)==='undefined' || mode=='') mode = "list";
+	if(typeof(id)==='undefined' || id=='') id	= "mb_top";
+	if(typeof(offset)==='undefined' || offset=='') offset = 130;
+	if(jQuery('div[id="'+id+'"]').length==1 && mb_options["mode"]==mode){
+		var nTop	= jQuery('#'+id).offset().top - offset;
+		if(nTop<0) nTop		= 0;
+		if(Math.abs(jQuery(window).scrollTop()-nTop)>offset){
+			jQuery("html, body").animate({scrollTop: nTop}, 300);
+		}
+	}
+}
 
 function getPostcode(type,id) {
 	if(typeof(mb_hybrid_app)==='undefined' || mb_hybrid_app==""){
-		new daum.Postcode({
+		new kakao.Postcode({
 			oncomplete: function(data) {
 				var fullAddr = ""; 
 				var extraAddr = "";
@@ -498,7 +506,7 @@ function getPostcodeIframe(type,id) {
 	if(typeof(id)==='undefined' || id=='') id = 'mb_kakao_postcode1';
 	var element_wrap	= document.getElementById(id);
 	var currentScroll		= Math.max(document.body.scrollTop, document.documentElement.scrollTop);
-	new daum.Postcode({
+	new kakao.Postcode({
 		oncomplete: function(data) {
 			var fullAddr = ""; 
 			var extraAddr = "";
@@ -664,6 +672,43 @@ function sendContentDataHandler(response, state){
 		showAlertPopup(response);
 	}
 }
+
+function sendAdminExcelData(fields,titles,param){
+	var data	= "mode=plugin&board_action=admin_table_data&board_name="+mb_options["board_name"]+"&fields="+encodeURIComponent(fields)+"&titles="+encodeURIComponent(titles)+"&list_type="+mb_options["list_type"]+"&page="+mb_options["page"];	
+	if(typeof(param)!=='undefined' && param!="") data	= data+"&"+param;
+	
+	if(jQuery("input[name='check_array[]']").filter(":checked").length>0){
+		var select_pid	= jQuery("input[name='check_array[]']").filter(":checked").map(function(){return jQuery(this).val();}).get().join(",");
+		data	= data+"&select_pid="+select_pid;
+	}else{
+		if(jQuery('#'+mb_options["board_name"]+'_form_board_search')) data		= data+"&"+jQuery('#'+mb_options["board_name"]+'_form_board_search').serialize();
+	}
+	sendDataRequest(mb_urls["template_api"], data, sendAdminExcelDataHandler);
+}
+
+function sendAdminExcelDataHandler(response, state){	
+	if(response && response.state == "success"){
+		var date				= new Date();
+		today_date			= date.getFullYear()+""+(date.getMonth()+1).to2()+""+(date.getDate()).to2();
+		var sendForm = document.createElement('form');
+		sendForm.method = 'post';
+		sendForm.action = mb_urls["home"]+"/?mb_trigger=file";
+		var h1 = document.createElement('input');
+		h1.type = 'hidden';h1.name = 'file_name';h1.value = mb_options["board_name"]+"_"+today_date+'.xls';
+		sendForm.appendChild(h1);
+		var h2 = document.createElement('input');
+		h2.type = 'hidden';h2.name = 'file_content';h2.value = response.data;		
+		sendForm.appendChild(h2);
+		var h3 = document.createElement('input');
+		h3.type = 'hidden';h3.name = 'file_type';h3.value = "application/vnd.ms-excel";		
+		sendForm.appendChild(h3);
+		document.body.appendChild(sendForm);
+		sendForm.submit();
+	}else{
+		showAlertPopup(response);
+	}
+}
+
 function mb_reloadImage_class(name){
 	if(typeof(name)==='undefined' || name=='') name = "mb_kcaptcha";
 

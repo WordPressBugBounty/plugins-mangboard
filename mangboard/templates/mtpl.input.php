@@ -47,7 +47,7 @@ if(!function_exists('mbw_get_input_template')){
 				}
 
 				if(strpos($item_type,'file_singular_upload')===0){
-					$template_start	.= '<input'.$data["ext"].__STYLE("width:".$data["width"].";".$data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'"'.$t_id.' accept="image/*" type="file"/>';
+					$template_start	.= '<input'.$data["ext"].__STYLE("width:".$data["width"].";".$data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'"'.$t_id.' accept="image/*" value="" type="file"/>';
 					if($item_type=='file_singular_upload' && !empty($data["value"])) {
 						$template_start	.= '<input type="hidden" name="'.esc_attr($data["item_name"]).'" id="mb_file_'.esc_attr($data["item_name"]).'" value="'.esc_attr($data["value"]).'" />';
 
@@ -72,7 +72,7 @@ if(!function_exists('mbw_get_input_template')){
 					$template_start	= '<a href="'.esc_url($file_url.$f_path).'" style="padding-right:10px;font-weight:600;"><span>'.esc_html($file_name).'</span></a>';
 				}
 				if($item_type=='file_attachment'){
-					$template_start	.= '<input'.$data["ext"].__STYLE("width:".$data["width"].";".$data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'"'.$t_id.' type="file"/>';
+					$template_start	.= '<input'.$data["ext"].__STYLE("width:".$data["width"].";".$data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'"'.$t_id.' value="" type="file"/>';
 					if(!empty($data["value"])) {
 						$template_start	.= '<input type="hidden" name="'.esc_attr($data["item_name"]).'" id="mb_file_'.esc_attr($data["item_name"]).'" value="'.esc_attr($data["value"]).'" />';
 						if(strpos($data["value"],'http')!==0 && (empty($data["use_delete_btn"]) || $data["use_delete_btn"]!="false")){
@@ -193,7 +193,7 @@ if(!function_exists('mbw_get_input_template')){
 					}else if($item_type=='img_ratio_link'){
 						//이미지 에디터가 설치되어 있으면 링크 주소 변경 2025-11-17
 						if(mbw_is_admin_page() && mbw_get_param("page")=="mbw_files" && defined('MBW_IMAGE_EDITOR')){
-							$img_link		= admin_url('admin.php')."?page=mbw_image_editor&mode=write&board_action=write&file_pid=".mbw_get_board_item('fn_pid');
+							$img_link		= admin_url('admin.php')."?page=mbw_".MBW_IMAGE_EDITOR."&mode=write&board_action=write&file_pid=".mbw_get_board_item('fn_pid');
 						}
 						$add_attr		= "";
 						if(mbw_get_board_item('fn_title',false)!="") $add_attr	= 'title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'"';

@@ -3,9 +3,9 @@ Contributors: kitae-park
 Donate link: https://www.mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 5.5.1
-Stable tag: 2.3.3
+Stable tag: 2.3.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,7 +61,6 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 * Upload the entire "mangboard" folder to the "/wp-content/plugins/" directory.
 * Activate the plugin through the 'Plugins' menu in WordPress.
 
-
 **Mang Board Installation (Korean)**
 
 * 플러그인 압축파일을 다운로드 받아 워드프레스 “/wp-content/plugins” 폴더에 업로드 합니다
@@ -82,7 +81,16 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 * MySQL version 5.0 or greater / MariaDB version 10.0 or greater (UTF-8)
 * WordPress 4.0 or greater
 
-= Mang Board 게시판을 추가하려면 어떻게 해야 하나요? =
+= How to Add a MangBoard Bulletin Board (English) =
+
+*  Access the Menu: Go to "MangBoard > Board Setting" and click the "Add Board" button.
+*  Configure Settings: Enter the Board Name and configure other options as needed, then click the "Submit" button to create the board. (Note: The Board Name is the only mandatory field.)
+*  Copy Shortcode: Once created, you will see the board name in the list along with various Shortcodes that can be added to WordPress pages.
+*  Create a New Page: Copy your preferred Shortcode, then navigate to the "Pages > Add New Page" menu in your WordPress admin dashboard.
+*  Publish the Board: Enter a page title, paste the copied Shortcode into the editor's text area, and click the "Publish" button. Your MangBoard is now registered to that WordPress page.
+*  Final Step: Add the newly registered page to your website's navigation menu.
+
+= MangBoard 게시판을 추가하려면 어떻게 해야 하나요? (Korean) =
 
 *  “Mangboard>게시판 관리” 메뉴를 클릭하고 “게시판 추가” 버튼을 클릭합니다
 *  게시판 이름을 입력하고 기타 게시판 옵션들을 설정하고 “확인” 버튼을 클릭해서 게시판을 추가합니다 (게시판 이름만 필수 입력)
@@ -114,12 +122,25 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 == Changelog ==
 
+= 2.4.4 =
+* 파일 업로드 허용 확장자 목록에 mov 확장자 추가
+* 망보드 호환성 향상을 위한 CSS 코드 수정
+* minor bug 수정
+
+= 2.4.3 =
+* 캔버스 모션 에디터(홈토리 에디터) 연동 기능 수정 
+* 우편번호 서비스 CDN 변경 (t1.daumcdn.net => t1.kakaocdn.net)
+* 파일 업로드 허용 확장자에 webp 확장자 추가
+* 워드프레스 7.0 관리자 모드에서 발생하는 호환성 문제 수정 (CSS 코드 수정)
+* 페이지네이션 버튼 클릭시 게시판 상단으로 페이지 스크롤 이동기능 삭제
+  (일부 테마 및 플러그인에서 URL 주소에 앵커가 있을 경우 새로고침을 차단하는 문제 발생)
+
 = 2.4.2 =
 * 최적화 및 안정성 개선을 위한 코드 수정
 * minor bug 수정
 
 = 2.4.1 =
-* 이미지 에디터(홈토리 에디터3) 연동 기능 수정 
+* 이미지 에디터(홈토리 에디터) 연동 기능 수정 
   => 이미지 에디터 상품 설치시 망보드 및 워드프레스에 업로드된 이미지 파일을 온라인에서 바로 편집 가능하도록 수정
 * 최적화 및 안정성 개선을 위한 코드 수정
 * 망보드 업데이트 기능 수정

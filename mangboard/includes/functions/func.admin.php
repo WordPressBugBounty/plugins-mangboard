@@ -329,6 +329,77 @@ if(!function_exists('mbw_delete_store_product')){
 		return true;
 	}
 }
+
+if(!function_exists('mbw_template_api_admin_table_data')){	
+	function mbw_template_api_admin_table_data(){
+		if(mbw_get_param("mode")=="plugin"){			
+			if(mbw_get_param("board_action")=="admin_table_data"){
+				if(mbw_is_admin()){//start
+
+					global $mstore,$mdb,$mb_fields,$mb_board_table_name,$mb_comment_table_name;
+
+					$table_data		= "";
+					if(mbw_is_admin()) {
+						$api_fields				= $mb_fields["select_board"];
+
+						$select_pid				= mbw_get_param("select_pid");
+						$select_pid				= mbw_value_filter($select_pid);
+						if(!empty($select_pid)){
+							$pid_format			= array();
+							$pid_array			= explode(",", $select_pid);
+							foreach($pid_array as $value) $pid_format[]		= "%d";
+							$select_query				= mbw_get_add_query(array("column"=>"*","join"=>"none")).$mdb->prepare(' where pid in ('.implode(",",$pid_format).') order by pid desc', $pid_array);
+						}else{
+							$select_query				= mbw_get_add_query(array("column"=>"*","join"=>"none"), "where", "order")." limit 0, 5000";
+						}
+						$items						= $mdb->get_results($select_query,ARRAY_A);
+
+						$table_data		= "<table>";
+						$table_array		= array();
+						$table_item		= array();
+						$table_fields		= explode(",", mbw_get_param("fields"));
+						$table_titles		= explode(",", mbw_get_param("titles"));
+
+						if(count($items)> 0){
+							$table_data			.= '<tr>';
+							foreach($table_titles	 as $title){
+								$table_data			= $table_data.'<td style="width:100px;border:solid 3px #EEE;">'.$title.'</td>';
+								$table_item[]			= $title;
+							}			
+							$table_data			.= '</tr>';
+							$table_array[]		= $table_item;
+							foreach($items as $item){
+								$table_data			.= '<tr>';
+								$table_item			= array();
+
+								foreach($table_fields as $field){										
+									if(strpos($field,'fn_')===0){
+										$table_data			.= '<td style="width:100px;border:solid 0.5px #EEE;">'.mbw_htmlspecialchars_decode($item[$api_fields[$field]]).'</td>';
+										$table_item[]			= mbw_htmlspecialchars_decode($item[$api_fields[$field]]);
+									}else{
+										$table_data			.= '<td style="width:100px;border:solid 0.5px #EEE;">'.$field.'</td>';
+										$table_item[]			= $field;
+									}					
+								}
+								$table_data			.= '</tr>';
+								$table_array[]		= $table_item;
+							}
+						}			
+						$table_data		.= "</table>";
+					}
+					$admin_data			= $table_data;
+					if(has_filter('mf_admin_table_data')){
+						$admin_data		= apply_filters("mf_admin_table_data",$admin_data, $table_array);
+					}					
+					$mstore->set_result_data(array("data"=>$admin_data));					
+					
+				}//end
+			}
+		}
+	}
+}
+add_action('mbw_template_api_header', 'mbw_template_api_admin_table_data');
+
 //if(!function_exists('mbw_add_dashboard_widget')){
 //	function mbw_add_dashboard_widget(){
 //		wp_add_dashboard_widget("mbw_dashboard_widget","Mboard Dashboard widget","mbw_create_dashboard_widget");

@@ -131,8 +131,6 @@ if(!empty($require_files)){
 		require_once($value);
 	}
 }
- 
-
 if((defined("MBW_REQUEST_MODE") && (MBW_REQUEST_MODE=="API")) || !empty($_REQUEST["action"])){
 	// Api mode
 	if(!defined('WP_DEBUG') || WP_DEBUG===false){
@@ -151,7 +149,8 @@ $require_files		= array();
 if(mbw_get_option("editor_mode") && $mb_request_mode=="Frontend"){
 	$require_files		= array_merge($require_files,mbw_get_require_path("plugins/editors/"));
 }
-if(mbw_get_option("widget_mode") && ($mb_request_mode=="Frontend" || mbw_get_param("widget-id")!="")){
+//if(mbw_get_option("widget_mode") && ($mb_request_mode=="Frontend" || mbw_get_param("widget-id")!="")){
+if(mbw_get_option("widget_mode")){
 	$widgets_files	= mbw_get_require_path("plugins/widgets/");
 	$widgets_files	= mbw_admin_check_data("widget",$widgets_files);
 	$require_files		= array_merge($require_files,$widgets_files);

@@ -3,8 +3,8 @@
 	var htImageInfo = [];		//image file정보 저장
 	var aResult = [];
 	
-	var rFilter = /^(image\/bmp|image\/gif|image\/jpg|image\/jpeg|image\/png)$/i;  
-	var rFilter2 = /^(bmp|gif|jpg|jpeg|png)$/i; 
+	var rFilter = /^(image\/bmp|image\/gif|image\/jpg|image\/jpeg|image\/webp|image\/png)$/i;  
+	var rFilter2 = /^(bmp|gif|jpg|jpeg|png|webp)$/i; 
 	var nTotalSize = 0;
 	var nMaxImageSize = 10*1024*1024;
 	var nMaxTotalImageSize = 50*1024*1024;
@@ -254,7 +254,7 @@
 			
 			for (var i = 0, j = nImageFileCount ; i < nCount ; i++){
 				if (!rFilter.test(files[i].type)) {
-					alert("이미지파일 (jpg,gif,png,bmp)만 업로드 가능합니다.");
+					alert("이미지파일 (jpg,gif,png,bmp,webp)만 업로드 가능합니다.");
 				} else if(files[i].size > nMaxImageSize){
 					alert("이미지 용량이 10MB를 초과하여 등록할 수 없습니다.");
 				} else {
@@ -369,7 +369,7 @@
 				if (res.readyState() == 4) {
 					if(sResString.indexOf("NOTALLOW_") > -1){
 						var sFileName = sResString.replace("NOTALLOW_", "");
-						alert("이미지 파일(jpg,gif,png,bmp)만 업로드 하실 수 있습니다. ("+sFileName+")");
+						alert("이미지 파일(jpg,gif,png,bmp,webp)만 업로드 하실 수 있습니다. ("+sFileName+")");
 					}else{
 						//성공 시에  responseText를 가지고 array로 만드는 부분.
 						makeArrayFromString(res._response.responseText);
@@ -510,8 +510,8 @@
 			sUrl  : ajax_url+"?mode=basic&action=mb_uploader&board_name="+board_name+"&"+mb_editor_nonce,			//mangboard wp edit
  	        //sCallback : location.href.replace(/\/[^\/]*$/, '') + '/callback.html',	//업로드 이후에 iframe이 redirect될 콜백페이지의 주소
 			sCallback : home_url+"/?mb_ext=seditor_callback",	//업로드 이후에 iframe이 redirect될 콜백페이지의 주소
- 	    	sFiletype : "*.jpg;*.jpeg;*.png;*.bmp;*.gif",						//허용할 파일의 형식. ex) "*", "*.*", "*.jpg", 구분자(;)	
- 	    	sMsgNotAllowedExt : 'JPG, GIF, PNG, BMP 확장자만 가능합니다',	//허용할 파일의 형식이 아닌경우에 띄워주는 경고창의 문구
+ 	    	sFiletype : "*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.webp",						//허용할 파일의 형식. ex) "*", "*.*", "*.jpg", 구분자(;)	
+ 	    	sMsgNotAllowedExt : 'JPG, GIF, PNG, BMP, WEBP 확장자만 가능합니다',	//허용할 파일의 형식이 아닌경우에 띄워주는 경고창의 문구
  	    	bAutoUpload : false,									 	//파일이 선택됨과 동시에 자동으로 업로드를 수행할지 여부 (upload 메소드 수행)
  	    	bAutoReset : true 											// 업로드한 직후에 파일폼을 리셋 시킬지 여부 (reset 메소드 수행)
  	    }).attach({

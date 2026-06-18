@@ -65,7 +65,7 @@ h1{color:#333;font-size:14px;letter-spacing:-1px}
 		<form id="editor_upimage" name="editor_upimage" action="FileUploader.php" method="post" enctype="multipart/form-data" onSubmit="return false;">
         <div id="pop_content2">
 			<input type="file" class="upload" id="uploadInputBox" name="Filedata" accept="image/*">
-            <p class="dsc" id="info">이미지 파일만 등록할 수 있습니다<br>(JPG, GIF, PNG, BMP)</p>
+            <p class="dsc" id="info">이미지 파일만 등록할 수 있습니다<br>(JPG, GIF, PNG, BMP, WEBP)</p>
         </div>
 		</form>
         <!-- //content -->
@@ -83,7 +83,7 @@ h1{color:#333;font-size:14px;letter-spacing:-1px}
             	<em class="blind">마우스로 드래그해서 이미지를 추가해주세요.</em><span id="guide_text" class="bg"></span>
             </div>
 			<div style="display:none;" id="divImageList"></div>
-            <p class="dsc dsc_v1">이미지 파일만<br>등록할 수 있습니다. (JPG, GIF, PNG, BMP)</p>
+            <p class="dsc dsc_v1">이미지 파일만<br>등록할 수 있습니다. (JPG, GIF, PNG, BMP, WEBP)</p>
         </div>
         <!-- //content -->
     </div>
@@ -98,8 +98,8 @@ h1{color:#333;font-size:14px;letter-spacing:-1px}
     </div>
     <!-- //footer -->
 </div>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>jindo.min.js?ver=1.6.5" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>jindo.fileuploader.js?ver=1.6.5" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>attach_photo.js?ver=1.6.5" charset="utf-8"></script>
+<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>jindo.min.js?ver=1.6.7" charset="utf-8"></script>
+<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>jindo.fileuploader.js?ver=1.6.7" charset="utf-8"></script>
+<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>attach_photo.js?ver=1.6.7" charset="utf-8"></script>
 </body>
 </html>

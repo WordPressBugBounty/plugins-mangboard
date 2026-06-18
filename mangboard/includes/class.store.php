@@ -148,7 +148,7 @@ Class MStore
 					if(is_string($this->params[$key])){
 						$this->params[$key]			= strip_tags($this->params[$key]);
 						if($key!="redirect_to"){
-							$this->params[$key]		= mbw_check_substr($this->params[$key],50);
+							$this->params[$key]		= mbw_check_substr($this->params[$key],100);
 						}
 					}
 				}

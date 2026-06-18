@@ -617,11 +617,19 @@ if(!function_exists('mbw_file_upload')){
 		}
 
 		if($args["type"]=="editor"){
-			if(isset($api_fields["fn_is_download"]))		$send_data[$api_fields["fn_is_download"]]				= "0";
+			if(isset($api_fields["fn_is_download"])){
+				$send_data[$api_fields["fn_is_download"]]				= "0";
+			}
 			$check_ext			= $mb_image_upload_files;
 			$file_sequence		= 1000;
 		}else{
-			if(isset($api_fields["fn_is_download"]))		$send_data[$api_fields["fn_is_download"]]				= "1";
+			if(isset($api_fields["fn_is_download"])){
+				if(isset($args["is_download"])){
+					$send_data[$api_fields["fn_is_download"]]				= $args["is_download"];
+				}else{
+					$send_data[$api_fields["fn_is_download"]]				= "1";
+				}
+			}
 			$check_ext			= $mb_board_upload_files;
 			$file_sequence		= 1;
 		}
@@ -668,9 +676,17 @@ if(!function_exists('mbw_file_upload')){
 							}else{
 								$upload_data["path"]		= $datePath.mbw_get_file_name($file_pid,$upload_data["name"]);
 								if(strpos($key,"image_")===0 || strpos($key,"ext")===0 || $args["type"]=="editor"){
-									if(isset($api_fields["fn_is_download"]))		$send_data[$api_fields["fn_is_download"]]				= "0";
+									if(isset($api_fields["fn_is_download"])){
+										$send_data[$api_fields["fn_is_download"]]				= "0";
+									}
 								}else{
-									if(isset($api_fields["fn_is_download"]))		$send_data[$api_fields["fn_is_download"]]				= "1";
+									if(isset($api_fields["fn_is_download"])){
+										if(isset($args["is_download"])){
+											$send_data[$api_fields["fn_is_download"]]				= $args["is_download"];
+										}else{
+											$send_data[$api_fields["fn_is_download"]]				= "1";
+										}
+									}
 								}
 								if(isset($api_fields["fn_pid"]))						$send_data[$api_fields["fn_pid"]]								= $file_pid;
 								if(isset($api_fields["fn_file_name"]))				$send_data[$api_fields["fn_file_name"]]					= $upload_data["name"];
@@ -723,9 +739,17 @@ if(!function_exists('mbw_file_upload')){
 						}else{
 							$upload_data["path"]		= $datePath.mbw_get_file_name($file_pid,$upload_data["name"]);
 							if(strpos($key,"image_")===0 || strpos($key,"ext")===0 || $args["type"]=="editor"){
-								if(isset($api_fields["fn_is_download"]))		$send_data[$api_fields["fn_is_download"]]				= "0";
+								if(isset($api_fields["fn_is_download"])){
+									$send_data[$api_fields["fn_is_download"]]				= "0";
+								}
 							}else{
-								if(isset($api_fields["fn_is_download"]))		$send_data[$api_fields["fn_is_download"]]				= "1";
+								if(isset($api_fields["fn_is_download"])){
+									if(isset($args["is_download"])){
+										$send_data[$api_fields["fn_is_download"]]				= $args["is_download"];
+									}else{
+										$send_data[$api_fields["fn_is_download"]]				= "1";
+									}
+								}
 							}
 
 							if(isset($api_fields["fn_pid"]))						$send_data[$api_fields["fn_pid"]]								= $file_pid;
@@ -868,15 +892,20 @@ if(!function_exists('mbw_file_upload')){
 						$datePath					= substr($upload_data["path"],0,11);
 						$file_name				= substr($upload_data["path"],11);
 						$upload_data["name"]	= $file_item[$mb_fields["files"]["fn_file_name"]];
-						$send_data2				= array();
-						if(isset($api_fields["fn_file_size"]))				$send_data2[$api_fields["fn_file_size"]]			= $file_size;
-						$where_data[$mb_fields["files"]["fn_pid"]]			= $file_pid;
-						$mdb->db_query("UPDATE",$mb_admin_tables["files"], $send_data2, $where_data);
+						if($file_item[$mb_fields["files"]["fn_file_description"]]!="img64"){
+							return $upload_data;
+						}else{
+							$send_data2				= array();
+							if(isset($api_fields["fn_file_size"]))				$send_data2[$api_fields["fn_file_size"]]			= $file_size;
+							$where_data[$mb_fields["files"]["fn_pid"]]			= $file_pid;
+							$mdb->db_query("UPDATE",$mb_admin_tables["files"], $send_data2, $where_data);
+						}
 					}
 				}else{
 					if(isset($api_fields["fn_pid"]))					$send_data[$api_fields["fn_pid"]]						= $file_pid;
 					if(isset($api_fields["fn_file_name"]))			$send_data[$api_fields["fn_file_name"]]				= $upload_data["name"];
 					if(isset($api_fields["fn_file_sequence"]))			$send_data[$api_fields["fn_file_sequence"]]		= $file_sequence;
+					if(isset($api_fields["fn_file_description"]))		$send_data[$api_fields["fn_file_description"]]		= "img64";
 					if(isset($api_fields["fn_file_size"]))				$send_data[$api_fields["fn_file_size"]]					= $file_size;
 					if(isset($api_fields["fn_file_type"]))				$send_data[$api_fields["fn_file_type"]]				= $file_type;
 					if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]				= $upload_data["path"];

@@ -197,7 +197,7 @@ $mb_schema["board_options"]	= "(
   `post_id` BIGINT(20) NOT NULL DEFAULT '0',
   `board_header` text NOT NULL,
   `board_footer` text NOT NULL,
-  `board_content_form` text NOT NULL,
+  `board_content_form` mediumtext NOT NULL,
   `editor_type` varchar(50) NOT NULL DEFAULT 'N',
   `api_type` varchar(50) NOT NULL DEFAULT 'mb',
   `page_size` smallint(5) unsigned NOT NULL DEFAULT '20',

@@ -111,6 +111,22 @@ if(!function_exists('mbw_filter_board_item')){
 				}
 			}
 
+		}else if($item["field"]=="fn_hit"){			//HIT  FILTER
+			$value						= intval($item["value"]);
+			if(mbw_get_param("mode")=="list"){
+				if($value>=100000){
+					if(mbw_get_option("locale")=="ko_KR"){
+						$value					= (intval($value*0.001)/10)."만";
+					}else{
+						$value					= (intval($value*0.01)/10)."K";
+					}
+				}else{
+					$value					= number_format($value);
+				}
+			}else{
+				$value					= number_format($value);
+			}			
+			$item["value"]			= $value;
 		}else if($item["field"]=="fn_title"){			//TITLE  FILTER
 		}
 		

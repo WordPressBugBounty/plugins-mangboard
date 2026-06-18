@@ -2,13 +2,16 @@
 if(!function_exists('mbw_get_list_template')){
 	function mbw_get_list_template($data,$tag=null,$echo=true){
 		global $mstore,$mb_tags;
+		if( isset($data["type"]) && ($data["type"]=="none" || $data["type"]=="search") ) {
+			return;
+		}else if( isset($data["display"]) && ($data["display"]=="none") ) {
+			return;
+		}
 		
 		if($tag==null){
 			$tag					= array("t_tr"=>"tr","t_th"=>"th","t_td"=>"td");
-		}
-		
-		$data					= mbw_init_item_data("list",$data,$tag);
-		
+		}		
+		$data					= mbw_init_item_data("list",$data,$tag);		
 		$template_start		= "";
 		$template_end		= "";
 		
@@ -23,7 +26,7 @@ if(!function_exists('mbw_get_list_template')){
 			if(strpos($data["link"],'fn_')===0){
 				if(mbw_get_board_item($data["link"])!="") $link_url		= mbw_get_board_item($data["link"]);
 				else $link_url		= mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')));			
-			}else if($data["link"]=="view"){
+			}else if($data["link"]=="view" || $data["link"]=="view_page"){
 				if(!empty($data["link_url"])){
 					if($data["link_url"]=="vid"){
 						$link_url		= mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),"","");

@@ -36,11 +36,11 @@ if(!function_exists('mbw_load_postcode_script')){
 		if(mbw_get_request_mode()=="Frontend"){
 			if($type=="daum"){
 				if(mbw_is_ssl()){
-					wp_enqueue_script("kakao-postcode", "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js", array('jquery'), null);
-					//loadScript("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js","kakao-postcode");
+					wp_enqueue_script("kakao-postcode", "https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js", array('jquery'), null);
+					//loadScript("https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js","kakao-postcode");
 				}else{
-					wp_enqueue_script("kakao-postcode", "http://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js", array('jquery'), null);
-					//loadScript("http://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js","kakao-postcode");
+					wp_enqueue_script("kakao-postcode", "http://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js", array('jquery'), null);
+					//loadScript("http://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js","kakao-postcode");
 				}
 			}
 		}

@@ -26,7 +26,7 @@
 .gallery-list .gallery-list-body .mc-gallery-item-wrap:hover .gallery-hover-box{opacity:1;} 
 .gallery-list .gallery-list-body .gallery-hover-box div{overflow:hidden;}
 .gallery-list .gallery-list-body .gallery-hover-box{
-	padding:10px 7px 10px 7px  !important; font-weight:600 !important; font-size:12px !important; position:absolute; bottom:0px; width:100%; background:rgba(0,0,0,0.6);	line-height:20px;opacity:0;	min-height:66px;
+	padding:10px 7px 10px 7px !important; font-weight:600 !important; font-size:12px !important; position:absolute; bottom:0px; width:100%; background:rgba(0,0,0,0.6);	line-height:20px;opacity:0;	min-height:66px;
 	-webkit-transition: all 0.2s ease-in-out;-moz-transition: all 0.2s ease-in-out;-o-transition: all 0.2s ease-in-out;-ms-transition: all 0.2s ease-in-out;transition: all 0.2s ease-in-out;
 }
 .mb-board .gallery-list-body .mc-gallery-item-wrap .img:hover{transform:scale(1);}
@@ -81,7 +81,7 @@ if(!function_exists('curl_init')){
 $response			= mbw_request_store_api($send_data);
 
 $mb_version2	= mbw_get_option("mb_version");
-$check_version	= '2.3.8';
+$check_version	= '2.4.0';
 if(function_exists('get_plugin_data')){
 	$plugin_data		= get_plugin_data(MBW_PLUGIN_PATH.'mangboard.php',false,false);
 	if(!empty($plugin_data['Version'])){

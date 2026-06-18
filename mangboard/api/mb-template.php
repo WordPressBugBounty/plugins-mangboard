@@ -103,7 +103,7 @@ if(mbw_get_param("mode")=="user"){
 	$board_type		= mbw_get_board_option("fn_board_type");
 
 	global $mb_board_table_name;
-	if((mbw_is_admin_table($mb_board_table_name) || $board_type=="user" || $board_type=="commerce") && !mbw_is_admin_page()){
+	if((mbw_is_admin_table($mb_board_table_name) || $board_type=="user" || ($board_type=="commerce" && $mb_board_table_name!="mb_commerce_product")) && !mbw_is_admin_page()){
 		if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode(mbw_get_result_array());exit;}	
 		mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
 		echo mbw_data_encode(mbw_get_result_array());

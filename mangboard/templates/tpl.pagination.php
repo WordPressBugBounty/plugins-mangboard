@@ -132,7 +132,7 @@ if(!function_exists('mbw_get_pagination_template')){
 				if($board_page == 1) $page_link["pprev"] = "";
 				else{
 					if($link_type=="href"){
-						$page_link["pprev"] = mbw_get_url(array("board_pid"=>"","board_page"=>"1"))."#mb_top";
+						$page_link["pprev"] = mbw_get_url(array("board_pid"=>"","board_page"=>"1"));
 					}else if($link_type=="onclick"){
 						$page_link["pprev"] = "sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'1','page_type':'ajax'})";
 					}
@@ -149,7 +149,7 @@ if(!function_exists('mbw_get_pagination_template')){
 					
 					if($prev_board_page<1) $prev_board_page		= 1;
 					if($link_type=="href"){
-						$page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$prev_board_page))."#mb_top";
+						$page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$prev_board_page));
 					}else if($link_type=="onclick"){
 						$page_link["prev"] = "sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'".esc_js($prev_board_page)."','page_type':'ajax'})";
 					}
@@ -165,7 +165,7 @@ if(!function_exists('mbw_get_pagination_template')){
 						$link_page .= '<td class="btn-page active"><a class="btn-page-num'.$first_class.'" title="Page '.$i.' - Selected">'.$i.'</a></td>' ;
 					}else{
 						if($link_type=="href"){
-							$link_page .= '<td class="btn-page"><a class="btn-page-num'.esc_attr($first_class).'" '.esc_attr($link_type).'="'.mbw_get_url(array("board_pid"=>"","board_page"=>$i)).'#mb_top" title="Page '.esc_attr($i).'">'.esc_html($i).'</a></td>';
+							$link_page .= '<td class="btn-page"><a class="btn-page-num'.esc_attr($first_class).'" '.esc_attr($link_type).'="'.mbw_get_url(array("board_pid"=>"","board_page"=>$i)).'" title="Page '.esc_attr($i).'">'.esc_html($i).'</a></td>';
 						}else if($link_type=="onclick"){
 							$link_page .= '<td class="btn-page"><a class="btn-page-num'.esc_attr($first_class).'" '.esc_attr($link_type)."=\"sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'".esc_js($i)."','page_type':'ajax'})\" title='Page ".esc_attr($i)."'>".esc_html($i).'</a></td>';
 						}
@@ -183,7 +183,7 @@ if(!function_exists('mbw_get_pagination_template')){
 					
 					if($next_board_page>$total_page) $next_board_page		= $total_page;
 					if($link_type=="href"){
-						$page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$next_board_page))."#mb_top";
+						$page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$next_board_page));
 					}else if($link_type=="onclick"){
 						$page_link["next"] = "sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'".esc_js($next_board_page)."','page_type':'ajax'})";
 					}				
@@ -192,7 +192,7 @@ if(!function_exists('mbw_get_pagination_template')){
 				if($board_page == $total_page) $page_link["nnext"] = "";
 				else {
 					if($link_type=="href"){
-						$page_link["nnext"] = mbw_get_url(array("board_pid"=>"","board_page"=>$total_page))."#mb_top";
+						$page_link["nnext"] = mbw_get_url(array("board_pid"=>"","board_page"=>$total_page));
 					}else if($link_type=="onclick"){
 						$page_link["nnext"] = "sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'".esc_js($total_page)."','page_type':'ajax'})";
 					}
@@ -215,8 +215,8 @@ if(!function_exists('mbw_get_pagination_template')){
 
 				$page_link		= array("prev"=>"","next"=>"");
 				if($link_type=="href"){
-					$page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$board_page-1))."#mb_top";
-					$page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$board_page+1))."#mb_top";
+					$page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$board_page-1));
+					$page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$board_page+1));
 				}else if($link_type=="onclick"){
 					$page_link["prev"] = "sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'".esc_js($board_page-1)."','page_type':'ajax'})";
 					$page_link["next"] = "sendListTemplateData({'board_name':'".esc_js($board_name)."','page':'".esc_js($board_page+1)."','page_type':'ajax'})";
@@ -242,10 +242,10 @@ if(!function_exists('mbw_get_pagination_template')){
 				$page_link		= array("prev"=>"","pprev"=>"","next"=>"","nnext"=>"");
 
 				if($board_page == 1) $page_link["pprev"] = "";			
-				else $page_link["pprev"] = mbw_get_url(array("board_pid"=>"","board_page"=>"1"))."#mb_top";
+				else $page_link["pprev"] = mbw_get_url(array("board_pid"=>"","board_page"=>"1"));
 						
 				if($board_block == 1) $page_link["prev"] = "";
-				else $page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$block_first-$block_size))."#mb_top";
+				else $page_link["prev"] = mbw_get_url(array("board_pid"=>"","board_page"=>$block_first-$block_size));
 				$link_page	= "";
 				$first_class	= "";
 
@@ -256,14 +256,14 @@ if(!function_exists('mbw_get_pagination_template')){
 					if($i == $board_page){
 						$link_page .= '<li class="active"><a class="btn-page-num'.esc_attr($first_class).'">'.esc_html($i).'</a></li>' ;
 					}else{
-						$link_page .= '<li><a class="btn-page-num'.esc_attr($first_class).'" href="'.esc_url(mbw_get_url(array("board_pid"=>"","board_page"=>$i))."#mb_top").'">'.esc_html($i).'</a></li>';
+						$link_page .= '<li><a class="btn-page-num'.esc_attr($first_class).'" href="'.esc_url(mbw_get_url(array("board_pid"=>"","board_page"=>$i))).'">'.esc_html($i).'</a></li>';
 					}
 				}
 				if($board_block == $total_block) $page_link["next"] = "";
-				else $page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$block_first+$block_size))."#mb_top";
+				else $page_link["next"] = mbw_get_url(array("board_pid"=>"","board_page"=>$block_first+$block_size));
 				
 				if($board_page == $total_page) $page_link["nnext"] = "";
-				else $page_link["nnext"] = mbw_get_url(array("board_pid"=>"","board_page"=>$total_page))."#mb_top";
+				else $page_link["nnext"] = mbw_get_url(array("board_pid"=>"","board_page"=>$total_page));
 				
 				foreach($page_link as $key =>$value){
 					if(empty($page_link[$key])) $page_class[$key]		= ' class="mb-disabled'.esc_attr($page_class[$key]).'"';

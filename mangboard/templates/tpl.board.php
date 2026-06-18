@@ -2,13 +2,16 @@
 if(!function_exists('mbw_get_list_template')){
 	function mbw_get_list_template($data,$tag=null,$echo=true){
 		global $mstore,$mb_tags;
-		
+		if( isset($data["type"]) && ($data["type"]=="none" || $data["type"]=="search") ) {
+			return;
+		}else if( isset($data["display"]) && ($data["display"]=="none") ) {
+			return;
+		}
+
 		if($tag==null){
 			$tag					= array("t_tr"=>"tr","t_th"=>"th","t_td"=>"td");
-		}
-		
-		$data					= mbw_init_item_data("list",$data,$tag);
-		
+		}		
+		$data					= mbw_init_item_data("list",$data,$tag);		
 		$template_start		= "";
 		$template_end		= "";
 		

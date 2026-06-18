@@ -48,6 +48,7 @@ if(!function_exists('mbw_get_admin_template')){
 				$template_start	.= '<div>'.__MW("W_BOARD_LATESET").': [mb_latest name="'.esc_attr($data["value"]).'" title="'.esc_attr($data["value"]).'" list_size="5" style=""] </div>';
 			}else{
 				if($board_type=="custom") $board_type		= "board";
+				else if($board_type=="board_ns") $board_type		= "board";
 				$template_start	.= '<div>[mb_'.esc_attr($board_type).' name="'.esc_attr($data["value"]).'" style=""]</div>';
 			}
 
