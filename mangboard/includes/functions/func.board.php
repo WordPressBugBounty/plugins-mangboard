@@ -294,7 +294,7 @@ if(!function_exists('mbw_set_params')){
 					$mstore->set_params(array('mode'=>'view','board_pid'=>intval($_GET["vid"])));
 				}
 				if(!empty($_GET["stag"])){
-					$mstore->set_params(array('search_field'=>'fn_tag','search_text'=>mbw_htmlspecialchars_decode($_GET["stag"])));
+					$mstore->set_params(array('search_field'=>'fn_tag','search_text'=>addslashes(mbw_htmlspecialchars_decode($_GET["stag"]))));
 				}else if(!empty($_GET["sid"])){
 					$mstore->set_params(array('search_field'=>'fn_pid','search_text'=>intval($_GET["sid"])));
 				}else if(!empty($_GET["suid"])){

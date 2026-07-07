@@ -5,7 +5,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
 Tested up to: 7.0
 Requires PHP: 5.5.1
-Stable tag: 2.3.4
+Stable tag: 2.3.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,10 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.4.5 (2.3.5) =
+* 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 Reflected XSS 취약점 수정]
+* 망보드 호환성 향상을 위한 CSS 코드 수정
 
 = 2.4.4 =
 * 파일 업로드 허용 확장자 목록에 mov 확장자 추가
