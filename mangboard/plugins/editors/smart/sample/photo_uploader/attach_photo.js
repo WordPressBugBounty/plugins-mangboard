@@ -494,7 +494,7 @@
  	function callFileUploader (){
 		var ajax_url			= mb_admin_url+"admin-ajax.php";		//mangboard wp edit		
 		var home_url			= location.href.replace(/\/[^\/]*$/, '');
-		if(typeof(opener) != "undefined"){
+		if(typeof opener != "undefined"){
 			if(opener.parent.mb_urls["ajax_url"]){
 				ajax_url			= opener.parent.mb_urls["ajax_url"];			//mangboard wp edit
 			}

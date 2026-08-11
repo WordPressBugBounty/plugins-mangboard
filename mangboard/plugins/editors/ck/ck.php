@@ -1,7 +1,7 @@
 <?php
 $editor_type						= "C";
 $editor_name					= "CK Editor";
-$mb_editors[$editor_type]		= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof(ckeditor)!=='undefined'){ sendBoardWriteData(ckeditor.getData()); }else{sendBoardWriteData();}");
+$mb_editors[$editor_type]		= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof ckeditor !== 'undefined'){ sendBoardWriteData(ckeditor.getData()); }else{sendBoardWriteData();}");
 
 if(!function_exists('mbw_load_editor_c')){
 	function mbw_load_editor_c(){		

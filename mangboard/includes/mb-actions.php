@@ -148,10 +148,12 @@ if(!function_exists('mbw_head_meta')){
 			$script		= '<script type="text/javascript">';
 
 			$script		.= 'var shareData				= {"url":"","title":"","image":"","content":""};';
-			$script		.= 'shareData["url"]			= "'.esc_url_raw($page_url).'";';
-			$script		.= 'shareData["title"]			= "'.esc_js($title).'";';
-			$script		.= 'shareData["image"]		= "'.esc_url_raw($image_path).'";';
-			$script		.= 'shareData["content"]	= "'.esc_js($description).'";';
+			if(empty($is_secret)){
+				$script		.= 'shareData["url"]			= "'.esc_url_raw($page_url).'";';
+				$script		.= 'shareData["title"]			= "'.esc_js($title).'";';
+				$script		.= 'shareData["image"]		= "'.esc_url_raw($image_path).'";';
+				$script		.= 'shareData["content"]	= "'.esc_js($description).'";';
+			}
 
 
 			if(mbw_get_option("naver_site_verification")!=""){
@@ -257,6 +259,16 @@ if(!function_exists('mbw_head_meta')){
 	}
 }
 
+add_action('init','mbw_cancel_the_batcache');
+function mbw_cancel_the_batcache() {   
+   if ( function_exists( 'batcache_cancel' ) && !empty( $_SERVER["REQUEST_URI"] ) ) {
+	   $uri			= strtok( $_SERVER["REQUEST_URI"], '?' );	   
+	   if( strpos($uri, "/m_") === 0 || strpos($uri, "user") !== false || strpos($uri, "login") !== false || strpos($uri, "password") !== false || in_array( $uri, [ '/cart/', '/logout/' ] ) ) {
+		   batcache_cancel();
+	   }       
+   }
+}
+
 add_action('wp_loaded', 'mbw_loaded_head', 25);
 if(!function_exists('mbw_loaded_head')){
 	function mbw_loaded_head(){
@@ -347,7 +359,7 @@ if(!function_exists('mbw_footer_scripts')){
 			mbw_add_trace("mbw_footer_scripts");
 			global $mb_api_urls;
 			$script		= '<script type="text/javascript">';
-			$script		.= 'if(typeof(mb_urls)==="undefined"){var mb_urls = {};}; ';
+			$script		.= 'if(typeof mb_urls === "undefined"){var mb_urls = {};}; ';
 			foreach($mb_api_urls as $key => $value){
 				$script		.= 'mb_urls["'.$key.'"]			= "'.esc_js($mb_api_urls[$key]).'";';
 			}
@@ -654,7 +666,7 @@ if(!function_exists('mbw_load_page_style')){
 			$path				= substr($content,$index1,strpos($content,"\"",$index1)-$index1);
 			$path_array		= explode(",",$path);
 			foreach($path_array as $value){
-				if(!empty($value)) loadStyle(MBW_PLUGIN_URL.$value);
+				if(!empty($value)) loadStyle(esc_url_raw(MBW_PLUGIN_URL.$value));
 			}
 		}
 	}
@@ -662,7 +674,12 @@ if(!function_exists('mbw_load_page_style')){
 add_shortcode('mb_page_style', 'mbw_create_page_style');
 if(!function_exists('mbw_create_page_style')){
 	function mbw_create_page_style($args, $content=""){
-		return "";
+		if(!empty($args) && !empty($args["path"])){
+			$path_array		= explode(",",$args["path"]);
+			foreach($path_array as $value){
+				if(!empty($value)) loadStyle(esc_url_raw(MBW_PLUGIN_URL.$value));
+			}
+		}
 	}
 }
 

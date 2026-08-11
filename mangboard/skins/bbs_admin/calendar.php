@@ -7,8 +7,8 @@ var openTarget;
 var openPid		= 0;
 function setCalendar(date,category1){
 	select_date		= "";
-	if(typeof(date)!=='undefined') select_date		= date;
-	if(typeof(category1)=='undefined') category1		= mb_categorys["value1"];
+	if(typeof date !== "undefined") select_date		= date;
+	if(typeof category1 === "undefined") category1		= mb_categorys["value1"];
 	var data		= jQuery('#'+mb_options["board_name"]+'_form_board_search').serialize();
 	data			= data+"&board_action=load&calendar_date="+select_date+"&list_type="+mb_options["list_type"];	
 	sendDataRequest(mb_urls["template_api"], data, sendCalendarDataHandler);			
@@ -29,7 +29,7 @@ function sendCalendarDataHandler(response, state){
 	}
 }
 function selectTabMenu(obj,category,name,idx){
-	if(typeof(idx)==="undefined" || idx=="") idx	= "1";
+	if(typeof idx === "undefined" || idx=="") idx	= "1";
 	jQuery('.tab-menu-on').removeClass("tab-menu-on").addClass("tab-menu-off");
 	jQuery(obj).removeClass("tab-menu-off").addClass("tab-menu-on");
 	if(jQuery("input[name=category"+idx+"]")) jQuery("input[name=category"+idx+"]").val(category);
@@ -42,7 +42,7 @@ function sendSearchData(data){
 	var search_url					= mb_urls["search"];	
 	var params						= jQuery('#'+mb_options["board_name"]+'_form_board_search').serialize();
 
-	if(typeof(data)!=='undefined') params					= params+"&"+data;		
+	if(typeof data !== "undefined") params					= params+"&"+data;		
 	if(params.indexOf('category')!=-1){
 		if(search_url.indexOf('category')!=-1){
 			search_url		= search_url.replace(/(category)(\d{1})=/g,"category_old$2=");
@@ -86,7 +86,7 @@ function sendBoardListData(args){
 function sendBoardListDataHandler(response, state)
 {
 	if(response.state == "success"){
-		if(typeof(response.message)!=='undefined'){
+		if(typeof response.message !== "undefined"){
 			 if(response.message!="") alert(response.message);
 		}		
 		window.location.reload();

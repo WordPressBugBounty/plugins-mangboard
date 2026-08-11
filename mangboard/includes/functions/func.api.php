@@ -565,8 +565,10 @@ if(!function_exists('mbw_check_upload_filename')){
 		$file_name		= str_replace('..','.',$file_name);
 		$file_name		= str_replace('#','＃',$file_name);
 		$file_name		= str_replace('%','％',$file_name);
-		if(strpos($file_name, '.php')!==false || strpos($file_name, '.phar')!==false || strpos($file_name, '.phtm')!==false){
-			exit;
+		
+		$tmp_name		= strtolower($file_name);
+		if(strpos($tmp_name, '.php')!==false || strpos($tmp_name, '.phar')!==false || strpos($tmp_name, '.phtm')!==false){
+			mbw_error_message("MSG_ERROR", "[PHP] Upload","1500");
 		}
 		return $file_name;
 	}

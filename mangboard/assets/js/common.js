@@ -1,9 +1,9 @@
 function sendFormDataRequest(form, action, successCallback, errorCallback, type, dataType){
-	if(typeof(action)==='undefined' || action=='') action = 'mb_board';
-	if(typeof(type)==='undefined') type = "POST";
-	if(typeof(dataType)==='undefined') dataType = "json";
-	if(typeof(successCallback)==='undefined') successCallback	= function s(a,b){};
-	if(typeof(errorCallback)==='undefined') errorCallback	= function e(a){};
+	if(typeof action === "undefined" || action=='') action = 'mb_board';
+	if(typeof type === "undefined") type = "POST";
+	if(typeof dataType === "undefined") dataType = "json";
+	if(typeof successCallback === "undefined") successCallback	= function s(a,b){};
+	if(typeof errorCallback === "undefined") errorCallback	= function e(a){};
 
 	if(String(action).indexOf('http')!==0){
 		action	= mb_ajax_object.ajax_url+"?action="+action+"&admin_page="+mb_ajax_object.admin_page+"&hybrid_app="+mb_hybrid_app;
@@ -33,11 +33,11 @@ function sendFormDataRequest(form, action, successCallback, errorCallback, type,
 }
 
 function sendDataRequest(action, param, successCallback, errorCallback, type, dataType){
-	if(typeof(action)==='undefined' || action=='') action = 'mb_template';
-	if(typeof(type)==='undefined') type = "POST";
-	if(typeof(dataType)==='undefined') dataType = "json";
-	if(typeof(successCallback)==='undefined') successCallback	= function s(a,b){};
-	if(typeof(errorCallback)==='undefined') errorCallback	= function e(a){};
+	if(typeof action === "undefined" || action=='') action = 'mb_template';
+	if(typeof type === "undefined") type = "POST";
+	if(typeof dataType === "undefined") dataType = "json";
+	if(typeof successCallback === "undefined") successCallback	= function s(a,b){};
+	if(typeof errorCallback === "undefined") errorCallback	= function e(a){};
 
 	if(param.indexOf('mb_nonce_value=')==-1){
 		if(param=="") param	= mb_options["nonce2"];
@@ -72,11 +72,11 @@ function sendDataRequest(action, param, successCallback, errorCallback, type, da
 }
 
 function sendDataRequest2(action, param, successCallback, errorCallback, type, dataType){
-	if(typeof(action)==='undefined' || action=='') action = 'mb_template';
-	if(typeof(type)==='undefined') type = "POST";
-	if(typeof(dataType)==='undefined') dataType = "json";
-	if(typeof(successCallback)==='undefined') successCallback	= function s(a,b){};
-	if(typeof(errorCallback)==='undefined') errorCallback	= function e(a){};
+	if(typeof action === "undefined" || action=='') action = 'mb_template';
+	if(typeof type === "undefined") type = "POST";
+	if(typeof dataType === "undefined") dataType = "json";
+	if(typeof successCallback === "undefined") successCallback	= function s(a,b){};
+	if(typeof errorCallback === "undefined") errorCallback	= function e(a){};
 
 	if(param.indexOf('mb_nonce_value=')==-1){
 		if(param=="") param	= mb_options["nonce2"];
@@ -111,7 +111,7 @@ function mb_appendHtml(name,message){
 }
 
 function checkCSSDisplay(name,time){
-	if(typeof(time)==='undefined') time = 0;
+	if(typeof time === "undefined") time = 0;
 	var objTarget		= jQuery(name);
 	if(objTarget.css("display")=="none"){
 		if(time==0) objTarget.show();
@@ -123,7 +123,7 @@ function checkCSSDisplay(name,time){
 }
 
 function checkCSSDisplayID(id,time){
-	if(typeof(time)==='undefined') time = 0;
+	if(typeof time === "undefined") time = 0;
 	var objTarget		= jQuery("#"+id);
 	if(objTarget.css("display")=="none"){
 		if(time==0) objTarget.show();
@@ -146,13 +146,13 @@ function replaceCategoryText(value){
   	return value.replace(/&#038;/g, "&").replace(/&/g, "&amp;").replace(/[=<>`'"]/g, '');
 }
 function set_category_data(data, id,value){
-	if(typeof(data)!=='undefined'){
+	if(typeof data !=="undefined"){
 		jQuery("#"+id+" option").remove();
 		var index		= id.substr(-1);
-		if(typeof(mb_languages["selectbox"+index])!='undefined' && mb_languages["selectbox"+index]!=""){
+		if(typeof mb_languages["selectbox"+index] !="undefined" && mb_languages["selectbox"+index]!=""){
 			jQuery("#"+id).append('<option value="">'+mb_languages["selectbox"+index]+'</option>');
 		}
-		if(typeof(data)==='object'){
+		if(typeof data === 'object'){
 			var add_html			= "";
 			var category_text	= "";
 			jQuery.each(data, function(key, entry){
@@ -183,7 +183,7 @@ function category_select(index){
 	var value2			= "";
 	var theme_type		= "type1";
 
-	if(typeof(category_text)!=='undefined' && category_text!="" && category_text.indexOf('&#038;')!=-1){
+	if(typeof category_text !=="undefined" && category_text!="" && category_text.indexOf('&#038;')!=-1){
 		theme_type	= "type2";
 	}
 	if(index==0){
@@ -244,16 +244,16 @@ function movePage(url, param){
 }
 function moveViewPage(pid,board_name,page){
 	var param		= "vid="+pid;
-	if(typeof(board_name)!=='undefined'&& board_name!="") param		= param+"&board_name="+board_name;
-	if(typeof(page)!=='undefined' && page!="") param			= param+"&page="+page;
+	if(typeof board_name !== "undefined"&& board_name!="") param		= param+"&board_name="+board_name;
+	if(typeof page !== "undefined" && page!="") param			= param+"&page="+page;
 	moveURL("", param)
 }
 function moveURL(url, param, loading){
 	var isLoading		= false;
-	if(typeof(loading)!=='undefined') isLoading = loading;
+	if(typeof loading !== "undefined") isLoading = loading;
 	if(isLoading) showLoadingBox();
 
-	if(typeof(param)!=='undefined' && param!=""){
+	if(typeof param !=="undefined" && param!=""){
 		if(url.indexOf('?')==-1){
 			url		= url+'?';
 		}else{
@@ -317,9 +317,9 @@ function openWindow(url,name,option){
 	if(url.indexOf('&#038;')!=-1){
 		url		= url.replace(/&#038;/g,'&');
 	}
-	if(typeof(mb_hybrid_app)==='undefined' || mb_hybrid_app==""){
-		if(typeof(option)==='undefined') option	= "width=600,height=640,toolbar=no,location=no,status=no,menubar=no,top=200,left=300,scrollbars=no,resizable=no";
-		if(typeof(mb_options)!=='undefined' && typeof(mb_options["device_type"])!=='undefined' && mb_options["device_type"]=="mobile"){
+	if(typeof mb_hybrid_app === "undefined" || mb_hybrid_app==""){
+		if(typeof option === "undefined") option	= "width=600,height=640,toolbar=no,location=no,status=no,menubar=no,top=200,left=300,scrollbars=no,resizable=no";
+		if(typeof mb_options !=="undefined" && typeof mb_options["device_type"] !=="undefined" && mb_options["device_type"]=="mobile"){
 			objPopup		= window.open(url,name);
 		}else{
 			objPopup		= window.open(url,name,option);
@@ -339,8 +339,8 @@ function sendBoardFileData(file_pid,file_name){
 function sendBoardFileDataHandler(response, state)
 {
 	if(response.state == "success"){
-		if(typeof(response.data)!=='undefined' && typeof(response.data.file_path)!=='undefined'){
-			if(mb_hybrid_app=="ios" && typeof(response.data.file_path2)!=='undefined'){
+		if(typeof response.data !== "undefined" && typeof response.data.file_path !== "undefined"){
+			if(mb_hybrid_app=="ios" && typeof response.data.file_path2 !== "undefined"){
 				var file_url	= mb_urls["base"];
 				file_url			= file_url.replace('/wp-content/plugins','/wp-content/uploads');
 				homeSendMessage({"mode":"FILE_DOWNLOAD","value": file_url+response.data.file_path2,"name": mb_selectFileName});
@@ -353,7 +353,7 @@ function sendBoardFileDataHandler(response, state)
 	}
 }
 function downloadFile(url, param){
-	if(typeof(param)!=='undefined' && param!=""){
+	if(typeof param !== "undefined" && param!=""){
 		if(url.indexOf('?')==-1){
 			url		= url+'?';
 		}else{
@@ -361,7 +361,7 @@ function downloadFile(url, param){
 		}
 		url		= url+param;
 	}
-	if(typeof(mb_hybrid_app)==='undefined' || mb_hybrid_app==""){
+	if(typeof mb_hybrid_app === "undefined" || mb_hybrid_app==""){
 		window.location.href		= decodeURIComponent(url+"&file_name="+mb_selectFileName+"&type=download");
 	}else{
 		window.location.href		= decodeURIComponent(url+"&type=download&file_name="+mb_selectFileName);
@@ -375,7 +375,7 @@ var listTemplateAction		= "";
 
 
 function sendTabReload(data,idx){
-	if(typeof(idx)==='undefined') idx	= "1";
+	if(typeof idx === "undefined") idx	= "1";
 	if(jQuery("input[name=category"+idx+"]")) jQuery("input[name=category"+idx+"]").val(data);
 	if(idx==1 && data==''){
 		if(jQuery("input[name=category2]")) jQuery("input[name=category2]").val(data);
@@ -397,12 +397,12 @@ function setEditorType(type){
 }
 function sendListTemplateData(data){
 	listTemplateCheck	= true;
-	if(typeof(data)==='undefined') data = {};
-	if(typeof(data.board_name)==='undefined' || data.board_name==='undefined' || data.board_name==='') board_name = mb_options["board_name"];	
+	if(typeof data === "undefined") data = {};
+	if(typeof data.board_name === "undefined" || data.board_name=== "undefined" || data.board_name==='') board_name = mb_options["board_name"];	
 	else board_name = data.board_name;	
-	if(typeof(data.mode)==='undefined' || data.mode==='undefined') mode = "";
+	if(typeof data.mode === "undefined" || data.mode=== "undefined") mode = "";
 	else mode = data.mode;
-	if(typeof(data.page)==='undefined' || data.page==='undefined' || data.page==='') page = 1;
+	if(typeof data.page === "undefined" || data.page=== "undefined" || data.page==='') page = 1;
 	else page = data.page;	
 	
 	listTemplateBoard					= board_name;
@@ -411,23 +411,23 @@ function sendListTemplateData(data){
 	if(jQuery('#'+listTemplateBoard+'_form_board_search2').length>0) params		= params+"&"+jQuery('#'+listTemplateBoard+'_form_board_search2').serialize();
 	params		= params+"&"+jQuery('#'+listTemplateBoard+'_form_board_list').serialize()+"&board_action=load";
 
-	if(typeof(data.category)!=='undefined'){
-		if(typeof(data.idx)==='undefined' || data.idx==='undefined' || data.idx==='') idx = "1";
+	if(typeof data.category !=="undefined"){
+		if(typeof data.idx === "undefined" || data.idx=== "undefined" || data.idx==='') idx = "1";
 		else idx = data.idx;
 		params					= params+"&category"+idx+"="+encodeURIComponent(data.category);
-	}else if(typeof(data.page_type)!=='undefined' && data.page_type=="ajax"){
-		if(typeof(mb_categorys["value1"])!=='undefined' && mb_categorys["value1"]!=""){		
+	}else if(typeof data.page_type !== "undefined" && data.page_type=="ajax"){
+		if(typeof mb_categorys["value1"] !== "undefined" && mb_categorys["value1"]!=""){		
 			params					= params+"&category1="+encodeURIComponent(mb_categorys["value1"]);
-			if(typeof(mb_categorys["value2"])!=='undefined' && mb_categorys["value2"]!=""){		
+			if(typeof mb_categorys["value2"] !== "undefined" && mb_categorys["value2"]!=""){		
 				params					= params+"&category2="+encodeURIComponent(mb_categorys["value2"]);
-				if(typeof(mb_categorys["value3"])!=='undefined' && mb_categorys["value3"]!=""){		
+				if(typeof mb_categorys["value3"] !=="undefined" && mb_categorys["value3"]!=""){		
 					params					= params+"&category3="+encodeURIComponent(mb_categorys["value3"]);
 				}
 			}
 		}
 	}
 
-	if(typeof(data.page_type)!=='undefined'){
+	if(typeof data.page_type !=="undefined"){
 		params					= params+"&page_type="+encodeURIComponent(data.page_type);
 	}		
 	params					= params+"&board_page="+page;	
@@ -450,7 +450,7 @@ function sendListTemplateDataHandler(response, state){
 			}else{
 				jQuery('#'+listTemplateBoard+'_pagination_box').html("");
 			}
-			if(listTemplateMode!="append" && typeof(scrollToBoardTop)==='function'){
+			if(listTemplateMode!="append" && typeof scrollToBoardTop === "function"){
 				scrollToBoardTop();
 			}
 		}else{
@@ -461,9 +461,9 @@ function sendListTemplateDataHandler(response, state){
 }
 
 function scrollToBoardTop(mode, id, offset){
-	if(typeof(mode)==='undefined' || mode=='') mode = "list";
-	if(typeof(id)==='undefined' || id=='') id	= "mb_top";
-	if(typeof(offset)==='undefined' || offset=='') offset = 130;
+	if(typeof mode === "undefined" || mode=='') mode = "list";
+	if(typeof id === "undefined" || id=='') id	= "mb_top";
+	if(typeof offset === "undefined" || offset=='') offset = 130;
 	if(jQuery('div[id="'+id+'"]').length==1 && mb_options["mode"]==mode){
 		var nTop	= jQuery('#'+id).offset().top - offset;
 		if(nTop<0) nTop		= 0;
@@ -474,7 +474,7 @@ function scrollToBoardTop(mode, id, offset){
 }
 
 function getPostcode(type,id) {
-	if(typeof(mb_hybrid_app)==='undefined' || mb_hybrid_app==""){
+	if(typeof mb_hybrid_app === "undefined" || mb_hybrid_app==""){
 		new kakao.Postcode({
 			oncomplete: function(data) {
 				var fullAddr = ""; 
@@ -503,7 +503,7 @@ function getPostcode(type,id) {
 	}
 }
 function getPostcodeIframe(type,id) {
-	if(typeof(id)==='undefined' || id=='') id = 'mb_kakao_postcode1';
+	if(typeof id === "undefined" || id=='') id = 'mb_kakao_postcode1';
 	var element_wrap	= document.getElementById(id);
 	var currentScroll		= Math.max(document.body.scrollTop, document.documentElement.scrollTop);
 	new kakao.Postcode({
@@ -578,7 +578,7 @@ function template_combo_handler(type,obj,name){
 	combo_wrapper.find('.mb-combo-'+name+'-'+value).show();
 	combo_wrapper.find('.mb-combo-'+name+'-'+value).find(":input").prop("disabled", false);
 
-	if(typeof(template_combo_hide[name])!=='undefined' && template_combo_hide[name]!=''){
+	if(typeof template_combo_hide[name] !== "undefined" && template_combo_hide[name]!=''){
 		template_combo_display_check('show',name,template_combo_hide[name]);
 	}	
 	if(combo_wrapper.find('.mb-combo-'+name+'-'+value+' .mb-combo-box-hide-element').length>0){
@@ -589,7 +589,7 @@ function template_combo_handler(type,obj,name){
 	}
 }
 function template_combo_display_check(type,name,value){
-	if(typeof(mb_options["board_name"])!=='undefined' && value!=''){
+	if(typeof mb_options["board_name"] !== "undefined" && value!=''){
 		var items			= value.split(",");
 		var item_name	= mb_options["board_name"];
 		for(var i=0; i < items.length; i++) {
@@ -611,7 +611,7 @@ function template_combo_display_check(type,name,value){
 function checkEnterKey(callback,param){
 	if(event.keyCode == 13){
 
-		if(typeof(param)==='undefined')
+		if(typeof param === "undefined")
 			callback();
 		else
 			callback(param);
@@ -622,8 +622,8 @@ var openPid				= "";
 var openColspan		= 0;
 var openColspanIndex	= 0;
 function openContents(obj, name, index, action){		
-	if(typeof(index)!=='undefined') openColspanIndex	= index;
-	if(typeof(action)!=='undefined') open_action	= action;
+	if(typeof index !== "undefined") openColspanIndex	= index;
+	if(typeof action !== "undefined") open_action	= action;
 	else open_action	= "content";
 
 	openTarget		= jQuery(obj).closest("tr");	
@@ -640,7 +640,7 @@ function openContents(obj, name, index, action){
 		}
 	}else{
 		//콘텐츠 데이타 불러오기		
-		if(typeof(name)==='undefined' || name=="") name	= mb_options["board_name"];
+		if(typeof name === "undefined" || name=="") name	= mb_options["board_name"];
 		var board_pid = jQuery(obj).attr("class").split("_").pop(); 		
 		var data		= "board_name="+name+"&mode=list&board_action="+open_action+"&board_pid="+board_pid;
 		sendDataRequest2(mb_urls["template_api"], data, sendContentDataHandler);		
@@ -675,7 +675,7 @@ function sendContentDataHandler(response, state){
 
 function sendAdminExcelData(fields,titles,param){
 	var data	= "mode=plugin&board_action=admin_table_data&board_name="+mb_options["board_name"]+"&fields="+encodeURIComponent(fields)+"&titles="+encodeURIComponent(titles)+"&list_type="+mb_options["list_type"]+"&page="+mb_options["page"];	
-	if(typeof(param)!=='undefined' && param!="") data	= data+"&"+param;
+	if(typeof param !== "undefined" && param!="") data	= data+"&"+param;
 	
 	if(jQuery("input[name='check_array[]']").filter(":checked").length>0){
 		var select_pid	= jQuery("input[name='check_array[]']").filter(":checked").map(function(){return jQuery(this).val();}).get().join(",");
@@ -710,7 +710,7 @@ function sendAdminExcelDataHandler(response, state){
 }
 
 function mb_reloadImage_class(name){
-	if(typeof(name)==='undefined' || name=='') name = "mb_kcaptcha";
+	if(typeof name === "undefined" || name=='') name = "mb_kcaptcha";
 
 	var img_url			= jQuery("."+name).attr("src");
 	var timestamp		= new Date().getTime();
@@ -725,7 +725,7 @@ function mb_reloadImage_class(name){
 	jQuery("."+name).attr("src",img_url)
 }
 function mb_reloadImage(id){
-	if(typeof(id)==='undefined') id = "mb_kcaptcha";
+	if(typeof id === "undefined") id = "mb_kcaptcha";
 
 	var img_url			= jQuery("#"+id).attr("src");
 	var timestamp		= new Date().getTime();
@@ -741,7 +741,7 @@ function mb_reloadImage(id){
 }
 
 function checkMaxNumber(obj,max){
-	if(typeof(max)!=='undefined'){
+	if(typeof max !== "undefined"){
 		if(max<parseInt(jQuery(obj).val())){
 			jQuery(obj).val(max);		
 		}		
@@ -800,14 +800,14 @@ function inputOnlyNumber(event){
 }
 
 function moveBodyScrollPosition(name,top,time){
-	if(typeof(top)==='undefined') top = 40;
-	if(typeof(time)==='undefined') time = 0;
+	if(typeof top === "undefined") top = 40;
+	if(typeof time === "undefined") time = 0;
 	jQuery("html, body").animate({scrollTop: jQuery(name).offset().top-top}, time);
 }
 
 function imgResize(objImage,nWidth,nHeight){
-	if(typeof(nWidth)==='undefined') nWidth = 50;
-	if(typeof(nHeight)==='undefined') nHeight = nWidth;
+	if(typeof nWidth === "undefined") nWidth = 50;
+	if(typeof nHeight === "undefined") nHeight = nWidth;
 
 	nWidth		= parseInt(nWidth);
 	nHeight		= parseInt(nHeight);
@@ -848,7 +848,7 @@ function imgResize(objImage,nWidth,nHeight){
 	objImage.height		= imgHeight;
 }
 function checkSendApiURL(){
-	if(typeof(mb_urls['board_api'])==='undefined' && typeof(mb_urls['template_api'])==='undefined') {
+	if(typeof mb_urls['board_api'] === "undefined" && typeof mb_urls['template_api'] === "undefined") {
 		mb_urls['board_api']			= "mb_board";
 		mb_urls['comment_api']	= "mb_comment";
 		mb_urls['user_api']			= "mb_user";

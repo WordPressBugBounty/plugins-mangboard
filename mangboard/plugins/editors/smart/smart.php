@@ -1,7 +1,7 @@
 <?php
 $editor_type							= "S";
 $editor_name							= "Smart Editor";
-$mb_editors[$editor_type]			= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof(oEditors)!=='undefined'){ oEditors.getById['se_content'].exec('UPDATE_CONTENTS_FIELD', []);}; sendBoardWriteData();");
+$mb_editors[$editor_type]			= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof oEditors !== 'undefined'){ oEditors.getById['se_content'].exec('UPDATE_CONTENTS_FIELD', []);}; sendBoardWriteData();");
 
 if(!function_exists('mbw_load_editor_s')){
 	function mbw_load_editor_s(){		
@@ -109,7 +109,7 @@ if(!function_exists('mbw_editor_smart_template')){
 			$item_html		= "";
 			$item_html		.= '<input type="hidden" name="'.mbw_set_form_name("data_type").'" id="data_type" value="html" />';
 			$item_html		.= '<textarea'.$data["ext"].__STYLE("width:".$data["width"].";height:".$data["height"].";".$data["style"].";visibility:hidden;").' name="'.esc_attr($data["item_name"]).'" id="'.esc_attr($editor_id).'" title="'.esc_attr($data["name"]).'">'.($data["value"]).'</textarea>';
-			$item_html		.= '<script type="text/javascript">if(typeof(oEditors)==="undefined"){var oEditors = [];};';
+			$item_html		.= '<script type="text/javascript">if(typeof oEditors ==="undefined"){var oEditors = [];};';
 				$item_html		.= 'jQuery(document).ready(function(){nhn.husky.EZCreator.createInIFrame({oAppRef: oEditors,elPlaceHolder: "'.esc_js($editor_id).'",sSkinURI:"'.esc_url_raw($editor_skin).'",fCreator:"createSEditor2",htParams:{bUseToolbar:true,bSkipXssFilter : true,I18N_LOCALE:"'.esc_js($editor_locale).'",bUsePhotoUpload:'.esc_js($use_photo_upload).',bUseVerticalResizer:true,bUseModeChanger:true';
 				if($font_local_name!=$font_name){
 					$font_name			= $font_local_name.",".$font_name;

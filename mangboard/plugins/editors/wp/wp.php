@@ -2,7 +2,7 @@
 // 워드프레스 기본 에디터 액션 등록
 $editor_type							= "W";
 $editor_name							= "WP Editor";
-$mb_editors[$editor_type]			= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof(tinyMCE)!=='undefined' && typeof(tinyMCE.get('we_content').getContent)!=='undefined'){ jQuery('#data_type').val('html');sendBoardWriteData(tinyMCE.get('we_content').getContent());}else{sendBoardWriteData();}");
+$mb_editors[$editor_type]			= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof tinyMCE !=='undefined' && typeof tinyMCE.get('we_content').getContent !== 'undefined'){ jQuery('#data_type').val('html');sendBoardWriteData(tinyMCE.get('we_content').getContent());}else{sendBoardWriteData();}");
 
 if(!function_exists('mbw_load_editor_w')){
 	function mbw_load_editor_w(){		

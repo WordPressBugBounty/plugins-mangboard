@@ -74,10 +74,11 @@ if(!function_exists('mbw_request_store_api')){
 			$data['mb_version']		= mbw_get_option("mb_version");
 			$data['php_version']	= PHP_VERSION;
 			$data['locale']			= mbw_get_option("locale");
-			$url						= "https://www.mangboard.com?mb_store=product";
+			$url						= "https://mangboard.com?mb_store=product";
 			$ch						= curl_init();
 			curl_setopt( $ch, CURLOPT_URL, $url);
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($data) );
+			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true);
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -123,6 +124,7 @@ if(!function_exists('mbw_fetch_feed')){
 		$ch				= curl_init();
 		curl_setopt( $ch, CURLOPT_URL, $url);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($data) );
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -162,8 +164,13 @@ if(!function_exists('mbw_install_store_product')){
 						//플러그인이 이미 설치되어있는지 체크
 						//if(!is_dir($check_path)){  
 						if(true){
-							if(strpos($product['download_url'], '.mangboard.com/')>20) return false;
-							else if(strpos($product['download_url'], '.hometory.com/')>20) return false;
+							if ( strpos($product['download_url'], 'https://mangboard.com/')===false && strpos($product['download_url'], 'https://hometory.com/')===false && strpos($product['download_url'], '.mangboard.com/')===false && strpos($product['download_url'], '.hometory.com/')===false ) {
+								return false;
+							} else if ( strpos($product['download_url'], 'mangboard.com/')>20 ) {
+								return false;
+							} else if ( strpos($product['download_url'], 'hometory.com/')>20 ) {
+								return false;
+							}
 
 							$download_file		= download_url($product['download_url']);
 							if(is_wp_error($download_file)){echo '<script>alert("'.esc_js($product['title']).' download failed");moveURL("'.admin_url('admin.php').'?page=mbw_store");</script>';exit;}

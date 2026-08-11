@@ -1211,7 +1211,7 @@ if(!function_exists('mbw_init_javascript')){
 			$script		.= 'var mb_is_login = false;';
 		}
 		$script		.= 'var mb_hybrid_app = "";';
-		$script		.= 'if(typeof(mb_urls)==="undefined"){var mb_urls = {};};';
+		$script		.= 'if(typeof mb_urls === "undefined"){var mb_urls = {};};';
 		$script		.= 'mb_options["device_type"]	= "'.esc_js(mbw_get_vars("device_type")).'";';
 		$script		.= 'mb_options["nonce"]		= "'.(mbw_create_nonce("param")).'";';
 		$script		.= 'mb_options["nonce2"]		= "'.(mbw_create_nonce("param")).'";';		//일부 테마에서 스킨의 헤더 파라미터값을 인코딩 하면서 충돌문제가 발생하여 변수를 분리
@@ -1521,7 +1521,8 @@ if(!function_exists('mbw_generate_auth_cookie')){
 		$expiration			= mbw_get_timestamp() + intval(mbw_get_option("cookie_expire"));			
 		$hash				= mbw_get_hash_key("cookie",$expiration,$user_id);
 		$auth_cookie		= $user_id. '|' . $expiration . '|' . $hash . '|' . $user_mode;
-		mbw_set_cookie($auth_cookie_name, $auth_cookie,$expire);
+		mbw_set_cookie($auth_cookie_name, $auth_cookie, $expire);
+		mbw_set_cookie("wordpress_mb_logged", $user_id, $expire);	//wordpress.com 호스팅 캐시 방지 쿠키
 	}
 }
 
@@ -1594,6 +1595,7 @@ if(!function_exists('mbw_clear_auth_cookie')){
 			$auth_cookie_name = $mstore->get_auth_cookie_name();
 		}
 		mbw_set_cookie($auth_cookie_name, "");
+		mbw_set_cookie("wordpress_mb_logged", "");	//wordpress.com 호스팅 캐시 방지 쿠키
 	}
 }
 

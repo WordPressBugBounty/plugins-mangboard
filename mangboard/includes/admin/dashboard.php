@@ -6,7 +6,7 @@ $mb_version			= mbw_get_option("mb_version");
 
 function mbw_dashboard_plugin_update($version){
 	if(empty($version)) return false;	
-	$update_file		= download_url("http://demo.mangboard.com/update/mangboard.".$version.".zip");
+	$update_file		= download_url("https://mangboard.com/update/mangboard.".$version.".zip");
 
 	if(is_wp_error($update_file)){echo '<script>alert("MangBoard '.esc_js($version).' download failed");moveURL("'.admin_url("admin.php?page=mbw_dashboard").'");</script>';exit;}
 
@@ -50,7 +50,7 @@ if(!empty($_REQUEST["update_version"])){
 $mb_admin_lang		= get_option("mb_admin_locale");
 $mb_locale				= get_option("mb_locale");
 if(empty($mb_locale)){ $mb_locale	= mbw_get_option("locale"); }
-$feed_url					= "https://demo.mangboard.com/dashboard_data.php?lang=".$mb_locale;
+$feed_url					= "https://mangboard.com/dashboard_data.php?lang=".$mb_locale;
 $feed_item				= mbw_fetch_feed($feed_url);
 $latest_version			= '1.0.0';
 $dashboard_title			= "";

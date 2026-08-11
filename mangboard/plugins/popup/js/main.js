@@ -49,7 +49,7 @@ function setPopupScrollEvent(){
 	})
 }
 function setPopupPosition(mode){
-	if(typeof(mode)!=='undefined'){
+	if(typeof mode !== 'undefined'){
 		if((mode=="scroll" || mode=="resize") && jQuery("#mb_pop_bg").css('display')=='none') return;
 	}
 
@@ -123,7 +123,7 @@ function showConfirmPopup(message,data,send,cancel){
 	popupCallbackData				= data;
 	confirmCallbackSend			= send;
 
-	if(typeof(cancel)==='undefined') confirmCallbackCancel = hidePopupBox;
+	if(typeof cancel === 'undefined') confirmCallbackCancel = hidePopupBox;
 	else confirmCallbackCancel		= cancel;
 
 	//위치 설정
@@ -131,15 +131,15 @@ function showConfirmPopup(message,data,send,cancel){
 	var pop_body		= '';
 	var pop_btn_ok		= mb_languages["btn_ok"];
 	var pop_btn_cancel	= mb_languages["btn_cancel"];
-	if(typeof(data)!=='undefined'){
-		if(typeof(data.btn_ok)!=='undefined' && data.btn_ok!=""){
+	if(typeof data !== "undefined"){
+		if(typeof data.btn_ok !== 'undefined' && data.btn_ok!=""){
 			pop_btn_ok		= data.btn_ok;
 		}
-		if(typeof(data.btn_cancel)!=='undefined' && data.btn_cancel!=""){
+		if(typeof data.btn_cancel !== 'undefined' && data.btn_cancel!=""){
 			pop_btn_cancel		= data.btn_cancel;
 		}
 	}
-	if(typeof(data)!=='undefined' && typeof(data.type)!=='undefined' && data.type=="passwd"){
+	if(typeof data !== 'undefined' && typeof data.type !== 'undefined' && data.type=="passwd"){
 		pop_head		= '<div class="pop-title pop-title-confirm" id="mb_pop_confirm_text">'+message+'</div>';
 		pop_body			= pop_body+'<div id="mb_pop_form">';
 			pop_body			= pop_body+'<form class="pop-form" action="javascript:sendConfirmCallbackData()" id="mb_confirm_form" method="post" name="mb_confirm_form"><div><input id="mb_confirm_passwd" name="passwd" class="pop-input-passwd" type="password" /></div></form>';
@@ -153,15 +153,15 @@ function showConfirmPopup(message,data,send,cancel){
 	pop_body			= pop_body+'<a href="javascript:;" id="mb_pop_confirm_ok" onclick="sendConfirmCallbackData()" class="btn btn-default btn-ok"><span>'+pop_btn_ok+'</span></a>';
 	pop_body			= pop_body+'</div>';
 
-	if(typeof(data)!=='undefined'){
-		if(typeof(data.head)!=='undefined')  pop_head		= data.head;
-		if(typeof(data.body)!=='undefined')  pop_body		= data.body;
+	if(typeof data !== "undefined"){
+		if(typeof data.head !== 'undefined')  pop_head		= data.head;
+		if(typeof data.body !== 'undefined')  pop_body		= data.body;
 	}
 
 	showPopupBox("Confirm",pop_head,pop_body);
 }
 function showAlertPopup(response,send){
-	if(!response || typeof(response)==='undefined') return;
+	if(!response || typeof response === 'undefined') return;
 
 	var code					= "";
 	var message				= "";
@@ -169,14 +169,14 @@ function showAlertPopup(response,send){
 	var mode					= "";
 	var board_action		= "";
 	
-	if(typeof(send)==='undefined') alertCallbackSend			= null;
+	if(typeof send === 'undefined') alertCallbackSend			= null;
 	else alertCallbackSend			= send;
 	
-	if(typeof(response.code)!=='undefined') code				= response.code;
-	if(typeof(response.message)!=='undefined') message		= response.message;
-	if(typeof(response.target_name)!=='undefined') target_name		= response.target_name;
-	if(typeof(response.mode)!=='undefined') mode				= response.mode;
-	if(typeof(response.board_action)!=='undefined') board_action				= response.board_action;
+	if(typeof response.code !== 'undefined') code				= response.code;
+	if(typeof response.message !== "undefined") message		= response.message;
+	if(typeof response.target_name !== 'undefined') target_name		= response.target_name;
+	if(typeof response.mode !== 'undefined') mode				= response.mode;
+	if(typeof response.board_action !== 'undefined') board_action				= response.board_action;
 	if(message=="") return;
 	if(code=="1103"){
 		showConfirmPopup(message, {}, function(){moveURL(mb_urls["login"]);});
@@ -190,7 +190,7 @@ function showAlertPopup(response,send){
 	showPopupBox("Alert",pop_head,pop_body);
 }
 function showPopupBox(type,head,body,data,mode){
-	if(typeof(mode)!=='undefined' && mode!=''){
+	if(typeof mode !== 'undefined' && mode!=''){
 		popupMode			= mode;
 	}else{
 		popupMode			= "popup";
@@ -217,11 +217,11 @@ function showPopupBox(type,head,body,data,mode){
 		popupID		= "#mb_pop_alert";
 		setTimeout(function(){ jQuery(popupID).addClass("mb-ani-pop-open");	 }, 1);		
 	}
-	if(typeof(data)==='undefined') data		= {};
-	if(typeof(data.position)==='undefined') data.position = "center";
-	if(typeof(data.bg)==='undefined') data.bg = true;
-	if(typeof(data.eventX)==='undefined') data.eventX = 0;
-	if(typeof(data.eventY)==='undefined') data.eventY = 0;
+	if(typeof data ==='undefined') data		= {};
+	if(typeof data.position ==='undefined') data.position = "center";
+	if(typeof data.bg ==='undefined') data.bg = true;
+	if(typeof data.eventX ==='undefined') data.eventX = 0;
+	if(typeof data.eventY ==='undefined') data.eventY = 0;
 	
 	jQuery(popupID+"_head").html(head);
 	jQuery(popupID+"_body").html(body);	
@@ -273,7 +273,7 @@ function showPopupBG(){
 
 var popup_user_name	= "";
 function getUserMenu(uid,pid,name){
-	if(typeof(name)!=='undefined' && name!=""){
+	if(typeof name !== 'undefined' && name!=""){
 		popup_user_name		= name;
 	}else{
 		popup_user_name		= "";
@@ -293,7 +293,7 @@ function showUserMenu(data){
 	var menu_foot		= data["foot"];
 
 	var user_name		= "";
-	if(typeof(data["user"]["name"])!=='undefined' && data["user"]["name"]!=""){
+	if(typeof data["user"]["name"] !== 'undefined' && data["user"]["name"]!=""){
 		user_name		= data["user"]["name"];
 	}else if(popup_user_name!=""){
 		user_name		= popup_user_name;
@@ -312,7 +312,7 @@ function showUserMenu(data){
 }
 
 function sendUserMenu(uid,board_pid,option,event){
-	if(typeof(event)!=='undefined'){
+	if(typeof event !=='undefined'){
 		eventX	= event.clientX;
 		eventY		= event.clientY - jQuery('body').offset().top;
 	}
@@ -357,11 +357,11 @@ function showAlertCallback(code,target_name,mode,board_action){
 }
 function hidePopupAlert(code,target_name,mode,board_action) {
 	if(popupMode=="modal") return;
-	if(typeof(code)!=='undefined' && code!=='undefined' && code!=''){
+	if(typeof code !== 'undefined' && code!=='undefined' && code!=''){
 		if(confirmCallbackSend) jQuery("#mb_pop_confirm").show();		
 
 		if(code.substr(0,2)=="12"){	//입력 관련 에러일 경우 포커스 설정
-			if(typeof(target_name)!=='undefined'  && target_name!=='undefined' && target_name!=''){
+			if(typeof target_name !== 'undefined'  && target_name!=='undefined' && target_name!=''){
 				var target;
 				if(jQuery("#mb_pop_confirm").css('display')!='none'){
 					if(target_name.indexOf(" ") !== -1){		//이름에 공백이 있을 경우
@@ -387,7 +387,7 @@ function hidePopupAlert(code,target_name,mode,board_action) {
 							}
 						}else{
 							if(jQuery("[name='"+target_name+"']").filter(':visible').length>0){
-								if(typeof(mode)!=='undefined' && mode=='comment' && typeof(board_action)!=='undefined' && (board_action=='reply' || board_action=='modify')){
+								if(typeof mode !== 'undefined' && mode=='comment' && typeof board_action !== 'undefined' && (board_action=='reply' || board_action=='modify')){
 									target		= jQuery(".cmt-reply-box [name='"+target_name+"']").filter(':visible').first();
 								}else{
 									target		= jQuery("[name='"+target_name+"']").filter(':visible').first();
@@ -399,7 +399,7 @@ function hidePopupAlert(code,target_name,mode,board_action) {
 					}
 				}
 				jQuery(".mb-input-focus").removeClass("mb-input-focus");
-				if(typeof(target)!=='undefined'  && target!=='undefined'){
+				if(typeof target !== 'undefined'  && target!=='undefined'){
 					jQuery("html, body").animate({scrollTop: target.offset().top-200}, 300, function(){
 						target.focus();
 						target.addClass("mb-input-focus");

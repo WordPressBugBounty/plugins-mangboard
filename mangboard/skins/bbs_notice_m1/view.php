@@ -43,7 +43,7 @@ function sendBoardViewData(action){
 }
 function sendBoardViewDataHandler(response, state)
 {
-	if(typeof(response)!=='undefined'){
+	if(typeof response !== "undefined"){
 		if(response.state=="success"){
 			if(view_action=="delete"){
 				moveURL(<?php echo "\"".mbw_get_url(array("board_pid"=>"","mode"=>"list"))."\""; ?>);

@@ -1560,7 +1560,7 @@ nhn.HuskyRange = jindo.$Class({
 	},
 
 	moveToBookmark : function(vBookmark){
-		if(typeof(vBookmark) != "object"){
+		if(typeof vBookmark  !== "object"){
 			return this.moveToStringBookmark(vBookmark);
 		}else{
 			return this.moveToXPathBookmark(vBookmark);

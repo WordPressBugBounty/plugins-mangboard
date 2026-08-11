@@ -3,9 +3,9 @@ Contributors: kitae-park
 Donate link: https://www.mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 5.5.1
-Stable tag: 2.3.5
+Stable tag: 2.3.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,14 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.4.7 =
+* 망보드 홈페이지 서버 이전 후 스토어 연결 기능이 정상적으로 동작하지 않는 문제 수정
+* 워드프레스닷컴(wordpress.com) 호스팅 지원을 위한 최적화 코드 추가
+* minor bug 수정
+
+= 2.4.6 =
+* 비밀글로 설정한 게시물의 요약 텍스트가 소스보기 모드에서 노출되는 문제 수정
 
 = 2.4.5 (2.3.5) =
 * 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 Reflected XSS 취약점 수정]

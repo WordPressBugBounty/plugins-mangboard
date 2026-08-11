@@ -61,14 +61,14 @@ function checkWriteData(){
 	?>	
 }
 function sendBoardWriteData(content){
-	if(typeof(content)!=='undefined') 
+	if(typeof content !== "undefined") 
 		jQuery('#'+mb_options["board_name"]+'_form_board_write textarea[name=content]').val(content);	
 	
 	sendFormDataRequest(jQuery('#'+mb_options["board_name"]+'_form_board_write'), mb_urls["board_api"], sendBoardWriteDataHandler, sendBoardWriteDataErrorHandler);	
 }
 function sendBoardWriteDataHandler(response, state){
 	if(response.state == "success"){
-		if(typeof(response.message)!=='undefined'){
+		if(typeof response.message !== "undefined"){
 			if(response.message!="") alert(response.message);
 		}
 		if(response.board_action == "modify"){

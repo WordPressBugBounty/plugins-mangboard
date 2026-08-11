@@ -25,8 +25,8 @@
 		comment_page		= 0;
 	}
 	function sendCommentData(action, pid, idx){
-		if(typeof(idx)==='undefined') idx = "";
-		if(typeof(pid)==='undefined') pid = "";
+		if(typeof idx === "undefined") idx = "";
+		if(typeof pid === "undefined") pid = "";
 
 		send_action							= action;
 		var data = jQuery('#'+mb_options["board_name"]+'_form_comment_'+action).serialize();
@@ -51,7 +51,7 @@
 		comment_page		= 0;
 	}	
 	function sendCommentList(mode){
-		if(typeof(mode)==='undefined') mode = "";
+		if(typeof mode === "undefined") mode = "";
 		if(comment_page_total>comment_page){
 			var data			= "board_name="+mb_options["board_name"]+"&parent_pid="+mb_options["pid"]+"&mode=comment";
 			data				= data+"&board_action=list&comment_page="+comment_page;

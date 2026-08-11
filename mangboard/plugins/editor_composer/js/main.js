@@ -88,7 +88,7 @@ function mb_insertEditorVideo(editor_id) {
 	var editor_target		= ".mb-editor-composer-"+editor_id;	
 	var video_target		= ".mb-editor-video-"+editor_id;	
 	var vinput			= jQuery(video_target+" .mb_editor_video_url").val();
-	if(typeof(vinput)=='undefined' || vinput==""){ 
+	if(typeof vinput =='undefined' || vinput==""){ 
 		alert(jQuery(video_target+" input[name=video_input_error1]").val());
 		return; 
 	}
@@ -186,16 +186,16 @@ function mb_insertEditorVideo(editor_id) {
 function mb_insertEditorHtml(editor_id,insert_html){
 	var editor_type		= jQuery('#editor_type').val();
 	if(editor_type=='S' || editor_type=='HS' || editor_type=='HS2' || editor_type=='HS3'){
-		if(typeof(oEditors)!=='undefined'){
+		if(typeof oEditors !== 'undefined'){
 			oEditors.getById[editor_id].exec("PASTE_HTML", [insert_html]);
 		}
 	}else if(editor_type=='C'){
-		if(typeof(ckeditor)!=='undefined'){
+		if(typeof ckeditor !== 'undefined'){
 			//ckeditor.insertHtml(insert_html);
 			CKEDITOR.instances[editor_id].insertHtml(insert_html);
 		}
 	}else if(editor_type=='W'){
-		if(typeof(tinyMCE)!=='undefined' && typeof(tinyMCE.activeEditor)!=='undefined'){
+		if(typeof tinyMCE !== 'undefined' && typeof tinyMCE.activeEditor !== 'undefined'){
 			tinyMCE.get(editor_id).execCommand('mceInsertRawHTML', false, insert_html);
 			tinyMCE.get(editor_id).focus();
 		}

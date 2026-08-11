@@ -8,7 +8,7 @@
 ?>
 <script type="text/javascript">
 function selectTabMenu(obj,category,name,idx){
-	if(typeof(idx)==="undefined" || idx=="") idx	= "1";
+	if(typeof idx === "undefined" || idx=="") idx	= "1";
 	jQuery('.tab-menu-on').removeClass("tab-menu-on").addClass("tab-menu-off");
 	jQuery(obj).removeClass("tab-menu-off").addClass("tab-menu-on");
 	if(jQuery("input[name=category"+idx+"]")) jQuery("input[name=category"+idx+"]").val(category);
@@ -17,7 +17,7 @@ function selectTabMenu(obj,category,name,idx){
 function sendSearchData(data){
 	var search_url					= mb_urls["search"];	
 	var params						= jQuery('#'+mb_options["board_name"]+'_form_board_search').serialize();
-	if(typeof(data)!=='undefined') params					= params+"&"+data;		
+	if(typeof data !== "undefined") params					= params+"&"+data;		
 	if(params.indexOf('category')!=-1){
 		if(search_url.indexOf('category')!=-1){
 			search_url		= search_url.replace(/(category)(\d{1})=/g,"category_old$2=");
@@ -78,7 +78,7 @@ function sendBoardListData(args){
 function sendBoardListDataHandler(response, state)
 {
 	if(response.state == "success"){
-		if(typeof(response.message)!=='undefined'){
+		if(typeof response.message !== "undefined"){
 			 if(response.message!="") alert(response.message);
 		}
 		moveURL("reload");
