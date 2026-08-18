@@ -5,7 +5,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
 Tested up to: 7.1
 Requires PHP: 5.5.1
-Stable tag: 2.3.6
+Stable tag: 2.3.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,10 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.4.8 =
+* 게시판 테이블 이름에 워드프레스 테이블 접두사(wp_) 추가 (새로 설치하는 사이트에만 적용)
+* minor bug 수정
 
 = 2.4.7 =
 * 망보드 홈페이지 서버 이전 후 스토어 연결 기능이 정상적으로 동작하지 않는 문제 수정

@@ -3,12 +3,14 @@ Class DBConnect
 {
 	public $db;
 	public $wp_prefix		= "";
+	public $mb_prefix		= "";
 	public $field_types		= array();
 
-	public function __construct($db=NULL){	
+	public function __construct($db=NULL, $prefix=""){
 		if(!empty($db)){
 			$this->db				= $db;
 			$this->wp_prefix		= $db->prefix;
+			$this->mb_prefix	= $prefix;
 		}		
 	}
 	public function query($query){

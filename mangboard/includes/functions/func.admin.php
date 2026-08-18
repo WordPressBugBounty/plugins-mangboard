@@ -142,9 +142,9 @@ if(!function_exists('mbw_fetch_feed')){
 					if(!empty($check_data["skin"])) $check_array["skin"]	= explode(',',$check_data["skin"]);
 					if(!empty($check_data["widget"])) $check_array["widget"]	= explode(',',$check_data["widget"]);
 				}
-				update_option('mb_admin_check_data',$check_array);
+				update_option('mb_admin_check_data', $check_array, false);
 			}else{
-				update_option('mb_admin_check_data',$check_array);
+				update_option('mb_admin_check_data', $check_array, false);
 			}
 		}
 		return $response;

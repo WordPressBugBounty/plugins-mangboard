@@ -19,25 +19,24 @@ if(!empty($_REQUEST['target'])){
 }
 
 if(function_exists('mb_internal_encoding')) mb_internal_encoding($encoding);
-
-
 if(defined('MBW_UPLOAD_PATH')){
 	$upload_path		= MBW_UPLOAD_PATH;
 }else{
 	$upload_path		= "../../../uploads/mangboard/";
 }
 
-function checkImagePath($path){
-	global $upload_path;
-	$size		= $_REQUEST['size'];
-	if($size=="small"){
-		$small_path		= substr($path,0,strrpos($path, "."))."_small".substr($path,strrpos($path, "."));
-		if(is_file($upload_path.$small_path)) $path		= $small_path;
-	}else if($size=="middle"){
-		$middle_path		= substr($path,0,strrpos($path, "."))."_middle".substr($path,strrpos($path, "."));
-		if(is_file($upload_path.$middle_path)) $path		= $middle_path;
+if(!function_exists('mbw_get_file_path')){
+	function mbw_get_file_path($path, $size){
+		global $upload_path;
+		if($size=="small"){
+			$small_path		= substr($path,0,strrpos($path, "."))."_small".substr($path,strrpos($path, "."));
+			if(is_file($upload_path.$small_path)) $path		= $small_path;
+		}else if($size=="middle"){
+			$middle_path		= substr($path,0,strrpos($path, "."))."_middle".substr($path,strrpos($path, "."));
+			if(is_file($upload_path.$middle_path)) $path		= $middle_path;
+		}
+		return $path;
 	}
-	return $path;
 }
 
 if(!empty($_REQUEST['path'])){
@@ -57,18 +56,22 @@ if(!empty($_REQUEST['path'])){
 
 	$path				= str_replace($file_name,"",$path);	
 	$path				= str_replace(".","",$path).$file_name;	
-	$file_path		= $upload_path.$path;	
+	$file_path			= $upload_path.$path;	
 
-	global $mb_image_upload_files,$mb_board_upload_files;
-
-	if(is_file($file_path)){		
-		if(empty($mb_board_upload_files)) 	require("mb-config.php");
+	if(is_file($file_path)){
+		global $mb_image_upload_files,$mb_board_upload_files;
+		
+		if(empty($mb_board_upload_files)){
+			require("mb-config.php");
+		}
 		if($type=="download"){	
 			$check_ext		= $mb_board_upload_files;
 		}else{
 			$check_ext		= $mb_image_upload_files;
 		}
-		if(empty($check_ext)) $check_ext		= array("jpg","jpeg","png","gif","bmp");
+		if(empty($check_ext)){
+			$check_ext		= array("jpg","jpeg","png","gif","bmp","webp");
+		}
 
 		if(in_array($file_ext, $check_ext)){
 			if($file_ext=="php") exit;
@@ -115,7 +118,9 @@ if(!empty($_REQUEST['path'])){
 				}else{
 					header("Content-Disposition: inline; filename=\"".rawurlencode($file_name)."\"");
 				}
-				if(!empty($_REQUEST['size'])) $path		= checkImagePath($path);
+				if(!empty($_REQUEST['size'])){
+					$path		= mbw_get_file_path($path,$_REQUEST['size']);
+				}
 				if(defined('MBW_CONTENT_URL')){
 					$upload_url			= MBW_CONTENT_URL."/uploads/mangboard/";
 					if(strpos($upload_url, 'http') !== 0){

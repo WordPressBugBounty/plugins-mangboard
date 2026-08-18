@@ -115,8 +115,8 @@ if( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ){
 if ( defined( 'WP_CLI' ) && WP_CLI ) return;
 else if(empty($wpdb)) return;
 
-$mdb					= new DBConnect($wpdb);
-$mstore					= new MStore($mdb,$mb_options);
+$mdb					= new DBConnect($wpdb, $mb_table_prefix);
+$mstore				= new MStore($mdb,$mb_options);
 $mstore->set_messages($mb_languages);
 
 if(!mbw_is_admin_page()){
@@ -195,8 +195,8 @@ if(empty($_COOKIE['mb_security_mode'])){
 			}else{
 				$security_mode		= 2;
 			}
-			update_option('mb_security_mode',$security_mode);
-			mbw_set_cookie("mb_security_mode", $security_mode);			
+			update_option('mb_security_mode', $security_mode, true);
+			mbw_set_cookie("mb_security_mode", $security_mode);
 		}
 	}
 }

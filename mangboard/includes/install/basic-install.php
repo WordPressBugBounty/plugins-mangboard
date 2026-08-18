@@ -43,12 +43,29 @@ if(!function_exists('mbw_install_insert_query')){
 					$check	= $wpdb->query($query);
 					if(!$check){ $wpdb->query($query); }
 				}
-			}	
+			}
 		}
 	}
 }
 if(!function_exists('mbw_basic_install')){
 	function mbw_basic_install(){
+		global $wpdb;
+		if ( class_exists( 'wpdb' ) && isset( $wpdb ) ) { 
+			$table_name			= ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix."mb_boards")));
+			if ( !empty( $table_name ) ) {
+				$mb_table_prefix			= $wpdb->prefix."mb_";
+				update_option("mb_table_prefix", $mb_table_prefix, true);
+			}else{
+				$table_name					= ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", "mb_boards")));
+				if(!empty($table_name)){
+					$mb_table_prefix		= "mb_";
+				} else {
+					$mb_table_prefix		= $wpdb->prefix."mb_";
+				}
+				update_option("mb_table_prefix", $mb_table_prefix, true);
+			}
+		}
+		
 		require(MBW_PLUGIN_PATH."includes/mb-config.php");	
 		require(MBW_PLUGIN_PATH."includes/mb-version.php");	
 		require(MBW_PLUGIN_PATH."includes/install/schema/mb-schema.php");

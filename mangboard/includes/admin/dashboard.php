@@ -25,7 +25,7 @@ function mbw_dashboard_plugin_update($version){
 if(!empty($_REQUEST["site_lang"]) && mbw_is_admin()){
 	if(wp_verify_nonce(mbw_get_param('mbw-language-nonce'), 'mbw-language-key')){
 		$mb_lang			= mbw_value_filter($_REQUEST["site_lang"]);
-		update_option("mb_locale",$mb_lang);
+		update_option("mb_locale", $mb_lang, true);
 	}
 }
 if(!empty($_REQUEST["lang"]) && mbw_is_admin()){

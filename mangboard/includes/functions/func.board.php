@@ -344,12 +344,10 @@ if(!function_exists('mbw_set_params')){
 						$board_name		= mbw_value_filter($board_name,"name");
 						$post_content		= "";
 						if(!empty($url)){
-							$page		= get_page_by_path($url);
-							if(!empty($page->post_content)){
-								$content			= $page->post_content;
-								if(strpos($content,'['.MBW_SHORTCODE_BOARD." name=\"".$board_name)!==false){
-									$post_content		= $content;
-								}
+							$post_obj		= get_page_by_path($url);
+							$content		= $post_obj ? $post_obj->post_content : '';
+							if(strpos($content,'['.MBW_SHORTCODE_BOARD." name=\"".$board_name)!==false){
+								$post_content		= $content;
 							}
 						}
 						//페이지에 망보드 숏코드가 검색되지 않을 경우 게시판과 연결된 포스트에서 숏코드를 한번 더 검색
@@ -358,7 +356,8 @@ if(!function_exists('mbw_set_params')){
 							$mstore->set_board_options($board_name);
 							$post_id				= mbw_get_board_option("fn_post_id");
 							if(!empty($post_id)){
-								$content		= get_post($post_id)->post_content;
+								$post_obj		= get_post($post_id);
+								$content		= $post_obj ? $post_obj->post_content : '';
 								if(strpos($content,'['.MBW_SHORTCODE_BOARD." name=\"".$board_name)!==false){
 									$post_content		= $content;
 								}
