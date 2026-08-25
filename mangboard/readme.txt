@@ -5,7 +5,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 4.0.0
 Tested up to: 7.1
 Requires PHP: 5.5.1
-Stable tag: 2.3.7
+Stable tag: 2.3.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,11 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.4.9 (2.3.8) =
+* 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 취약점 수정]
+* 워드프레스 7.1 버전에서 팝업 캘린더 호환성 문제 수정
+* minor bug 수정
 
 = 2.4.8 =
 * 게시판 테이블 이름에 워드프레스 테이블 접두사(wp_) 추가 (새로 설치하는 사이트에만 적용)

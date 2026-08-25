@@ -552,6 +552,7 @@ if(!function_exists('mbw_set_cookie')){
 				$cookie_options["samesite"]		= "None";
 			}
 			@setcookie($name, $value, $cookie_options);
+			$_COOKIE[$name] = $value;
 		}
 	}
 }

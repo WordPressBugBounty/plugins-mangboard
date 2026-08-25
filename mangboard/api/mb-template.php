@@ -55,8 +55,10 @@ if(mbw_get_param("mode")=="user"){
 					$filter_item	= apply_filters("mf_board_sitem", array("value"=>$user_name,"field"=>"fn_user_name","type"=>"menu"), $user_data);
 					$user_name	= $filter_item["value"];
 				}
-				$user_point		= $user_data[$mb_fields["users"]["fn_user_point"]];
-				$user_level		= $user_data[$mb_fields["users"]["fn_user_level"]];
+				if($mb_user_level>=8){
+					$user_point		= $user_data[$mb_fields["users"]["fn_user_point"]];
+					$user_level		= $user_data[$mb_fields["users"]["fn_user_level"]];
+				}
 			}
 			if(has_filter('mf_user_popup_menu')) $menu_body			= apply_filters("mf_user_popup_menu",$menu_body);
 		}

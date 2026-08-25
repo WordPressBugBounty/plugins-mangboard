@@ -294,28 +294,26 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 		if(mbw_get_param("board_action")=="multi_move"){
 			$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_board_table_name." WHERE `".$api_fields["fn_pid"]."` in (".implode(",",$pid_format).")", $pid_array );	
 
-			//게시물 삭제시 댓글도 삭제
-			if(!empty($mb_comment_table_name) && mbw_get_board_option("fn_use_comment") == 1 && $mstore->table_exists($mb_comment_table_name)){
-				$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_comment_table_name." WHERE `".$mb_fields["select_comment"]["fn_parent_pid"]."` in (".implode(",",$pid_format).")", $pid_array );
-			}
-
 			//게시물 삭제시 파일 연결 해제
 			$query_data[]		= $mdb->prepare("UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."='".$mb_board_table_name."' and ".$mb_fields["files"]["fn_board_pid"]." in (".implode(",",$pid_format).")", $pid_array );
 
 			//게시물 삭제시 게시물에 연결된 쿠키정보 삭제
 			$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).	$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_board_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$pid_format).");", $pid_array );
-
-			$comment_items			= $mdb->get_results($mdb->prepare( "SELECT ".$mb_fields["select_comment"]["fn_pid"]." FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]." in (".implode(",",$pid_format).")", $pid_array ), ARRAY_A);
-			if(!empty($comment_items)){
-				$comment_pid_array		= array_column($comment_items, $mb_fields["select_comment"]["fn_pid"]);
-				if(!empty($comment_pid_array)){
-					$comment_pid_format			= array();
-					foreach($comment_pid_array as $key){
-						$comment_pid_format[]		= "%d";
+			
+			if(!empty($mb_comment_table_name) && mbw_get_board_option("fn_use_comment") == 1 && $mstore->table_exists($mb_comment_table_name)){
+				$comment_items			= $mdb->get_results($mdb->prepare( "SELECT ".$mb_fields["select_comment"]["fn_pid"]." FROM ".$mb_comment_table_name." WHERE ".$mb_fields["select_comment"]["fn_parent_pid"]." in (".implode(",",$pid_format).")", $pid_array ), ARRAY_A);
+				if(!empty($comment_items)){
+					$comment_pid_array		= array_column($comment_items, $mb_fields["select_comment"]["fn_pid"]);
+					if(!empty($comment_pid_array)){
+						$comment_pid_format			= array();
+						foreach($comment_pid_array as $key){
+							$comment_pid_format[]		= "%d";
+						}
+						//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
+						$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_comment_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$comment_pid_format).");", $comment_pid_array );					
 					}
-					//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
-					$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_admin_tables["cookies"]." WHERE ".$mb_fields["cookies"]["fn_board_name"]."=%s",mbw_get_param("board_name")).$mdb->prepare( " and ".$mb_fields["cookies"]["fn_cookie_type"]."='mb_comment_vote' and ".$mb_fields["cookies"]["fn_cookie_value"]." in (".implode(",",$comment_pid_format).");", $comment_pid_array );					
 				}
+				$query_data[]		= $mdb->prepare( "DELETE FROM ".$mb_comment_table_name." WHERE `".$mb_fields["select_comment"]["fn_parent_pid"]."` in (".implode(",",$pid_format).")", $pid_array );
 			}
 		}
 	}

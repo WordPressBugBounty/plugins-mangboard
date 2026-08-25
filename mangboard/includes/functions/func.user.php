@@ -411,8 +411,8 @@ if(!function_exists('mbw_get_user_today_point')){
 	function mbw_get_user_today_point($user_pid){		
 		$today_point		= 0;
 		if(!empty($user_pid)){
-			global $mdb;
-			$items		= $mdb->get_results($mdb->prepare("SELECT content FROM mb_logs where type='point' and (action='write' or action='reply') and user_pid=%d and reg_date>=DATE_SUB(curdate(),INTERVAL 0 DAY);",$user_pid), ARRAY_A);
+			global $mdb,$mb_admin_tables;
+			$items		= $mdb->get_results($mdb->prepare("SELECT content FROM ".$mb_admin_tables["logs"]." where type='point' and (action='write' or action='reply') and user_pid=%d and reg_date>=DATE_SUB(curdate(),INTERVAL 0 DAY);",$user_pid), ARRAY_A);
 			if(!empty($items)){
 				foreach($items as $key=>$item){
 					$value			= $item["content"];
@@ -431,7 +431,7 @@ if(!function_exists('mbw_get_user_today_point')){
 	}
 }
 if(!function_exists('mbw_set_wp_user_data')){
-	function mbw_set_wp_user_data($user_id=NULL){
+	function mbw_set_wp_user_data($user_id=NULL,$mode=""){
 		if(mbw_get_trace("mbw_set_wp_user_data")!="") return;
 
 		mbw_add_trace("mbw_set_wp_user_data");
@@ -441,19 +441,32 @@ if(!function_exists('mbw_set_wp_user_data')){
 		$send_data		= array();
 		$where_data		= array();
 		$cookie			= "";
-		$user_mode		= "WP";
+		if(!empty($mode)){
+			$user_mode		= $mode;
+		}else{
+			$user_mode		= mbw_get_option("user_mode");
+		}		
 		
 		if(empty($user_id)){		
-			if($mstore->is_login_cookie()){
-				$cookie					= $mstore->get_login_cookie();
-				$cookie_elements		= explode('|', $cookie);
-				list($user_id, $expiration, $hmac, $user_mode) = $cookie_elements;
+			if(mbw_is_login_cookie()){
+				if(mbw_validate_auth_cookie()){
+					$cookie					= mbw_get_login_cookie();
+					$cookie_elements		= explode('|', $cookie);
+					list($user_id, $expiration, $hmac, $user_mode, $auth_key) = $cookie_elements;
+				}
 			}
 		}
 
 		if(empty($mb_admin_tables["users"])) return;		
 		if(!empty($user_id)){
-			$today_date			= $mstore->get_current_date();
+			//현재 로그인된 워드프레스 아이디가 있을 경우 동일한 회원 ID로 설정되는지 체크
+			if(get_current_user_id()!=0){		
+				$current_user = wp_get_current_user();
+				if($current_user->user_login!=$user_id){
+					return;
+				}
+			}
+			$today_date			= mbw_get_current_date();
 			$point_type			= "";
 			$log_type				= "";
 			$field					= $mb_fields["users"];
@@ -480,10 +493,10 @@ if(!function_exists('mbw_set_wp_user_data')){
 						$send_data[$field["fn_user_phone"]]					= get_user_meta( $user->data->ID, "mb_user_phone", true );
 
 						$send_data[$field["fn_passwd"]]						= $user->data->user_pass;
-						$send_data[$field["fn_user_auth_key"]]				= mbw_get_user_auth_key();
+						$send_data[$field["fn_user_auth_key"]]				= mbw_get_user_auth_key($user_id);
 						$send_data[$field["fn_reg_date"]]						= mbw_get_current_time();
 						$send_data[$field["fn_last_login"]]					= mbw_get_current_time();
-						$send_data[$field["fn_user_access_token"]]			= mbw_generate_access_token();
+						$send_data[$field["fn_user_access_token"]]			= mbw_generate_access_token($user_id);
 
 						//회원 가입 포인트 지급
 						$join_point		= intval(mbw_get_option("user_join_point"));
@@ -501,8 +514,8 @@ if(!function_exists('mbw_set_wp_user_data')){
 					}
 					
 				}else{
-					$log_type														= "login";
-					$user_data						= $mdb->get_row($mdb->prepare("select ".$field["fn_last_login"].",".$field["fn_login_count"]." from `".$mb_admin_tables["users"]."` where `".$field["fn_user_id"]."`=%s",$user_id),ARRAY_A);
+					$log_type							= "login";
+					$user_data						= $mdb->get_row($mdb->prepare("select ".$field["fn_last_login"].",".$field["fn_login_count"].",".$field["fn_user_auth_key"]." from `".$mb_admin_tables["users"]."` where `".$field["fn_user_id"]."`=%s",$user_id),ARRAY_A);
 					if(!empty($user_data)){
 						$user_last_login			= $user_data[$field["fn_last_login"]];
 						$user_login_count		= intval($user_data[$field["fn_login_count"]]);
@@ -511,7 +524,16 @@ if(!function_exists('mbw_set_wp_user_data')){
 							if(strpos($user_last_login,$today_date)===false){
 								$point_type			= $log_type;
 							}
+						}						
+						
+						$current_dt		= new DateTime(mbw_get_current_time());
+						$last_login_dt	= new DateTime($user_last_login);
+						$diff				= $current_dt->diff($last_login_dt);
+						//처음 로그인을 하거나 로그인 날짜가 30일이 지났을 경우 auth key 갱신
+						if( empty($user_data[$field["fn_user_auth_key"]]) || $diff->days >= 30 ){
+							$send_data[$field["fn_user_auth_key"]]					= mbw_get_user_auth_key($user_id);
 						}
+						
 						if($user_mode=="WP" && function_exists('wp_get_current_user')){
 							$user														= wp_get_current_user();
 							if(!empty($user->data->user_email)){
@@ -520,13 +542,17 @@ if(!function_exists('mbw_set_wp_user_data')){
 							}
 							//if(!empty($user->data->display_name)) $send_data[$field["fn_user_name"]]					= $user->data->display_name;
 							if(!empty($user->data->user_pass)) $send_data[$field["fn_passwd"]]							= $user->data->user_pass;
+							
+							//워드프레스 기능에서 쿠키를 생성하지 못해 연속으로 로그인 로그가 남는 문제 방지
+							if( (abs($current_dt->getTimestamp() - $last_login_dt->getTimestamp()) < 10) || (strpos(mbw_get_vars("user_agent"), 'JetpackbyWordPr') !== false) ) {
+								$log_type			= "";
+							}
 						}
 
 						//마지막 로그인 시간 수정
-						$send_data[$field["fn_last_login"]]								= mbw_get_current_time();
-						//$send_data[$field["fn_user_auth_key"]]							= mbw_get_user_auth_key();
+						$send_data[$field["fn_last_login"]]								= mbw_get_current_time();						
 						$send_data[$field["fn_login_count"]]								= $user_login_count+1;
-						$send_data[$field["fn_user_access_token"]]						= mbw_generate_access_token();
+						$send_data[$field["fn_user_access_token"]]						= mbw_generate_access_token($user_id);
 						$where_data[$field["fn_user_id"]]									= $user_id;
 
 						$mdb->db_query("UPDATE",$mb_admin_tables["users"], $send_data, $where_data);
@@ -539,8 +565,12 @@ if(!function_exists('mbw_set_wp_user_data')){
 			do_action('mbw_user_login');
 
 			//로그인 포인트 설정
-			if(!empty($point_type))	mbw_set_user_point("user",$point_type);
-			if(!empty($log_type) && mbw_get_option("login_log")) mbw_set_log($log_type,"",array("mode"=>"user","board_action"=>$log_type,"board_name"=>"users"));
+			if(!empty($point_type)){
+				mbw_set_user_point("user",$point_type);
+			}
+			if(!empty($log_type) && mbw_get_option("login_log")){				
+				mbw_set_log($log_type,"",array("mode"=>"user","board_action"=>$log_type,"board_name"=>"users"));
+			}
 		}
 	}
 }
@@ -591,8 +621,13 @@ if(!function_exists('mbw_synchronize_wp_user_data')){
 }
 
 if(!function_exists('mbw_get_user_auth_key')){
-	function mbw_get_user_auth_key(){		
-		return md5(mbw_generate_access_token());
+	function mbw_get_user_auth_key($uid=""){		
+		if(function_exists('wp_generate_password')){
+			$auth_key		= wp_generate_password( 10, false );
+		}else{
+			$auth_key		= md5(time());
+		}		
+		return md5($auth_key.$uid.mbw_generate_access_token($uid));
 	}
 }
 

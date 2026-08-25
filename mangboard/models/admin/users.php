@@ -110,22 +110,38 @@ add_action('mbw_board_api_body', 'mbw_user_synchronize',5);
 //관리자 비밀번호 변경 처리
 if(!function_exists('mbw_api_header_admin_modify_passwd')){
 	function mbw_api_header_admin_modify_passwd(){
-		if(mbw_is_admin() && mbw_get_param('board_action')=='admin_modify_password' && mbw_get_param('admin_modify_passwd')!=''){
-			global $mdb,$mstore,$mb_admin_tables,$mb_fields;
-			$user_pid			= mbw_get_param('board_pid');
-			if(!empty($user_pid)){
-				$user_mode		= mbw_get_option("user_mode");
-
-				$hashed			= mbw_hash_password(mbw_get_param("admin_modify_passwd"));
-				$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_passwd"]."='".$hashed."' where ".$mb_fields["users"]["fn_pid"]."=%d", $user_pid));
-				
-				if($user_mode=="WP"){
-					global $wpdb;
-					$user_id		= ($mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_id"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid)));
-					$wpdb->update( $wpdb->users, array( 'user_pass' => $hashed ), array( 'user_login' => $user_id ) );
+		if(mbw_is_admin() && current_user_can('administrator') && mbw_get_param('board_action')=='admin_modify_password' && mbw_get_param('admin_modify_passwd')!=''){
+			if(!mbw_verify_nonce()){
+				mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
+			}else{
+				global $mdb,$mstore,$mb_admin_tables,$mb_fields;
+				$user_pid			= mbw_get_param('board_pid');
+				if(!empty($user_pid)){
+					$user_mode		= mbw_get_option("user_mode");
+					$hashed			= mbw_hash_password(mbw_get_param("admin_modify_passwd"));			
+					
+					if($user_mode=="WP"){
+						global $wpdb;
+						$row		= $mdb->get_row($mdb->prepare("select ".$mb_fields["users"]["fn_user_id"].",".$mb_fields["users"]["fn_wp_user_pid"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_pid"]."`=%d limit 1", $user_pid), ARRAY_A);
+						if(!empty($row)){
+							$user_id	= $row[$mb_fields["users"]["fn_user_id"]];
+							$wp_pid	= $row[$mb_fields["users"]["fn_wp_user_pid"]];
+							//로그인 사용자가 슈퍼 관리자이면 모든 사용자의 비밀번호 변경 가능 (멀티사이트에서 일반 관리자는 슈퍼 관리자의 비밀번호를 변경하지 못하도록 설정)
+							if(is_super_admin() || !is_super_admin($wp_pid)){
+								$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_passwd"]."=%s where ".$mb_fields["users"]["fn_pid"]."=%d", $hashed, $user_pid));
+								$wpdb->update( $wpdb->users, array( 'user_pass' => $hashed ), array( 'user_login' => $user_id ) );
+								mbw_set_result_data(array("message"=>__MM('MSG_PASSWD_MODIFY')));
+							}else{
+								global $mb_languages;
+								mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_MODIFY"],"1102");
+							}
+						}
+					}else{
+						$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_passwd"]."=%s where ".$mb_fields["users"]["fn_pid"]."=%d", $hashed, $user_pid));
+						mbw_set_result_data(array("message"=>__MM('MSG_PASSWD_MODIFY')));
+					}
 				}
-				mbw_set_result_data(array("message"=>__MM('MSG_PASSWD_MODIFY')));
-			}	
+			}
 		}
 	}
 }

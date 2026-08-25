@@ -1,6 +1,7 @@
 <?php
-if(!function_exists('mbw_init_datepicker')){	
+if(!function_exists('mbw_init_datepicker')){
 	function mbw_init_datepicker(){
+		loadStyle(MBW_PLUGIN_URL."plugins/datepicker/css/style.css");
 		loadScript(MBW_PLUGIN_URL."plugins/datepicker/js/datepicker.js");
 	}
 }

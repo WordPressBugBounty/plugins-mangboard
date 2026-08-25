@@ -1,0 +1,38 @@
+body .ui-datepicker .ui-datepicker-header {
+    padding: 3px 0 !important;
+}
+body .ui-datepicker select.ui-datepicker-month, 
+body .ui-datepicker select.ui-datepicker-year {
+	height:28px !important;min-height:28px !important;line-height:2.2 !important;font-size:13px;outline: none !important;box-shadow:none !important;
+	-moz-box-sizing:border-box !important;-webkit-box-sizing:border-box !important;
+	vertical-align:middle !important;
+	font-weight:700;
+}
+body .ui-datepicker a{outline: none !important;box-shadow:none !important;}
+body .ui-datepicker .ui-datepicker-prev,
+body .ui-datepicker .ui-datepicker-next {
+	position: absolute;
+	top: 4px !important;
+	width: 28px;
+	height: 28px;	
+	cursor:pointer !important;
+	-moz-box-sizing:border-box !important;-webkit-box-sizing:border-box !important;
+}
+body .ui-datepicker .ui-datepicker-prev-hover,
+body .ui-datepicker .ui-datepicker-next-hover {
+	top: 4px !important;
+}
+body .ui-datepicker .ui-datepicker-prev {
+	left: 4px !important;
+}
+body .ui-datepicker .ui-datepicker-next {
+	right: 4px !important;
+}
+body .ui-datepicker .ui-datepicker-prev-hover {
+	left: 4px !important;
+	transition: none !important;
+}
+body .ui-datepicker .ui-datepicker-next-hover {
+	right: 4px !important;
+	transition: none !important;
+}

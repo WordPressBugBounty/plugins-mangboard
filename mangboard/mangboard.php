@@ -3,7 +3,7 @@
  * Plugin Name: MangBoard WP
  * Plugin URI: https://mangboard.com/
  * Description: MangBoard WP는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
- * Version: 2.3.7
+ * Version: 2.3.8
  * Author: Hometory
  * Author URI: https://www.hometory.com/
  */
@@ -41,34 +41,39 @@ define("MBW_PARAM_LOG", false);		//파라미터 로그 설정: /wp-content/uploa
 require_once(MBW_PLUGIN_PATH."includes/mb-settings.php");
 if(empty($mstore)) return;
 
+
 if(!function_exists('mbw_init')){
 	function mbw_init(){	
-		mbw_add_trace("mbw_init");
-		global $mb_options;
-		global $mstore,$mb_vars;			
+		mbw_add_trace("mbw_init");		
 		if(function_exists('load_plugin_textdomain')){
-			if($mb_options["wp_multi_language"])
+			if( mbw_get_option("wp_multi_language") ) {
 				load_plugin_textdomain('mangboard', false, MBW_PLUGIN_PATH . '/includes/languages/');
+			}
 		}
 		mbw_set_params();
 		if(mbw_get_access_token()==""){
 			mbw_generate_access_token();
-			if($mstore->is_login_cookie()) mbw_refresh_auth_cookie();
-		}
-		global $current_user;
-		if(get_current_user_id()!=0){
-			if(!$mstore->is_login_cookie()){
-				mbw_generate_auth_cookie($current_user->data->user_login,"WP");
+			if(mbw_is_login_cookie()) mbw_refresh_auth_cookie();
+		}		
+		if(get_current_user_id()!=0){		
+			if(!mbw_is_login_cookie()){
+				$current_user = wp_get_current_user();
+				if($current_user->ID){
+					mbw_generate_auth_cookie($current_user->user_login,"WP");
+				}
 			}else if(!mbw_validate_auth_cookie()){
 				mbw_clear_auth_cookie();
-				mbw_generate_auth_cookie($current_user->data->user_login,"WP");
+				$current_user = wp_get_current_user();
+				if($current_user->ID){
+					mbw_generate_auth_cookie($current_user->user_login,"WP");
+				}
 			}
-		}else if($mstore->is_login_cookie()){
+		}else if(mbw_is_login_cookie()){
 			if(mbw_validate_auth_cookie()){
-				$cookie					= $mstore->get_login_cookie();
+				$cookie					= mbw_get_login_cookie();
 				$cookie_elements		= explode('|', $cookie);
-				list($user_id, $expiration, $hmac, $user_mode) = $cookie_elements;
-				mbw_set_wp_user_data($user_id);
+				list($user_id, $expiration, $hmac, $user_mode, $auth_key) = $cookie_elements;
+				mbw_set_wp_user_data($user_id, $user_mode);
 				if($user_mode=="WP") mbw_logout("MB",false);
 			}else{
 				mbw_clear_auth_cookie();
@@ -78,6 +83,7 @@ if(!function_exists('mbw_init')){
 		if(is_admin() && !empty($_GET["page"])){
 			$page_name		= $_GET["page"];
 			if(strpos($page_name, 'mbw_')===0 && strpos($page_name, 'mbw_page')!==0 && $page_name!="mbw_dashboard" && $page_name!="mbw_commerce_dashboard" && $page_name!="mbw_commerce_category"){
+				global $mstore;
 				$mstore->set_board_options(mbw_get_admin_board_name());
 			}
 		}

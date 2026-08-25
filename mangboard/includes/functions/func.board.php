@@ -19,28 +19,38 @@ if(!function_exists('mbw_get_hash_key')){
 	function mbw_get_hash_key($tag,$expiration=0,$uid="",$token=""){
 		global $mstore,$mdb,$mb_admin_tables,$mb_fields;
 		$hash				= "";
-		if(!empty($token))  $access_toekn		= $token;
-		else $access_toekn		= mbw_generate_access_token();
+		if(!empty($token))  $access_token		= $token;
+		else $access_token		= mbw_generate_access_token($uid);
 		
-		$auth_key			= md5(MBW_AUTH_SITE_URL).$access_toekn;
-		if(($expiration+intval(mbw_get_option("cookie_expire")))<mbw_get_timestamp()){
+		$access_token2			= md5(MBW_AUTH_SITE_URL).$access_token;
+		if(($expiration+intval(mbw_get_option("cookie_expire")))<time()){
 			return "";
 		}
 
-		global $current_user;
 		$user_id		= "";
-		if(get_current_user_id()!=0){
-			$user_id		= $current_user->data->user_login;
-		}else if($mstore->is_login_cookie()){
-			$cookie = $mstore->get_login_cookie();
-			$cookie_elements = explode('|', $cookie);
-			list($user_id, $expiration2, $hmac, $user_mode) = $cookie_elements;
-			if(empty($expiration)) $expiration		= $expiration2;
-		}else if($uid!=""){
+		if( !empty($uid) ) {
 			$user_id		= $uid;
+		} else {
+			if(get_current_user_id()!=0){
+				$current_user = wp_get_current_user();
+				if($current_user->ID){
+					$user_id		= $current_user->user_login;
+				}			
+			}else if(mbw_is_login_cookie()){
+				$cookie = mbw_get_login_cookie();
+				$cookie_elements = explode('|', $cookie);
+				list($user_id, $expiration2, $hmac, $user_mode, $auth_key) = $cookie_elements;
+				if(empty($expiration)) $expiration		= $expiration2;
+			}
 		}
+		
 		if($user_id!=""){
-			$user_auth_key	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_auth_key"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;", $user_id));
+			if( mbw_get_vars("mb_".$user_id."_auth_key") != "" ) {
+				$user_auth_key		= mbw_get_vars("mb_".$user_id."_auth_key");
+			} else {
+				$user_auth_key	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_auth_key"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;", $user_id));
+				mbw_set_vars("mb_".$user_id."_auth_key",$user_auth_key);
+			}
 		}else{
 			$user_id			= "guest";
 			$user_auth_key	= "guest";
@@ -54,7 +64,7 @@ if(!function_exists('mbw_get_hash_key')){
 			if(count($name_array)>2) $table_name		= $name_array[0]."_".$name_array[1];
 			$tmp_tag			= $tag.'_'.$table_name;
 		}
-		$key			= md5($user_id . $user_auth_key . '|' . $expiration.$auth_key.'|'.$tmp_tag);
+		$key		= md5($user_id . $user_auth_key . '|' . $expiration.$access_token2.'|'.$tmp_tag);
 		$hash		= hash_hmac('md5', $user_id . '|' . $expiration, $key);
 		if($tag=="nonce"){
 			mbw_set_vars("nonce_hash",$hash);
@@ -124,10 +134,10 @@ if(!function_exists('mbw_verify_nonce')){
 
 if(!function_exists('mbw_create_nonce')){
 	function mbw_create_nonce($type,$name=""){
-		global $mstore,$current_user;
+		global $mstore;
 
 		$board_name		= $name;
-		$time					= mbw_get_timestamp();
+		$time					= time();
 		if(empty($board_name)) {
 			$board_name		= mbw_get_board_name();
 			$hash				= mbw_get_hash_key("nonce",$time);
@@ -769,23 +779,32 @@ if(!function_exists('mbw_init_options')){
 						if(mbw_get_param("se_field".$i)!="" && mbw_get_param("se_text".$i)!="" && !empty($select_fields[mbw_get_param("se_field".$i)])){						
 							$se_text		= mbw_htmlspecialchars(mbw_get_param("se_text".$i));
 							$se_field		= mbw_get_param("se_field".$i);
-							if(strpos($se_text, ',') !== false){ $is_multi		= '1'; }
-							else{ $is_multi		= '0'; }
+							if(strpos($se_text, ",") !== false){
+								$is_multi		= "1"; 
+							}else{ 
+								$is_multi		= "0"; 
+							}
 							$se_sign		= mbw_get_param("se_sign".$i);
 							if(!empty($se_sign)){
-								if($se_sign=='lt') $se_sign	= '<';
-								else if($se_sign=='lt2') $se_sign	= '<=';
-								else if($se_sign=='gt') $se_sign	= '>';
-								else if($se_sign=='gt2') $se_sign	= '>=';
-								else if($se_sign=='like'){
-									if($is_multi=='1'){
-										$se_text		= '%'.str_replace(',', '%,%', $se_text).'%';
+								if($se_sign=="lt"){
+									$se_sign	= "<";
+								}else if($se_sign=="lt2"){
+									$se_sign	= "<=";
+								}else if($se_sign=="gt"){
+									$se_sign	= ">";
+								}else if($se_sign=="gt2"){
+									$se_sign	= ">=";
+								}else if($se_sign=="like"){
+									if($is_multi=="1"){
+										$se_text		= "%".str_replace(",", "%,%", $se_text)."%";
 									}else{
-										$se_text		= '%'.$se_text.'%';
+										$se_text		= "%".$se_text."%";
 									}
-								}else $se_sign	= '=';
+								}else{
+									$se_sign	= "=";
+								}
 							}else{
-								$se_sign	= '=';
+								$se_sign	= "=";
 							}
 							mbw_set_board_where(array("field"=>$se_field, "value"=>$se_text, "sign"=> $se_sign, "multi"=>$is_multi));
 							$is_search		= true;
@@ -1173,14 +1192,15 @@ if(!function_exists('mbw_init_javascript')){
 
 		$jquery_ver		= "1.11.4";
 		if(!empty($wp_scripts->registered['jquery-ui-core']->ver)) $jquery_ver		= $wp_scripts->registered['jquery-ui-core']->ver;
-		wp_register_style('jquery-ui-css', "//ajax.googleapis.com/ajax/libs/jqueryui/".$jquery_ver."/themes/smoothness/jquery-ui.css");
+		//wp_register_style('jquery-ui-css', "//ajax.googleapis.com/ajax/libs/jqueryui/".$jquery_ver."/themes/smoothness/jquery-ui.css");
+		wp_register_style('jquery-ui-css', "//code.jquery.com/ui/".$jquery_ver."/themes/base/jquery-ui.css");
 		if(mbw_is_admin_page()) wp_enqueue_style('jquery-ui-css');
 
 		$path					= MBW_PLUGIN_PATH.'assets/js';
 		$dir					= dir($path);
 		while (false !== ($entry = $dir->read())){
 			if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
-				if(strpos($entry,".js")!==false){
+				if(substr($entry, -3) === '.js'){
 					loadScript(MBW_PLUGIN_URL.'assets/js/'.$entry);
 				}
 			}
@@ -1189,7 +1209,7 @@ if(!function_exists('mbw_init_javascript')){
 		$dir					= dir($path);
 		while (false !== ($entry = $dir->read())){
 			if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
-				if(strpos($entry,".css")!==false){
+				if(substr($entry, -4) === '.css'){
 					loadStyle(MBW_PLUGIN_URL.'assets/css/'.$entry);
 				}
 			}	
@@ -1511,15 +1531,23 @@ if(!function_exists('mbw_check_cookie')){
 }
 if(!function_exists('mbw_generate_auth_cookie')){
 	function mbw_generate_auth_cookie($user_id="",$user_mode="MB",$expire=0){				
-		global $mstore;		
+		global $mstore,$mdb,$mb_fields,$mb_admin_tables;		
 
 		if(empty($user_id)) return;
 
 		$auth_cookie_name = $mstore->get_auth_cookie_name();
-		mbw_set_wp_user_data($user_id);
-		$expiration			= mbw_get_timestamp() + intval(mbw_get_option("cookie_expire"));			
+		mbw_set_wp_user_data($user_id, $user_mode);
+		$expiration		= time();
 		$hash				= mbw_get_hash_key("cookie",$expiration,$user_id);
-		$auth_cookie		= $user_id. '|' . $expiration . '|' . $hash . '|' . $user_mode;
+		
+		if( mbw_get_vars("mb_".$user_id."_auth_key") != "" ) {
+			$user_auth_key		= mbw_get_vars("mb_".$user_id."_auth_key");
+		} else {
+			$user_auth_key	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_auth_key"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;", $user_id));
+			mbw_set_vars("mb_".$user_id."_auth_key",$user_auth_key);
+		}
+		$auth_key		= md5($user_id.'|'.$expiration.'|'.$user_auth_key);
+		$auth_cookie		= $user_id. '|' . $expiration . '|' . $hash . '|' . $user_mode . '|' . $auth_key;
 		mbw_set_cookie($auth_cookie_name, $auth_cookie, $expire);
 		mbw_set_cookie("wordpress_mb_logged", $user_id, $expire);	//wordpress.com 호스팅 캐시 방지 쿠키
 	}
@@ -1529,50 +1557,84 @@ if(!function_exists('mbw_refresh_auth_cookie')){
 	function mbw_refresh_auth_cookie(){
 		global $mstore,$mdb,$mb_admin_tables,$mb_fields;
 
-		if ( !$mstore->is_login_cookie() )
+		if ( !mbw_is_login_cookie() )
 			return false;
 		
-		$cookie					= $mstore->get_login_cookie();
+		$cookie					= mbw_get_login_cookie();
 		$cookie_elements		= explode('|', $cookie);
 
-		if ( count($cookie_elements) != 4 )
+		if ( count($cookie_elements) != 5 ) {
 			return false;
+		}
 		
-		list($user_id, $expiration, $hmac, $user_mode) = $cookie_elements;
-		if(!empty($user_id)) $user_access_token	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_access_token"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;",$user_id));
-		else $user_access_token	= "";
-		$hash			= mbw_get_hash_key("cookie",$expiration,$user_id,$user_access_token);
-		$hash2			= mbw_get_hash_key("cookie",$expiration,$user_id);
-		
-		if($hmac==$hash || $hmac==$hash2){
-			$expire		= mbw_get_timestamp() + 7776000;
-			mbw_clear_auth_cookie();
-			mbw_generate_auth_cookie($user_id,$user_mode,$expire);
-			$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_access_token"]."='".mbw_generate_access_token()."' where ".$mb_fields["users"]["fn_user_id"]."=%s;",$user_id));
+		list($user_id, $expiration, $hmac, $user_mode, $auth_key) = $cookie_elements;
+		$user_access_token	= "";
+		$user_auth_key		= "";
+		if( !empty($user_id) ) {
+			if( mbw_get_vars("mb_".$user_id."_access_token") != "" && mbw_get_vars("mb_".$user_id."_auth_key") != "" ) {
+				$user_access_token	= mbw_get_vars("mb_".$user_id."_access_token");
+				$user_auth_key		= mbw_get_vars("mb_".$user_id."_auth_key");
+			} else {
+				$row	= $mdb->get_row($mdb->prepare("select ".$mb_fields["users"]["fn_user_access_token"].",".$mb_fields["users"]["fn_user_auth_key"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;", $user_id), ARRAY_A);
+				if(!empty($row)){
+					$user_access_token	= $row[$mb_fields["users"]["fn_user_access_token"]];
+					$user_auth_key		= $row[$mb_fields["users"]["fn_user_auth_key"]];
+					mbw_set_vars("mb_".$user_id."_access_token",$user_access_token);
+					mbw_set_vars("mb_".$user_id."_auth_key",$user_auth_key);
+				}
+			}
+		}
+		if( !empty($auth_key) && $auth_key == md5($user_id.'|'.$expiration.'|'.$user_auth_key) ){
+			$hash			= mbw_get_hash_key("cookie",$expiration,$user_id,$user_access_token);
+			$hash2		= mbw_get_hash_key("cookie",$expiration,$user_id);
+			
+			if($hmac==$hash || $hmac==$hash2){
+				$expire		= time() + 7776000;
+				mbw_clear_auth_cookie();
+				mbw_generate_auth_cookie($user_id,$user_mode,$expire);
+				$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_access_token"]."='".mbw_generate_access_token($user_id)."' where ".$mb_fields["users"]["fn_user_id"]."=%s;",$user_id));
+			}
 		}
 	}
 }
 
 if(!function_exists('mbw_validate_auth_cookie')){
 	function mbw_validate_auth_cookie(){
-		if(mbw_get_trace("mbw_set_wp_user_data")!="") return true;
+		if( mbw_get_trace("mbw_set_wp_user_data")!="" ) {
+			return true;
+		}
 
 		global $mstore,$mdb;
 		global $mb_admin_tables,$mb_fields;
-
-		if ( !$mstore->is_login_cookie() )
+		if ( !mbw_is_login_cookie() ) {
 			return false;
-		
-		$cookie = $mstore->get_login_cookie();
-
+		}		
+		$cookie = mbw_get_login_cookie();
 		$cookie_elements = explode('|', $cookie);
-
-		if ( count($cookie_elements) != 4 )
+		if ( count($cookie_elements) != 5 ) {
 			return false;
+		}
 
-		list($user_id, $expiration, $hmac, $user_mode) = $cookie_elements;
-		if(!empty($user_id)) $user_access_token	= $mdb->get_var($mdb->prepare("select ".$mb_fields["users"]["fn_user_access_token"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;",$user_id));
-		else $user_access_token	= "";
+		list($user_id, $expiration, $hmac, $user_mode, $auth_key) = $cookie_elements;
+		$user_access_token	= "";
+		$user_auth_key		= "";
+		if( !empty($user_id) ) {
+			if( mbw_get_vars("mb_".$user_id."_access_token") != "" && mbw_get_vars("mb_".$user_id."_auth_key") != "" ) {
+				$user_access_token	= mbw_get_vars("mb_".$user_id."_access_token");
+				$user_auth_key		= mbw_get_vars("mb_".$user_id."_auth_key");
+			} else {
+				$row	= $mdb->get_row($mdb->prepare("select ".$mb_fields["users"]["fn_user_access_token"].",".$mb_fields["users"]["fn_user_auth_key"]." from `".$mb_admin_tables["users"]."` where `".$mb_fields["users"]["fn_user_id"]."`=%s;", $user_id), ARRAY_A);
+				if(!empty($row)){
+					$user_access_token	= $row[$mb_fields["users"]["fn_user_access_token"]];
+					$user_auth_key		= $row[$mb_fields["users"]["fn_user_auth_key"]];
+					mbw_set_vars("mb_".$user_id."_access_token",$user_access_token);
+					mbw_set_vars("mb_".$user_id."_auth_key",$user_auth_key);
+				}
+			}
+		}
+		if( empty($auth_key) || $auth_key != md5($user_id.'|'.$expiration.'|'.$user_auth_key) ){
+			return false;
+		}
 		$hash		= mbw_get_hash_key("cookie",$expiration,$user_id,$user_access_token);
 
 		if($hmac==$hash) return true;
@@ -1619,25 +1681,36 @@ if(!function_exists('mbw_get_id_prefix')){
 			if(!empty($_REQUEST["board_name"]))
 				$name		= $_REQUEST["board_name"];
 		}else{
-			$name		= $mb_board_name;			
+			$name		= $mb_board_name;
 		}
 		return $mb_table_prefix.$name."_";
 	}
 }
 
 if(!function_exists('mbw_generate_access_token')){
-	function mbw_generate_access_token(){		
+	function mbw_generate_access_token($uid=""){
 		if(mbw_get_access_token()!=""){
-			return mbw_get_access_token();
+			$token	= mbw_get_access_token();
 		}else{
 			if(function_exists('wp_generate_password')){
-				$auth_key		= wp_generate_password( 20, false );
+				$auth_key		= wp_generate_password( 24, false );
 			}else{
 				$auth_key		= md5(time());
 			}
-			mbw_set_cookie("mb_access_token",$auth_key,(mbw_get_timestamp()+7776000));
-			return $auth_key;
-		}		
+			mbw_set_cookie("mb_access_token",$auth_key,(time()+7776000));
+			$token	= $auth_key;
+		}
+		if(!empty($uid)){
+			$token	= md5($uid.$token);
+		}else if(get_current_user_id()!=0){
+			$current_user = wp_get_current_user();
+			if($current_user->ID){
+				$token	= md5($current_user->user_login.$token);
+			}
+		}else if(mbw_is_login()){
+			$token	= md5(mbw_get_user("fn_user_id").$token);
+		}
+		return $token;
 	}
 }
 if(!function_exists('mbw_update_model_data')){
@@ -1760,7 +1833,7 @@ if(!function_exists('mbw_analytics')){
 						}
 					}
 				}
-				mbw_set_cookie("mb_".$mode,"mb_".$mode, mbw_get_timestamp()+(60*60*24));
+				mbw_set_cookie("mb_".$mode,"mb_".$mode, time()+(60*60*24));
 				$mdb->query($mdb->prepare("UPDATE ".$mb_admin_tables["analytics"]." set today_visit=today_visit+%d,total_visit=total_visit+%d where ".$mb_fields["analytics"]["fn_date"]."=%s;",$value,$value,$today));
 				do_action("mbw_".$mode);
 			}

@@ -367,7 +367,7 @@ if(!function_exists('mbw_check_api_required')){
 						}
 					}
 					//입력 패턴 검사
-					if(!empty($data["pattern"]) && !empty($api_fields[$data["field"]]) && $send_data[$api_fields[$data["field"]]]!=""){
+					if(!empty($data["pattern"]) && !empty($api_fields[$data["field"]]) && isset($send_data[$api_fields[$data["field"]]]) && $send_data[$api_fields[$data["field"]]]!==""){
 						if(!empty($data["pattern_action"]) && $data["pattern_action"]!=mbw_get_param("board_action")){
 							//pattern_action 설정이 있고, board_action과 일치하지 않을 경우 예외처리
 						}else{
@@ -386,15 +386,17 @@ if(!function_exists('mbw_check_api_required')){
 					}
 
 					if(!empty($data["filter"]) && $data["filter"]!="false" && $mb_user_level<mbw_get_option("admin_level")){
-						$filter		= mbw_check_filter($data["filter"], $send_data[$api_fields[$data["field"]]]);
-						if(!empty($filter)){
-							if(isset($data["filter_error"])){
-								$error_message		= '<div>"'.$filter.'"</div>'.mbw_get_message($data["filter_error"]);
-							}else{
-								$error_message		= "MSG_FILTER_ERROR";
+						if(!empty($api_fields[$data["field"]]) && isset($send_data[$api_fields[$data["field"]]]) && $send_data[$api_fields[$data["field"]]]!==""){
+							$filter		= mbw_check_filter($data["filter"], $send_data[$api_fields[$data["field"]]]);
+							if(!empty($filter)){
+								if(isset($data["filter_error"])){
+									$error_message		= '<div>"'.$filter.'"</div>'.mbw_get_message($data["filter_error"]);
+								}else{
+									$error_message		= "MSG_FILTER_ERROR";
+								}
+								mbw_error_message($error_message, $filter,"1204",str_replace("fn_", "", $data["field"]));
+								break;
 							}
-							mbw_error_message($error_message, $filter,"1204",str_replace("fn_", "", $data["field"]));
-							break;
 						}
 					}
 				}
