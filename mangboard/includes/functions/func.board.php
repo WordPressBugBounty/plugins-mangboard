@@ -96,37 +96,74 @@ if(!function_exists('mbw_check_request_size')){
 		}
 	}
 }
+if(!function_exists('mbw_is_same_origin_request')){
+	function mbw_is_same_origin_request(){
+		$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+		// 1. Sec-Fetch-Site 헤더 확인
+		if( !empty($host) && isset($_SERVER['HTTP_SEC_FETCH_SITE']) && $_SERVER['HTTP_SEC_FETCH_SITE'] == "same-origin" ){	
+			// 2. Origin 헤더 및 Referer 헤더 검증 (AJAX / POST 요청 시)
+			if( isset($_SERVER['HTTP_ORIGIN']) && isset($_SERVER['HTTP_REFERER']) ){
+				$originHost		= parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST);
+				$refererHost		= parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);					
+				$currentHost		= explode(':', $host)[0];
+				if( $originHost === $currentHost && $refererHost === $currentHost ){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+}
 if(!function_exists('mbw_verify_nonce')){
 	function mbw_verify_nonce(){
-		if(mbw_get_option("anti_spam_protection")===0) return true;
-		if(mbw_get_param("mb_nonce_value")!="" && mbw_get_param("mb_nonce_time")!=""){
-			if(mbw_is_admin()) return true;			
+		if( mbw_get_option("anti_spam_protection") === 0 ){
+			if( mbw_get_param('mode') != "user" && mbw_get_param('board_name') != "users" ){
+				return true;
+			}
+		}
+		if( mbw_get_param("mb_nonce_value") != "" && mbw_get_param("mb_nonce_time") != "" ){
+			//동일한 사이트에서 발생한 내부 요청이고 관리자 권한이 있을 경우 접근 허용
+			if( mbw_is_same_origin_request() && mbw_is_admin() ){
+				return true;
+			}
 
-			$board_name		= mbw_get_board_name();			
-			$hash1				= mbw_get_hash_key("nonce",mbw_get_param("mb_nonce_time"));
-			if(mbw_get_param("mb_nonce_value")==$hash1) return true;
+			$board_name		= mbw_get_board_name();
+			$hash1				= mbw_get_hash_key("nonce", mbw_get_param("mb_nonce_time"));
+			if( mbw_get_param("mb_nonce_value") == $hash1 ){
+				return true;
+			}
 
-			if(mbw_get_param("mb_nonce_token")!=""){
-				$hash1			= mbw_get_hash_key("nonce",mbw_get_param("mb_nonce_time"),"",mbw_get_param("mb_nonce_token"));
-				if(mbw_get_param("mb_nonce_value")==$hash1) return true;
+			if( mbw_get_param("mb_nonce_token")!="" ){
+				$hash1			= mbw_get_hash_key("nonce", mbw_get_param("mb_nonce_time"), "", mbw_get_param("mb_nonce_token"));
+				if( mbw_get_param("mb_nonce_value") == $hash1 ){
+					return true;
+				}
 			}
 
 			$table_name		= mbw_get_board_table_name($board_name);
-			if(mbw_get_param('wp_nonce_value')!="" && wp_verify_nonce(mbw_get_param('wp_nonce_value'), 'mbw_api_nonce'.$table_name)) return true;
+			if( mbw_get_param('wp_nonce_value') !="" && wp_verify_nonce(mbw_get_param('wp_nonce_value'), 'mbw_api_nonce'.$table_name) ){
+				return true;
+			}
 
-			if(empty($board_name)){
-				if(mbw_get_param('mode')=="user" || mbw_get_param('board_action')=="login"){
+			if( empty($board_name) ){
+				if( mbw_get_param('mode') == "user" || mbw_get_param('board_action') == "login" ){
 					global $mstore;		
 					$board_name		= "users";
 					$mstore->set_board_name($board_name);
 
-					$hash2				= mbw_get_hash_key("nonce",mbw_get_param("mb_nonce_time"));
-					if(mbw_get_param("mb_nonce_value")==$hash2) return true;
+					$hash2				= mbw_get_hash_key("nonce", mbw_get_param("mb_nonce_time"));
+					if( mbw_get_param("mb_nonce_value") == $hash2 ){
+						return true;
+					}
 					$table_name		= mbw_get_board_table_name($board_name);
-					if(mbw_get_param('wp_nonce_value')!="" && wp_verify_nonce(mbw_get_param('wp_nonce_value'), 'mbw_api_nonce'.$table_name)) return true;
+					if( mbw_get_param('wp_nonce_value') != "" && wp_verify_nonce(mbw_get_param('wp_nonce_value'), 'mbw_api_nonce'.$table_name) ){
+						return true;
+					}
 				}
 			}
-			if(mbw_get_param('wp_nonce_value')!="" && wp_verify_nonce(mbw_get_param('wp_nonce_value'), 'mbw_api_nonce')) return true;
+			if( mbw_get_param('wp_nonce_value') != "" && wp_verify_nonce(mbw_get_param('wp_nonce_value'), 'mbw_api_nonce') ){
+				return true;
+			}
 		}
 		return false;	
 	}
@@ -550,38 +587,51 @@ if(!function_exists('mbw_set_board_params')){
 if(!function_exists('mbw_get_board_table_name')){
 	function mbw_get_board_table_name($board_name,$mode="board",$type=""){
 		$name	= $board_name;
-		if($name == mbw_get_board_option("fn_board_name2") && mbw_get_board_option("fn_table_link")!="") $name	= mbw_get_board_option("fn_table_link");
+		if( $name == mbw_get_board_option("fn_board_name2") && mbw_get_board_option("fn_table_link") != "" ){
+			$name	= mbw_get_board_option("fn_table_link");
+		}
 		return mbw_get_table_name($name,$mode,$type);
 	}
 }
 if(!function_exists('mbw_get_table_name')){
 	function mbw_get_table_name($board_name,$mode="board",$type=""){
+		$board_name	= mbw_value_filter($board_name,"name");
 		if(empty($board_name)) return "";
+		
 		global $mdb,$mstore,$mb_admin_tables,$mb_fields;
 		global $mb_table_prefix,$mb_table_board_suffix,$mb_table_comment_suffix;
-
-		$board_name	= mbw_value_filter($board_name,"name");
-		if(!empty($type)) $board_type		= $type;
-		else $board_type		= $mstore->get_board_type($board_name);
-
-		if($mode!="comment" && $board_type=="admin" && !empty($mb_admin_tables[$board_name])){
+		
+		if( !empty($type) ){
+			$board_type		= $type;
+		}else{
+			$board_type		= $mstore->get_board_type($board_name);
+		}
+		if( $mode != "comment" && $board_type == "admin" && !empty($mb_admin_tables[$board_name]) ){
 			return $mb_admin_tables[$board_name];
 		}
 
-		if($mode=="comment"){
-			if($board_type=="custom"){
-				return $board_name.$mb_table_comment_suffix;
-			}else if($board_type=="link"){
+		if( $mode == "comment" ){
+			if( $board_type == "custom" ){
+				if( $board_name !=" none" && !$mstore->table_exists($board_name.$mb_table_comment_suffix) ){
+					wp_die( __MM('MSG_EXIST_ERROR2', array($board_name.$mb_table_comment_suffix, "Table")) );
+				}else{
+					return $board_name.$mb_table_comment_suffix;
+				}				
+			}else if( $board_type == "link" ){
 				$name	= $mdb->get_var($mdb->prepare("SELECT ".$mb_fields["board_options"]["fn_table_link"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_board_name2"]."=%s limit 1", $board_name));
 				if(empty($name)) $name		= $board_name;
 				return $mb_table_prefix.$name.$mb_table_comment_suffix;
 			}else{
 				return $mb_table_prefix.$board_name.$mb_table_comment_suffix;
-			}			
+			}
 		}else{
-			if($board_type=="custom"){
-				return $board_name;
-			}else if($board_type=="link"){
+			if( $board_type == "custom" ){
+				if( $board_name !=" none" && !$mstore->table_exists($board_name) ){
+					wp_die( __MM('MSG_EXIST_ERROR2', array($board_name, "Table")) );
+				}else{
+					return $board_name;
+				}
+			}else if( $board_type == "link" ){
 				$name	= $mdb->get_var($mdb->prepare("SELECT ".$mb_fields["board_options"]["fn_table_link"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_board_name2"]."=%s limit 1", $board_name));
 				if(empty($name)) $name		= $board_name;
 				return $mb_table_prefix.$name;

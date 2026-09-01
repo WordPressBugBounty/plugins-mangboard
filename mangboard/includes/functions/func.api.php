@@ -72,17 +72,16 @@ if(!function_exists('mbw_set_api_params')){
 			}
 		}
 		//XSS 필터 적용하기
-		if($check_htmlspecialchars && (mbw_get_param("data_type")=="html")){
+		if( $check_htmlspecialchars && (mbw_get_param("data_type") == "html") ){
 			if(mbw_get_param("content")!=""){
 				$tmp_content		= mbw_get_param("content");
 				if(strpos($tmp_content, '<')!==false){
-					if((!mbw_is_admin() && function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=')) || (defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML)){
-						mbw_set_param("content",mbw_get_htmlpurify($tmp_content));
-					}else if(!mbw_is_admin()){
-						$tmp_content		= strtolower($tmp_content);
-						if(strpos($tmp_content, '<script')!==false || strpos($tmp_content, '<object')!==false || strpos($tmp_content, '<embed')!==false || strpos($tmp_content, '<applet')!==false || strpos($tmp_content, '<vbscript')!==false){
-							mbw_set_param("content",mbw_htmlspecialchars2(mbw_get_param("content"),ENT_NOQUOTES));
-						}
+					if(!mbw_is_admin() || (defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) || mbw_get_option("anti_spam_protection") === 0){
+						if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
+							mbw_set_param("content",mbw_get_htmlpurify($tmp_content));
+						}else{
+							mbw_set_param("content",mbw_htmlspecialchars2($tmp_content,ENT_NOQUOTES));
+						}						
 					}
 				}
 			}

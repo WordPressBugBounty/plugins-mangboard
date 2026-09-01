@@ -204,9 +204,9 @@
 .mb-board .cursor_move{cursor:move !important;}
 
 .mb-board .height-0 {height:0px !important;}
-.mb-board .board-list .search-text,.mb-board .board-list .search-field,
-.mb-board .gallery-list .search-text,.mb-board .gallery-list .search-field,
-.mb-board .calendar-list .search-text,.mb-board .calendar-list .search-field{vertical-align:top !important;min-height:30px !important;}
+.mb-board .mb-mode-list .board-list .search-text,.mb-board .mb-mode-list .board-list .search-field,
+.mb-board .mb-mode-list .gallery-list .search-text,.mb-board .mb-mode-list .gallery-list .search-field,
+.mb-board .mb-mode-list .calendar-list .search-text,.mb-board .mb-mode-list .calendar-list .search-field{vertical-align:top !important;min-height:30px !important;background-color:#fff;}
 .mb-board .board-list select#search_field {width: auto !important;}
 .mb-board .board-list .list-search{white-space: nowrap;}
 .mb-board .board-list .list-search>div{display:inline-block !important;}

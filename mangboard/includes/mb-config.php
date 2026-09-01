@@ -4,29 +4,29 @@ $mb_image_upload_files			= array("jpg","jpeg","png","gif","bmp","webp");
 $mb_words							= array();
 $mb_languages						= array();
 
-if ( ! defined( 'MB_TABLE_PREFIX' ) ) {	
-	if ( function_exists( 'get_option' ) && get_option( 'mb_table_prefix' ) != "" ) {
-		$mb_table_prefix		= get_option( 'mb_table_prefix' );
-	} else if ( class_exists( 'wpdb' ) && isset( $wpdb ) ) { 
+if( !defined('MB_TABLE_PREFIX') ){
+	if( function_exists('get_option') && get_option('mb_table_prefix') != "" ){
+		$mb_table_prefix		= get_option('mb_table_prefix');
+	}else if( class_exists('wpdb') && isset($wpdb) ){ 
 		$table_name					= $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix."mb_boards"));
-		if(!empty($table_name)){
+		if( !empty($table_name) ){
 			$mb_table_prefix		= $wpdb->prefix."mb_";
 			update_option("mb_table_prefix", $mb_table_prefix, true);
 		}else{
 			$mb_table_prefix		= "mb_";
 			$table_name				= $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $mb_table_prefix."boards"));
-			if(!empty($table_name)){
+			if( !empty($table_name) ){
 				update_option("mb_table_prefix", $mb_table_prefix, true);
 			}
 		}
-	} else {
+	}else{
 		$mb_table_prefix		= "mb_";
 	}
 }else{
 	// wp-config.php 파일에 접두사 설정(MB_TABLE_PREFIX) 있으면 해당 설정으로 변경 // define('MB_TABLE_PREFIX', "mb2_");
 	$mb_table_prefix					= MB_TABLE_PREFIX;
 }
-if(empty($mb_table_prefix)){
+if( empty($mb_table_prefix) ){
 	$mb_table_prefix					= "mb_";
 }
 

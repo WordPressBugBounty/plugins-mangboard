@@ -81,7 +81,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 			if(!empty($pid_data[$i]) && strpos($checked_pid, ",".$pid_data[$i].",")!==false){			
 				foreach($send_data as $key => $value){
 					if( is_array($send_data[$key]) && isset($send_data[$key][$i]) ){
-						if((defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) || !mbw_is_admin()){
+						if((defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) || !mbw_is_admin() || mbw_get_option("anti_spam_protection") === 0){
 							$modify_data[$key]			= strip_tags(mbw_htmlspecialchars_decode($send_data[$key][$i]));
 						}else{
 							$modify_data[$key]			= ($send_data[$key][$i]);

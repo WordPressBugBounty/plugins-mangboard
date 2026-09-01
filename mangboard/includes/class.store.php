@@ -350,10 +350,10 @@ Class MStore
 		$add_query2	= "";
 		$add_query3	= "";
 		$user_query	= "";
-		$join_query		= "";
+		$join_query	= "";
 		$select_data	= array();
 		$where_data	= array();
-		$order_data		= array();
+		$order_data	= array();
 
 		if(!empty($sData)){
 			if (is_array($sData) ){
@@ -370,17 +370,17 @@ Class MStore
 				if(mbw_is_user_join()) $join_query		= "b.";
 			}
 			if(!empty($select_data)){
-				if($this->get_option("show_user_picture")){
+				if( $this->get_option("show_user_picture") ){
 					$user_query		= $user_query.",u.".$mb_fields["users"]["fn_user_picture"];
 				}
-
-				if($this->get_option("show_user_level")){
+				if( $this->get_option("show_user_level") ){
 					$user_query		= $user_query.",u.".$mb_fields["users"]["fn_user_level"];
 				}
+				if( has_filter('mf_user_join_field') ){
+					$user_query		= apply_filters("mf_user_join_field",$user_query);
+				}
 
-				if(has_filter('mf_user_join_field')) $user_query		= apply_filters("mf_user_join_field",$user_query);
-
-				if(empty($sData["command"])) $sData["command"]		= "SELECT";
+				if(empty($sData["command"])) $sData["command"]			= "SELECT";
 				if(empty($sData["column"])) $sData["column"]				= "*";	
 				if(empty($sData["join"])) $sData["join"]						= "";
 				if(empty($sData["user_pid"])) $sData["user_pid"]			= "user_pid";
@@ -390,28 +390,30 @@ Class MStore
 					if(empty($mb_fields["select_board"]["fn_user_pid"])) $user_query		= "";
 				}
 
-				if(strpos($sData["column"],"(")!==false) $user_query		= "";
-				else if($this->is_admin_table($sData["table"])) $user_query		= "";
-				else if($sData["join"]=="none") $user_query		= "";
+				if( strpos($sData["column"],"(") !== false ){
+					$user_query		= "";
+				}else if( $this->is_admin_table($sData["table"]) ){
+					$user_query		= "";
+				}else if( $sData["join"] == "none" ){
+					$user_query		= "";
+				}
 				
-				if(!empty($user_query)){
-					if(mbw_is_user_join() && $sData["command"]=="SELECT")
+				if( !empty($user_query) ){
+					if( mbw_is_user_join() && $sData["command"] == "SELECT" ){
 						$join_query		= "b.";
-
-					$user_query				= $user_query.",u.".$mb_fields["users"]["fn_pid"]." as uid";
-
-					$sData["column"]		= str_replace( " ", "", $sData["column"]);
-					$sData["column"]		= $join_query.str_replace( ",", ",".$join_query, $sData["column"]);
-
-					$add_query1		= "SELECT ".$sData["column"].$user_query." from ".$sData["table"]." b LEFT OUTER JOIN ".$mb_admin_tables["users"]." u ON b.".$sData["user_pid"]."=u.pid";
+					}
+					$user_query			= $user_query.",u.".$mb_fields["users"]["fn_pid"]." as uid";
+					$sData["column"]	= str_replace( " ", "", $sData["column"]);
+					$sData["column"]	= $join_query.str_replace( ",", ",".$join_query, $sData["column"]);
+					$add_query1			= "SELECT ".$sData["column"].$user_query." from ".$sData["table"]." b LEFT OUTER JOIN ".$mb_admin_tables["users"]." u ON b.".$sData["user_pid"]."=u.pid";
 				}else{
-					$add_query1		= "SELECT ".$sData["column"]." from ".$sData["table"];
+					$add_query1			= "SELECT ".$sData["column"]." from ".$sData["table"];
 				}
 			}
 		}
 
 		if(!empty($wData)){
-			if (is_array($wData) ){
+			if( is_array($wData) ){
 				$where_data		= $wData;				
 				if(!empty($this->where_data) && !empty($this->board_name) && $this->board_name!='commerce_order_result' && strpos($this->board_name, 'commerce_product')!==0 && strpos($this->board_name, 'commerce_lecture')!==0){
 					if(!empty($sData["table"]) && $mb_board_table_name==$sData["table"]){
@@ -419,7 +421,7 @@ Class MStore
 						$where_data	= array();
 						$field_array		= array();
 						foreach($temp_data as $item){
-							if(!in_array($item['field'], $field_array)){
+							if( !in_array($item['field'], $field_array) ){
 								$field_array[]		= $item['field'];
 								$where_data[]		= $item;
 							}
@@ -459,7 +461,7 @@ Class MStore
 			}
 			if(!empty($where_data)){			
 				$add_data		= array();
-				$index			= 0;
+				$index				= 0;
 				$count			= count($where_data)-1;
 				
 				foreach ( $where_data  as $data ) {
@@ -469,50 +471,61 @@ Class MStore
 					if(empty($data["sign"])) $data["sign"]		= "=";
 					if(empty($data["operator"])) $data["operator"]		= "AND";
 
-					if(!empty($data["field"]) && isset($data["value"])){
-						if(strpos($data["field"], 'fn_')===0){
+					if( !empty($data["field"]) && isset($data["value"]) ){
+						if( strpos($data["field"], 'fn_') === 0 ){
 							$field		= $this->get_board_field($data["field"]);
 						}else{
-							$field		= mbw_value_filter($data["field"],"name");
-						}
-
-						if($data["sign"]=="in"){
-							$where_query		= $data["prefix"].$join_query.$field." ".$data["sign"]." ".$data["value"]." ".$data["suffix"];		//여기는 prepare 처리하면 안됨, 여러 문자열 데이터가 쉼표로 구분되서 넘어옴
-						}else{
-							if((strpos($field, 'category') === 0) && strlen($field)==9){
-								$data["multi"]		= '1';
-							}							
-							if($data["multi"]=='1' && strpos($data["value"], ',') !== false){
-								$category_array		= explode(',',$data["value"]);
-								$filter_array			= array();
-								foreach($category_array as $item){
-									$filter_array[]		= $this->db->prepare($data["prefix"].$join_query.$field." ".$data["sign"]." %s ".$data["suffix"], $item );
-								}
-								$where_query		= " (".implode( ' OR ', $filter_array).")";
+							if( strlen($data["field"]) < 30 ){
+								$field		= $data["field"];
 							}else{
-								$where_query		= $this->db->prepare($data["prefix"].$join_query.$field." ".$data["sign"]." %s ".$data["suffix"],$data["value"]);
-							}							
+								continue;
+							}
 						}
-						if($index<$count) $where_query		= $where_query." ".$data["operator"]." ";
-						$add_data[]			= $where_query;
+						$field		= mbw_value_filter($field,"name");						
+						if( !empty($field) ){
+							if($data["sign"]=="in"){
+								$where_query		= $data["prefix"].$join_query.$field." ".$data["sign"]." ".$data["value"]." ".$data["suffix"];		//여기는 prepare 처리하면 안됨, 여러 문자열 데이터가 쉼표로 구분되서 넘어옴
+							}else{
+								if((strpos($field, 'category') === 0) && strlen($field)==9){
+									$data["multi"]		= '1';
+								}							
+								if($data["multi"]=='1' && strpos($data["value"], ',') !== false){
+									$category_array		= explode(',',$data["value"]);
+									$filter_array			= array();
+									foreach($category_array as $item){
+										$filter_array[]		= $this->db->prepare($data["prefix"].$join_query.$field." ".$data["sign"]." %s ".$data["suffix"], $item );
+									}
+									$where_query		= " (".implode( ' OR ', $filter_array).")";
+								}else{
+									$where_query		= $this->db->prepare($data["prefix"].$join_query.$field." ".$data["sign"]." %s ".$data["suffix"],$data["value"]);
+								}
+							}
+							if($index<$count) $where_query		= $where_query." ".$data["operator"]." ";
+							$add_data[]			= $where_query;
+						}
 					}
 					$index++;
 				}
-				$add_query2		= " WHERE ".implode( "", $add_data );
+				if( !empty($add_data) ){
+					$add_query2		= " WHERE ".implode( "", $add_data );					
+				}					
 			}
 		
-			if(!empty($this->where_query_data)){
+			if( !empty($this->where_query_data) ){
 				$where_add_query		= "";
 				$index						= 0;
 				foreach ( $this->where_query_data as $data ) {
-					if($index==0 && empty($add_query2))  $data["operator"]		= "WHERE";
-					else if(empty($data["operator"])) $data["operator"]		= "AND";
+					if( $index == 0 && empty($add_query2) ){
+						$data["operator"]		= "WHERE";
+					}else if( empty($data["operator"]) ){
+						$data["operator"]		= "AND";
+					}
 					$where_add_query		.= " ".$data["operator"]." (".$data["query"].")";
 					$index++;
 				}
 				$add_query2		.= $where_add_query;
 			}
-			if(empty($join_query) && strpos($add_query2, 'b.')!==false){
+			if( empty($join_query) && strpos($add_query2, 'b.') !== false ){
 				$add_query2		= str_replace("(b.", "(", $add_query2);
 				$add_query2		= str_replace(" b.", " ", $add_query2);
 			}
@@ -533,21 +546,31 @@ Class MStore
 				$add_query3		= " ".$this->order_query;
 			}else if(!empty($order_data)){
 				foreach ( $order_data  as $key => $value ) {
-					if(strpos($key, 'fn_')===0){
+					if( strpos($key, 'fn_') === 0 ){
 						$field		= $this->get_board_field($key);
-					}else $field		= $key;
-					$field				= mbw_value_filter($field,"name");
-					$value				= trim(strtolower(mbw_value_filter($value)));
-					if($value=="desc"){
-						$value		= "desc";
 					}else{
-						$value		= "asc";
+						if( strlen($key) < 30 ){
+							$field		= $key;
+						}else{
+							continue;
+						}						
 					}
-					$add_data[] = $join_query.$field." ".$value;
+					$field				= mbw_value_filter($field,"name");
+					if( !empty($field) ){
+						$value				= trim(strtolower(mbw_value_filter($value)));
+						if( $value == "desc" ){
+							$value		= "desc";
+						}else{
+							$value		= "asc";
+						}
+						$add_data[] = $join_query.$field." ".$value;
+					}
 				}
-				$add_query3		= " ORDER BY ".implode( ",", $add_data );
+				if( !empty($add_data) ){
+					$add_query3		= " ORDER BY ".implode( ",", $add_data );
+				}
 			}
-			if(empty($join_query) && strpos($add_query3, 'b.')!==false){
+			if( empty($join_query) && strpos($add_query3, 'b.') !== false ){
 				$add_query3		= str_replace("(b.", "(", $add_query3);
 				$add_query3		= str_replace(" b.", " ", $add_query3);
 			}

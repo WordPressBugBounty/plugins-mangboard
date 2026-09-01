@@ -291,6 +291,8 @@ function moveURL(url, param, loading){
 		window.history.back();
 	}else if(url=="forward"){
 		window.history.forward();
+	}else if(url=="order"){
+		sendLoginUserOrder();
 	}else if(url=="referer" || url=="referrer"){
 		url		= document.referrer;
 		if(url.indexOf('%26')==-1){
