@@ -725,7 +725,7 @@ if(!function_exists('mbw_init_options')){
 		mbw_add_trace("mbw_init_options");		
 		global $mstore,$mdb,$mb_fields;
 		global $mb_admin_tables,$mb_board_table_name,$mb_comment_table_name;		
-		global $mb_vars,$mb_words,$mb_request_mode;
+		global $mb_words,$mb_request_mode;
 	
 		if(empty($board_name)) return;	
 		 
@@ -1083,7 +1083,7 @@ if(!function_exists('mbw_is_permission_level')){
 if(!function_exists('mbw_set_log')){
 	function mbw_set_log($type,$content="",$args=array()){
 		global $mstore,$mdb;
-		global $mb_admin_tables,$mb_fields,$mb_vars,$mb_table_prefix;
+		global $mb_admin_tables,$mb_fields,$mb_table_prefix;
 
 		$send_data			= array();
 		$where_data			= array();		
@@ -1124,7 +1124,7 @@ if(!function_exists('mbw_set_log')){
 		$send_data[$mb_fields["logs"]["fn_content"]]						= mbw_htmlspecialchars($content);
 
 		$send_data[$mb_fields["logs"]["fn_ip"]]								= $_SERVER["REMOTE_ADDR"];
-		$send_data[$mb_fields["logs"]["fn_agent"]]							= $mb_vars["user_agent"];
+		$send_data[$mb_fields["logs"]["fn_agent"]]							= mbw_get_vars("user_agent");
 		$send_data[$mb_fields["logs"]["fn_reg_date"]]						= mbw_get_current_time();
 		
 		if(mbw_is_login()){
@@ -1241,9 +1241,12 @@ if(!function_exists('mbw_init_javascript')){
 		wp_enqueue_script('jquery-ui-datepicker');
 
 		$jquery_ver		= "1.11.4";
-		if(!empty($wp_scripts->registered['jquery-ui-core']->ver)) $jquery_ver		= $wp_scripts->registered['jquery-ui-core']->ver;
-		//wp_register_style('jquery-ui-css', "//ajax.googleapis.com/ajax/libs/jqueryui/".$jquery_ver."/themes/smoothness/jquery-ui.css");
-		wp_register_style('jquery-ui-css', "//code.jquery.com/ui/".$jquery_ver."/themes/base/jquery-ui.css");
+		if(!empty($wp_scripts->registered['jquery-ui-core']->ver)) $jquery_ver		= $wp_scripts->registered['jquery-ui-core']->ver;		
+		if(version_compare($jquery_ver, '1.12.1', '<')){
+			wp_register_style('jquery-ui-css', "//ajax.googleapis.com/ajax/libs/jqueryui/".$jquery_ver."/themes/smoothness/jquery-ui.css");
+		}else{
+			wp_register_style('jquery-ui-css', "//code.jquery.com/ui/".$jquery_ver."/themes/base/jquery-ui.css");
+		}		
 		if(mbw_is_admin_page()) wp_enqueue_style('jquery-ui-css');
 
 		$path					= MBW_PLUGIN_PATH.'assets/js';
@@ -1528,7 +1531,7 @@ if(!function_exists('mbw_get_move_script')){
 if(!function_exists('mbw_check_cookie')){
 	function mbw_check_cookie($data){
 		global $mstore,$mdb;
-		global $mb_admin_tables,$mb_fields,$mb_vars;
+		global $mb_admin_tables,$mb_fields;
 
 		if($data["save"]=="db"){
 			$send_data										= array();
@@ -1550,7 +1553,7 @@ if(!function_exists('mbw_check_cookie')){
 				$send_data[$mb_fields["cookies"]["fn_cookie_value"]]					= $data["value"];
 
 				$send_data[$mb_fields["cookies"]["fn_ip"]]								= $_SERVER["REMOTE_ADDR"];
-				$send_data[$mb_fields["cookies"]["fn_agent"]]							= $mb_vars["user_agent"];
+				$send_data[$mb_fields["cookies"]["fn_agent"]]							= mbw_get_vars("user_agent");
 				$send_data[$mb_fields["cookies"]["fn_reg_date"]]						= mbw_get_current_time();
 				
 				$mdb->db_query("INSERT",$mb_admin_tables["cookies"], $send_data, array());
@@ -1858,7 +1861,7 @@ if(!function_exists('mbw_analytics')){
 	function mbw_analytics($mode,$value=1){
 		if(empty($mode) || mbw_is_search_engine()) return;
 
-		global $mdb, $mstore, $mb_admin_tables,$mb_fields,$mb_vars;
+		global $mdb, $mstore, $mb_admin_tables,$mb_fields;
 		$today				= date('Y-m-d',mbw_get_timestamp());	
 		$counter_check		= intval($mdb->get_var($mdb->prepare("SELECT count(*) FROM ".$mb_admin_tables["analytics"]." WHERE ".$mb_fields["analytics"]["fn_date"]."=%s;",$today)));
 		if($counter_check==0){
@@ -1879,7 +1882,7 @@ if(!function_exists('mbw_analytics')){
 						$referer_log		= mbw_get_option("referer_log");
 						if($referer_log!=0 && strpos(MBW_HOME_URL, $referer_host) === false){
 							$referer_field		= $mstore->get_board_select_fields(array("fn_date","fn_reg_date","fn_referer_host","fn_referer_url","fn_ip","fn_agent"),"referers");
-							$mdb->query($mdb->prepare("INSERT INTO ".$mb_admin_tables["referers"]." (".implode( ",", $referer_field).") VALUES (%s,%s,%s,%s,%s,%s)",$today,mbw_get_current_time(),$referer_host,$referer_url,$ip,$mb_vars["user_agent"]));
+							$mdb->query($mdb->prepare("INSERT INTO ".$mb_admin_tables["referers"]." (".implode( ",", $referer_field).") VALUES (%s,%s,%s,%s,%s,%s)",$today,mbw_get_current_time(),$referer_host,$referer_url,$ip,mbw_get_vars("user_agent")));
 						}
 					}
 				}

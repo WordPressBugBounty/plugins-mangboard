@@ -203,7 +203,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 					echo '<tbody>';				
 					$rank		= 1;
 					foreach($url_items as $item){
-						echo '<tr><td>'.$rank.'</td><td class="text-left">'.$item[$field].'</td><td>'.$item["count"].'</td></tr>';
+						echo '<tr><td>'.$rank.'</td><td class="text-left">'.esc_html($item[$field]).'</td><td>'.$item["count"].'</td></tr>';
 						$rank++;
 					}					
 					echo '</tbody></table>';

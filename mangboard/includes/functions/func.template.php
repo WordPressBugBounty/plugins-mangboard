@@ -212,9 +212,6 @@ if(!function_exists('mbw_init_subitem_data')){
 }
 if(!function_exists('mbw_init_item_property')){
 	function mbw_init_item_property($mode,$data){		
-		
-		global $mb_vars;
-
 		$key_data		= array("field","type","name","width","height","data","style","parent");
 		foreach($key_data as $key){
 			if(!isset($data[$key])) $data[$key]		= "";
@@ -734,7 +731,7 @@ if(!function_exists('mbw_get_date_search_template')){
 
 if(!function_exists('mbw_create_search_template')){
 	function mbw_create_search_template($type=""){
-		global $mb_vars,$mdb,$mb_admin_tables,$mb_fields;
+		global $mdb,$mb_admin_tables,$mb_fields;
 		global $mb_shop_order_state,$mb_shop_sale_status;
 
 		if($type=="board_type"){

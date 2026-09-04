@@ -48,7 +48,7 @@ if(!function_exists('mbw_check_filter')){
 if(!function_exists('mbw_set_api_params')){
 	function mbw_set_api_params($fields){
 		mbw_add_trace("mbw_set_api_params");
-		global $mstore,$mdb,$mb_vars,$mb_admin_tables,$mb_fields;
+		global $mstore,$mdb,$mb_admin_tables,$mb_fields;
 		global $mb_board_table_name,$mb_comment_table_name;
 		$api_fields					= $fields;
 		$check_fields				= $fields;
@@ -234,8 +234,8 @@ if(!function_exists('mbw_set_api_params')){
 			$send_data[$api_fields["fn_passwd"]]			= mbw_hash_password($send_data[$api_fields["fn_passwd"]]);
 		}
 
-		if(isset($api_fields["fn_ip"]) && mbw_get_param("board_name")!="access_ip")				$send_data[$api_fields["fn_ip"]]					= $_SERVER["REMOTE_ADDR"];
-		if(isset($api_fields["fn_agent"]))		$send_data[$api_fields["fn_agent"]]				= $mb_vars["user_agent"];
+		if(isset($api_fields["fn_ip"]) && mbw_get_param("board_name")!="access_ip")				$send_data[$api_fields["fn_ip"]]					= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
+		if(isset($api_fields["fn_agent"]))		$send_data[$api_fields["fn_agent"]]				= mbw_get_vars("user_agent");
 
 		if(mbw_get_param("mode")=="comment"){	
 			if(isset($api_fields["fn_reg_date"]))	$send_data[$api_fields["fn_reg_date"]]			= mbw_get_current_time();
@@ -579,7 +579,7 @@ if(!function_exists('mbw_file_upload')){
 		mbw_add_trace("mbw_file_upload");
 		global $mstore,$mdb;
 		global $mb_fields,$mb_admin_tables,$mb_board_table_name;
-		global $mb_vars,$mb_image_upload_files,$mb_board_upload_files;
+		global $mb_image_upload_files,$mb_board_upload_files;
 		
 		if(!empty($_SERVER['HTTP_REFERER'])){			
 			if(defined('MBW_HOME_URL') && strpos(MBW_HOME_URL,'http')===0){
@@ -640,8 +640,8 @@ if(!function_exists('mbw_file_upload')){
 		if(isset($api_fields["fn_board_name"]))		$send_data[$api_fields["fn_board_name"]]					= $args["board_name"];
 		if(isset($api_fields["fn_table_name"]))		$send_data[$api_fields["fn_table_name"]]						= $args["table_name"];
 		if(isset($api_fields["fn_board_pid"]))			$send_data[$api_fields["fn_board_pid"]]						= $args["board_pid"];
-		if(isset($api_fields["fn_ip"]))						$send_data[$api_fields["fn_ip"]]								= $_SERVER["REMOTE_ADDR"];
-		if(isset($api_fields["fn_agent"]))				$send_data[$api_fields["fn_agent"]]								= $mb_vars["user_agent"];
+		if(isset($api_fields["fn_ip"]))						$send_data[$api_fields["fn_ip"]]								= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
+		if(isset($api_fields["fn_agent"]))				$send_data[$api_fields["fn_agent"]]							= mbw_get_vars("user_agent");
 		if(isset($api_fields["fn_reg_date"]))		$send_data[$api_fields["fn_reg_date"]]								= mbw_get_current_time();
 
 		if(mbw_is_login()){

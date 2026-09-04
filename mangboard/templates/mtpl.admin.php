@@ -203,23 +203,22 @@ if(!function_exists('mbw_get_admin_template')){
 			$template_start	.= '</div>';
 
 		}else if($item_type=='admin_skin_model'){
-			$template_start	.= '<p>'.$data["value"].'</p>';
+			$template_start	.= '<div>'.esc_html($data["value"]).'</div>';
 			$model_name		= mbw_get_board_item("fn_model_name");
-			if(!empty($model_name)) $template_start	.= '<p style="font-size:11px;">('.esc_html($model_name).')</p>';
+			if(!empty($model_name)) $template_start	.= '<div style="font-size:11px;">('.esc_html($model_name).')</div>';
 		}else if($item_type=='admin_ip_agent'){
-			$template_start	.= '<p>'.$data["value"].'</p>';
+			$template_start	.= '<div>'.esc_html($data["value"]).'</div>';
 			$agent		= mbw_get_board_item("fn_agent");
-			if(!empty($agent)) $template_start	.= '<p style="font-size:11px;">('.esc_html($agent).')</p>';
+			if(!empty($agent)) $template_start	.= '<div style="font-size:11px;">('.esc_html($agent).')</div>';
 		}else if($item_type=='admin_ip_agent2'){
-			$template_start	.= '<span>'.$data["value"].'</span>';
+			$template_start	.= '<span>'.esc_html($data["value"]).'</span>';
 			$agent		= mbw_get_board_item("fn_agent");
 			if(!empty($agent)) $template_start	.= ' <span style="font-size:11px;">('.esc_html($agent).')</span>';
 		}else if($item_type=='admin_action_type'){
-			$template_start	.= '<p>'.$data["value"].'</p>';
+			$template_start	.= '<div>'.esc_html($data["value"]).'</div>';
 			$type					= mbw_get_board_item("fn_type");
-			if(!empty($type)) $template_start	.= '<p style="font-size:11px;">('.esc_html($type).')</p>';
+			if(!empty($type)) $template_start	.= '<div style="font-size:11px;">('.esc_html($type).')</div>';
 		}else if($item_type=='admin_board_name_pid'){
-
 			$is_admin_page			= mbw_is_admin_page();
 			$pid							= mbw_get_board_item("fn_board_pid");
 			$board_name				= $data["value"];
@@ -239,7 +238,7 @@ if(!function_exists('mbw_get_admin_template')){
 				if(!empty($pid)) $template_start	.= '<div style="font-size:11px;">('.esc_html($pid).')</div>';
 				$template_start	.= '</a>';
 			}else{
-				$template_start	.= $data["value"];
+				$template_start	.= esc_html($data["value"]);
 			}
 
 		}else if($item_type=='admin_file_name_size'){

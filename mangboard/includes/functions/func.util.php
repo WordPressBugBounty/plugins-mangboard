@@ -800,6 +800,8 @@ if(!function_exists('mbw_value_filter')){
 			$pattern		= "/[^0-9]/";		//숫자
 		}else if($type=='number'){
 			$pattern		= "/[^0-9\,\.\-]/";		//숫자,-,.
+		}else if($type=='ip'){
+			$pattern		= "/[^0-9a-fA-F.:]/";
 		}else{
 			$pattern		= "/[^0-9a-zA-Z\&\_\,\.\-\=]/";
 		}

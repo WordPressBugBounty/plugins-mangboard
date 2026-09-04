@@ -3,10 +3,13 @@ body .ui-datepicker .ui-datepicker-header {
 }
 body .ui-datepicker select.ui-datepicker-month, 
 body .ui-datepicker select.ui-datepicker-year {
-	height:28px !important;min-height:28px !important;line-height:2.2 !important;font-size:13px;outline: none !important;box-shadow:none !important;
+	height:28px !important;min-height:28px !important;line-height:2.2 !important;
+	font-size:13px !important;
+	outline: none !important;box-shadow:none !important;
 	-moz-box-sizing:border-box !important;-webkit-box-sizing:border-box !important;
 	vertical-align:middle !important;
 	font-weight:700;
+    padding: 0px 3px !important;
 }
 body .ui-datepicker a{outline: none !important;box-shadow:none !important;}
 body .ui-datepicker .ui-datepicker-prev,
