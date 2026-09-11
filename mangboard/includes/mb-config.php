@@ -1,5 +1,5 @@
 <?php
-$mb_board_upload_files			= array("jpg","jpeg","png","gif","bmp","webp","zip","ppt","xls","doc","pptx","xlsx","docx","pdf","hwp","hwpx","psd","ai","mp3","mp4","txt","gz","dwg","stp","wav","wmv","mpg","mpeg","webm","mov");
+$mb_board_upload_files			= array("jpg","jpeg","png","gif","bmp","webp","zip","ppt","xls","doc","pptx","xlsx","docx","pdf","hwp","hwpx","psd","ai","mp3","mp4","txt","gz","dwg","stp","wav","wmv","mpg","mpeg","webm","mov","heic");
 $mb_image_upload_files			= array("jpg","jpeg","png","gif","bmp","webp");
 $mb_words							= array();
 $mb_languages						= array();

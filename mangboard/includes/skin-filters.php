@@ -70,15 +70,15 @@ if(!function_exists('mbw_filter_board_item')){
 				}			
 			}
 		}else if($item["field"]=="fn_content"){		//CONTENT FILTER
-			if(!empty($mb_fields["select_board"]["fn_data_type"]) && !empty($data[$mb_fields["select_board"]["fn_data_type"]]) && ($data[$mb_fields["select_board"]["fn_data_type"]]=="html") || mbw_get_board_option("fn_editor_type")=="H"){
+			if( !empty($mb_fields["select_board"]["fn_data_type"]) && !empty($data[$mb_fields["select_board"]["fn_data_type"]]) && $data[$mb_fields["select_board"]["fn_data_type"]] == "html" ){
 				//html 에디터로 작성된 글만 디코드
 				$item["value"]			= mbw_htmlspecialchars_decode($item["value"]);
 				if((mbw_get_param("mode")=="list" || mbw_get_param("mode")=="view") && function_exists('mbw_replace_image_url')) $item["value"]			= mbw_replace_image_url($item["value"]);
-			}else if($item["type"]!="comment" && mbw_get_param("mode")!="write"){
+			}else if( $item["type"] != "comment" && mbw_get_param("mode") != "write" ){
 				$item["value"]			= nl2br($item["value"]);
 			}
 
-			if(!empty($mb_fields["select_board"]["fn_editor_type"]) && !empty($data[$mb_fields["select_board"]["fn_editor_type"]]) && $data[$mb_fields["select_board"]["fn_editor_type"]]=="W"){
+			if( !empty($mb_fields["select_board"]["fn_editor_type"]) && !empty($data[$mb_fields["select_board"]["fn_editor_type"]]) && $data[$mb_fields["select_board"]["fn_editor_type"]] == "W" ){
 				//워드프레스 에디터에서 작성된 게시물에만 shortcode 허용
 				//$item["value"]				= do_shortcode($item["value"]);
 			}

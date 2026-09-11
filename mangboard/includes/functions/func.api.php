@@ -59,11 +59,11 @@ if(!function_exists('mbw_set_api_params')){
 		$check_htmlspecialchars			= true;
 		$is_admin_table						= false;
 		
-		if(mbw_is_admin_table($mb_board_table_name)){
+		if( mbw_is_admin_table($mb_board_table_name) ){
 			$is_admin_table					= true;
-			if(mbw_is_admin() && mbw_get_param("board_name")=="options")
-				$check_htmlspecialchars		= false;			
-
+			if( mbw_is_admin() && mbw_get_param("board_name") == "options" ){
+				$check_htmlspecialchars		= false;
+			}
 			if(!mbw_is_admin()){
 				//관리자가 아닌 상태에서 관리자 테이블 목록을 요구할 경우 종료
 				if(mbw_get_param("mode")=="list") exit;				
@@ -72,7 +72,11 @@ if(!function_exists('mbw_set_api_params')){
 			}
 		}
 		//XSS 필터 적용하기
-		if( $check_htmlspecialchars && (mbw_get_param("data_type") == "html") ){
+		$data_type	= mbw_get_param("data_type");
+		if( !empty($data_type) && is_array($data_type) ){
+			$data_type		= implode(",", $data_type);
+		}		
+		if( ($check_htmlspecialchars && ( strpos($data_type, 'html') !== false )) || !is_string($data_type) ){
 			if(mbw_get_param("content")!=""){
 				$tmp_content		= mbw_get_param("content");
 				if(strpos($tmp_content, '<')!==false){

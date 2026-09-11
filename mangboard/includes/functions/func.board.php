@@ -612,7 +612,7 @@ if(!function_exists('mbw_get_table_name')){
 
 		if( $mode == "comment" ){
 			if( $board_type == "custom" ){
-				if( $board_name !=" none" && !$mstore->table_exists($board_name.$mb_table_comment_suffix) ){
+				if( $board_name !=" none" && strlen($board_name) > 3 && !$mstore->table_exists($board_name.$mb_table_comment_suffix) ){
 					wp_die( __MM('MSG_EXIST_ERROR2', array($board_name.$mb_table_comment_suffix, "Table")) );
 				}else{
 					return $board_name.$mb_table_comment_suffix;
@@ -626,7 +626,7 @@ if(!function_exists('mbw_get_table_name')){
 			}
 		}else{
 			if( $board_type == "custom" ){
-				if( $board_name !=" none" && !$mstore->table_exists($board_name) ){
+				if( $board_name !=" none" && strlen($board_name) > 3 && !$mstore->table_exists($board_name) ){
 					wp_die( __MM('MSG_EXIST_ERROR2', array($board_name, "Table")) );
 				}else{
 					return $board_name;
