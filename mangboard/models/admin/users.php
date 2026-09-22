@@ -150,7 +150,9 @@ add_action('mbw_board_api_header', 'mbw_api_header_admin_modify_passwd');
 if(!function_exists('mbw_get_synchronize_template')){
 	function mbw_get_synchronize_template(){
 		echo '<div class="border-bottom-ccc-1" style="margin-bottom:10px !important;padding:10px 0 !important;text-align:right;">';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo mbw_get_btn_template(array("name"=>"W_WP_USER_SYNC","onclick"=>"sendBoardListData({'board_action':'user_wp_synchronize'})","class"=>"btn btn-default btn-search margin-left-5"));
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<span class="mb-description"><br>('.__MM('MSG_NOT_REGIST_USER_LOAD').')</span>';	
 		echo '</div>';
 	}
@@ -173,9 +175,10 @@ if(!function_exists('mbw_get_user_date_search_template')){
 			echo '<div style="float:left;" class="mb-float-mnone padding-mbottom-10">';
 				echo '<input type="hidden" name="search_add_field1" value="fn_allow_mailing" />';
 				echo '<input type="hidden" name="se_field1" value="fn_user_level" />';
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo mbw_get_item_template("category",array("field"=>"search_add_text1","type"=>"select","item_name"=>"search_add_text1","class"=>"max-width-m100","style"=>"max-width:100px;","value"=>mbw_get_param('search_add_text1'),"event"=>"onchange=\"sendSearchData()\"","label"=>'이메일 수신,수신동의,수신안함',"data"=>',1,0'));
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo mbw_get_item_template("category",array("field"=>"se_text1","type"=>"select","item_name"=>"se_text1","class"=>"max-width-m100","style"=>"max-width:100px;","value"=>mbw_get_param('se_text1'),"event"=>"onchange=\"sendSearchData()\"","label"=>'레벨,0,1,2,3,4,5,6,7,8,9,10',"data"=>',0,1,2,3,4,5,6,7,8,9,10'));
-
 			echo '</div>';
 			mbw_create_search_template("date_range");
 		echo '</div>';

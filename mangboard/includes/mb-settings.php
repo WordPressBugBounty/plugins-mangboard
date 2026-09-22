@@ -1,29 +1,75 @@
 <?php
 if(!function_exists('mbw_get_require_path')){
-	function mbw_get_require_path($dir_name,$type="dir"){
-		if(strpos($type, 'theme_')===0) $path		= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/".$dir_name;
-		else $path					= MBW_PLUGIN_PATH.$dir_name;
+	function mbw_get_require_path($dir_name, $type="dir"){
+		if ( strpos($type, 'theme_') === 0 ) {
+			$path		= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/".$dir_name;
+		} else {
+			$path		= MBW_PLUGIN_PATH.$dir_name;
+		}
+		if ( $dir_name == "includes/install/plugins/" && is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
+			$add_path		= MBW_STORE_DIR;
+		}else{
+			$add_path		= mbw_get_option("store_path");
+		}
+		
 		$path							= rtrim($path,'/\\');
 		$require_path				= array();
 		if(!is_dir($path)) return $require_path;
 		$dir							= dir($path);
 
-		if($type=="dir" || $type=="theme_dir"){
+		if ( $type=="dir" || $type=="theme_dir" ) {
 			while (false !== ($entry = $dir->read())){
 				if(strpos($entry,'.')!==0){
 					if(is_dir($path."/".$entry)){
-						if(is_file($path."/".$entry."/".$entry.".php")){
-							$require_path[]		= $path."/".$entry."/".$entry.".php";
+						$key			= str_replace(array(" ","-","."), "_", $entry);
+						if(is_file($path."/".$entry."/".$entry.".php")){							
+							$require_path[$key]		= $path."/".$entry."/".$entry.".php";
 						}else if(is_file($path."/".$entry."/index.php")){
-							$require_path[]		= $path."/".$entry."/index.php";
+							$require_path[$key]		= $path."/".$entry."/index.php";
 						}
 					}
 				}
 			}
-		}else if($type=="file" || $type=="theme_file"){
+		
+			if ( !empty($add_path) ) {
+				$path							= WP_CONTENT_DIR.$add_path.$dir_name;
+				$path							= rtrim($path,'/\\');
+				if(!is_dir($path)) return $require_path;
+				$dir							= dir($path);
+				
+				while (false !== ($entry = $dir->read())){
+					if(strpos($entry,'.')!==0){
+						if(is_dir($path."/".$entry)){
+							$key			= str_replace(array(" ","-","."), "_", $entry);
+							if(is_file($path."/".$entry."/".$entry.".php")){							
+								$require_path[$key]		= $path."/".$entry."/".$entry.".php";
+							}else if(is_file($path."/".$entry."/index.php")){
+								$require_path[$key]		= $path."/".$entry."/index.php";
+							}
+						}
+					}
+				}
+			}
+			
+			
+		}else if ( $type=="file" || $type=="theme_file" ) {
 			while (false !== ($entry = $dir->read())){
 				if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
-					$require_path[]		= $path."/".$entry;
+					$key			= str_replace(array(" ","-",".php","."), "_", $entry);
+					$require_path[$key]		= $path."/".$entry;
+				}
+			}
+			if ( !empty($add_path) ) {
+				$path							= WP_CONTENT_DIR.$add_path.$dir_name;
+				$path							= rtrim($path,'/\\');
+				if(!is_dir($path)) return $require_path;
+				$dir							= dir($path);
+				
+				while (false !== ($entry = $dir->read())){
+					if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
+						$key			= str_replace(array(" ","-",".php","."), "_", $entry);
+						$require_path[$key]		= $path."/".$entry;
+					}
 				}
 			}
 		}
@@ -80,6 +126,8 @@ require_once(MBW_PLUGIN_PATH."includes/functions/func.plugin.php");
 require_once(MBW_PLUGIN_PATH."includes/functions/func.table.php");
 require_once(MBW_PLUGIN_PATH."includes/functions/func.board.php");
 
+
+
 if(version_compare(PHP_VERSION, '5.6.0', '>=')){
 	require_once(MBW_PLUGIN_PATH."includes/class.db.php");
 }else{
@@ -94,13 +142,14 @@ if( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ){
 		foreach($require_files  as $value){
 			require_once($value);
 		}
-	}
-	//register_activation_hook(MBW_PLUGIN_FILE, 'mbw_plugin_activation');
-	register_deactivation_hook(MBW_PLUGIN_FILE, 'mbw_plugin_deactivation');
+	}	
+	//register_activation_hook(MBW_PLUGIN_FILE, 'mbw_plugin_activation');		
 	if(!function_exists('mbw_plugin_activation')){
-		function mbw_plugin_activation(){
+		function mbw_plugin_activation(){			
+			//do_action('mbw_activation_hook');			
 		}
 	}
+	register_deactivation_hook(MBW_PLUGIN_FILE, 'mbw_plugin_deactivation');
 	if(!function_exists('mbw_plugin_deactivation')){
 		function mbw_plugin_deactivation(){
 			delete_option('mb_user_synchronize_index');
@@ -111,7 +160,6 @@ if( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ){
 		}
 	}
 }
-
 if ( defined( 'WP_CLI' ) && WP_CLI ) return;
 else if(empty($wpdb)) return;
 

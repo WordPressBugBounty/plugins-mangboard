@@ -1,7 +1,8 @@
 <?php
 if(!function_exists('mbw_footer_video_scripts')){	
 	function mbw_footer_video_scripts(){
-		loadScript(MBW_PLUGIN_URL."plugins/editor_composer/js/video.js","mb-editor-video");
+		$plugin_url	= plugins_url('', __FILE__)."/";
+		loadScript($plugin_url."js/video.js","mb-editor-video");
 	}
 }
 add_action('wp_footer', 'mbw_footer_video_scripts',15);
@@ -11,10 +12,11 @@ if(!function_exists('mbw_init_editor_composer')){
 		if(mbw_get_trace("mbw_init_editor_composer")==""){
 			mbw_add_trace("mbw_init_editor_composer");
 			wp_enqueue_script( 'jquery-ui-widget', false, array('jquery') );
-			loadStyle(MBW_PLUGIN_URL."plugins/editor_composer/css/evol-colorpicker.min.css");
-			loadScript(MBW_PLUGIN_URL."plugins/editor_composer/js/evol-colorpicker.min.js","",array('jquery','jquery-ui-widget'));
-			loadStyle(MBW_PLUGIN_URL."plugins/editor_composer/css/style.css");
-			loadScript(MBW_PLUGIN_URL."plugins/editor_composer/js/main.js");
+			$plugin_url	= plugins_url('', __FILE__)."/";
+			loadStyle($plugin_url."css/evol-colorpicker.min.css");
+			loadScript($plugin_url."js/evol-colorpicker.min.js","",array('jquery','jquery-ui-widget'));
+			loadStyle($plugin_url."css/style.css");
+			loadScript($plugin_url."js/main.js");
 		}
 	}
 }
@@ -50,17 +52,17 @@ if(!function_exists('mbw_get_editor_composer_template')){
 		$board_name		= mbw_get_board_name();
 		if(empty($board_name)) return false;
 
-		if(empty($editor_id)) $editor_id			= "se_content";
+		if(empty($editor_id)) $editor_id			= "se_content";		
+		$plugin_url	= plugins_url('', __FILE__)."/";
+		$plugin_path	= plugin_dir_path(__FILE__);
 
 		if(mbw_get_option("ecomposer_use_level")!=""){
 			$mb_ecomposer_except_board		= mbw_get_option("ecomposer_except_board");
 			$mb_ecomposer_use_board			= mbw_get_option("ecomposer_use_board");
 			$mb_ecomposer_use_level				= mbw_get_option("ecomposer_use_level");
 		}else{
-			include(MBW_PLUGIN_PATH."plugins/editor_composer/config.php");
+			include($plugin_path."config.php");
 		}		
-
-		
 		$user_level			= intval(mbw_get_user("fn_user_level"));
 		//허용 예외 게시판일 경우 컴포저 표시 안함
 		if(!empty($mb_ecomposer_except_board) && strpos(','.$mb_ecomposer_except_board.',', ','.$board_name.',') !== false) return false;
@@ -191,7 +193,7 @@ if(!function_exists('mbw_get_editor_composer_template')){
 
 				$template_start	.= '<div class="mb-layout-option-box">';
 
-					$template_start	.= '<div onclick="checkCSSDisplay(\'.mb-editor-video-'.esc_js($editor_id).'\');return false;" class="mbc_editor_video cursor_pointer" title="'.__MW("W_VIDEO_INSERT").'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/icon_editor_video.png" style="width:13px;margin: 3px 0 3px !important;vertical-align: top !important;"> '.__MW("W_VIDEO").'</div>';
+					$template_start	.= '<div onclick="checkCSSDisplay(\'.mb-editor-video-'.esc_js($editor_id).'\');return false;" class="mbc_editor_video cursor_pointer" title="'.__MW("W_VIDEO_INSERT").'"><img src="'.$plugin_url.'img/icon_editor_video.png" style="width:13px;margin: 3px 0 3px !important;vertical-align: top !important;"> '.__MW("W_VIDEO").'</div>';
 
 					$template_start	.= '<span class="mb-editor-composer-vertical-bar1"></span>';
 
@@ -204,28 +206,29 @@ if(!function_exists('mbw_get_editor_composer_template')){
 				$insert_layout		= __MM("MSG_ECOMPOSER_INSERT_LAYOUT")."";
 
 
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L25-75\');return false;" class="mb-layout-icon" title="Desktop(25%,75%), Tablet(25%,75%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/25-75.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L30-70\');return false;" class="mb-layout-icon" title="Desktop(30%,70%), Tablet(30%,70%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/30-70.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L33-67\');return false;" class="mb-layout-icon" title="Desktop(33%,67%), Tablet(33%,67%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/33-67.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L67-33\');return false;" class="mb-layout-icon" title="Desktop(67%,33%), Tablet(67%,33%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/67-33.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L70-30\');return false;" class="mb-layout-icon" title="Desktop(70%,30%), Tablet(70%,30%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/70-30.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L75-25\');return false;" class="mb-layout-icon" title="Desktop(75%,25%), Tablet(75%,25%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/75-25.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L25-75\');return false;" class="mb-layout-icon" title="Desktop(25%,75%), Tablet(25%,75%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/25-75.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L30-70\');return false;" class="mb-layout-icon" title="Desktop(30%,70%), Tablet(30%,70%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/30-70.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L33-67\');return false;" class="mb-layout-icon" title="Desktop(33%,67%), Tablet(33%,67%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/33-67.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L67-33\');return false;" class="mb-layout-icon" title="Desktop(67%,33%), Tablet(67%,33%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/67-33.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L70-30\');return false;" class="mb-layout-icon" title="Desktop(70%,30%), Tablet(70%,30%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/70-30.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'L75-25\');return false;" class="mb-layout-icon" title="Desktop(75%,25%), Tablet(75%,25%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/75-25.png"></div>';
 
-				//$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-111\');return false;" class="mb-layout-icon" title="Desktop(100%), Tablet(100%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/111.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-221\');return false;" class="mb-layout-icon" title="Desktop(50%,50%), Tablet(50%,50%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/221.png"></div>';
-				//$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-222\');return false;" class="mb-layout-icon" title="Desktop(50%,50%), Tablet(50%,50%), Mobile(50%,50%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/222.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-321\');return false;" class="mb-layout-icon" title="Desktop(33%,33%,33%), Tablet(50%,50%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/321.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'M331\');return false;" class="mb-layout-icon" title="Desktop(30%,30%,30%), Tablet(30%,30%,30%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/m331.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-421\');return false;" class="mb-layout-icon" title="Desktop(25%,25%,25%,25%), Tablet(50%,50%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/421.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-432\');return false;" class="mb-layout-icon" title="Desktop(25%,25%,25%,25%), Tablet(33%,33%,33%), Mobile(50%,50%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/432.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-532\');return false;" class="mb-layout-icon" title="Desktop(20%,20%,20%,20%,20%), Tablet(33%,33%,33%), Mobile(50%,50%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/532.png"></div>';
-				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-543\');return false;" class="mb-layout-icon" title="Desktop(20%,20%,20%,20%,20%), Tablet(25%,25%,25%,25%), Mobile(33%,33%,33%) '.esc_attr($insert_layout).'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/543.png"></div>';
+				//$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-111\');return false;" class="mb-layout-icon" title="Desktop(100%), Tablet(100%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/111.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-221\');return false;" class="mb-layout-icon" title="Desktop(50%,50%), Tablet(50%,50%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/221.png"></div>';
+				//$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-222\');return false;" class="mb-layout-icon" title="Desktop(50%,50%), Tablet(50%,50%), Mobile(50%,50%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/222.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-321\');return false;" class="mb-layout-icon" title="Desktop(33%,33%,33%), Tablet(50%,50%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/321.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'M331\');return false;" class="mb-layout-icon" title="Desktop(30%,30%,30%), Tablet(30%,30%,30%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/m331.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-421\');return false;" class="mb-layout-icon" title="Desktop(25%,25%,25%,25%), Tablet(50%,50%), Mobile(100%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/421.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-432\');return false;" class="mb-layout-icon" title="Desktop(25%,25%,25%,25%), Tablet(33%,33%,33%), Mobile(50%,50%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/432.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-532\');return false;" class="mb-layout-icon" title="Desktop(20%,20%,20%,20%,20%), Tablet(33%,33%,33%), Mobile(50%,50%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/532.png"></div>';
+				$template_start	.= '<div onclick="mb_insertEditorLayout(\''.esc_js($editor_id).'\',\'col-543\');return false;" class="mb-layout-icon" title="Desktop(20%,20%,20%,20%,20%), Tablet(25%,25%,25%,25%), Mobile(33%,33%,33%) '.esc_attr($insert_layout).'"><img src="'.$plugin_url.'img/543.png"></div>';
 				$template_start	.= '<div class="mb-editor-btn-box">';
-					$template_start	.= '<a class="mb-editor-hide-btn cursor_pointer" href="javascript:;" onclick="mb_showEditorAttrBox(\''.esc_js($editor_id).'\');return false;" title="'.__MM("MSG_ECOMPOSER_EXPAND_PANELS").'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/icon_arrow_down.png" style="width:20px;height:20px;"></a>';
-					$template_start	.= '<a class="mb-editor-show-btn cursor_pointer" style="display:none;" href="javascript:;" onclick="mb_hideEditorAttrBox(\''.esc_js($editor_id).'\');return false;" title="'.__MM("MSG_ECOMPOSER_COLLAPSE_ICONS").'"><img src="'.MBW_PLUGIN_URL.'plugins/editor_composer/img/icon_arrow_up.png" style="width:20px;height:20px;"></a>';
+					$template_start	.= '<a class="mb-editor-hide-btn cursor_pointer" href="javascript:;" onclick="mb_showEditorAttrBox(\''.esc_js($editor_id).'\');return false;" title="'.__MM("MSG_ECOMPOSER_EXPAND_PANELS").'"><img src="'.$plugin_url.'img/icon_arrow_down.png" style="width:20px;height:20px;"></a>';
+					$template_start	.= '<a class="mb-editor-show-btn cursor_pointer" style="display:none;" href="javascript:;" onclick="mb_hideEditorAttrBox(\''.esc_js($editor_id).'\');return false;" title="'.__MM("MSG_ECOMPOSER_COLLAPSE_ICONS").'"><img src="'.$plugin_url.'img/icon_arrow_up.png" style="width:20px;height:20px;"></a>';
 				$template_start	.= '</div>';
 			$template_start	.= '</div>';
 		$template_start	.= '</div>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo  $template_start;
 	}
 }

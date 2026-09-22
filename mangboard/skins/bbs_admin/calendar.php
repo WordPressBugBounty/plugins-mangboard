@@ -17,9 +17,9 @@ function sendCalendarDataHandler(response, state){
 	if(response.state == "success"){
 		var calendar_nav		= "";
 		calendar_nav	= calendar_nav+'<div class="calendar-lnb">';
-		calendar_nav	= calendar_nav+'<span class="lnb-prev-year"><a href="javascript:;" title="Previous Year" onclick="setCalendar(\''+response.data["prev_year"]+'\')"><img src="<?php echo MBW_SKIN_URL;?>images/icon_arrow_left2.gif"></a></span><span class="lnb-prev-month"><a href="javascript:;" title="Previous Month" onclick="setCalendar(\''+response.data["prev_month"]+'\')"><img src="<?php echo MBW_SKIN_URL;?>images/icon_arrow_left.gif"></a></span>';
-		calendar_nav	= calendar_nav+'<span class="calendar-date-text">'+response.data["year"]+'<span class="lnb-year-text"><?php echo __MM("W_YEAR");?></span>'+response.data["month"]+'<span class="lnb-month-text"><?php echo __MM("W_MONTH");?></span></span>';
-		calendar_nav	= calendar_nav+'<span class="lnb-next-month"><a href="javascript:;" title="Next Month" onclick="setCalendar(\''+response.data["next_month"]+'\')"><img src="<?php echo MBW_SKIN_URL;?>images/icon_arrow_right.gif"></a></span><span class="lnb-next-year"><a href="javascript:;" title="Next Year" onclick="setCalendar(\''+response.data["next_year"]+'\')"><img src="<?php echo MBW_SKIN_URL;?>images/icon_arrow_right2.gif"></a></span>';
+		calendar_nav	= calendar_nav+'<span class="lnb-prev-year"><a href="javascript:;" title="Previous Year" onclick="setCalendar(\''+response.data["prev_year"]+'\')"><img src="<?php echo MBW_SKIN_URL; // phpcs:ignore ?>images/icon_arrow_left2.gif"></a></span><span class="lnb-prev-month"><a href="javascript:;" title="Previous Month" onclick="setCalendar(\''+response.data["prev_month"]+'\')"><img src="<?php echo MBW_SKIN_URL; // phpcs:ignore ?>images/icon_arrow_left.gif"></a></span>';
+		calendar_nav	= calendar_nav+'<span class="calendar-date-text">'+response.data["year"]+'<span class="lnb-year-text"><?php echo __MM("W_YEAR"); // phpcs:ignore ?></span>'+response.data["month"]+'<span class="lnb-month-text"><?php echo __MM("W_MONTH"); // phpcs:ignore ?></span></span>';
+		calendar_nav	= calendar_nav+'<span class="lnb-next-month"><a href="javascript:;" title="Next Month" onclick="setCalendar(\''+response.data["next_month"]+'\')"><img src="<?php echo MBW_SKIN_URL; // phpcs:ignore ?>images/icon_arrow_right.gif"></a></span><span class="lnb-next-year"><a href="javascript:;" title="Next Year" onclick="setCalendar(\''+response.data["next_year"]+'\')"><img src="<?php echo MBW_SKIN_URL; // phpcs:ignore ?>images/icon_arrow_right2.gif"></a></span>';
 		calendar_nav	= calendar_nav+'<input type="hidden" name="mb_calendar_date" id="mb_calendar_date" value="'+response.data["year"]+"-"+response.data["month"]+'"></div>';
 		
 		var calendar_data		= '<div class="calendar-box">'+calendar_nav+response.data["start"]+response.data["thead"]+response.data["tbody"]+response.data["end"]+'</div>';
@@ -54,24 +54,24 @@ function sendSearchData(data){
 function showDeleteConfirm(){	
 	var check_count	= jQuery(".mb-board input[name='check_array[]']").filter(":checked").length;	
 	if(check_count > 0) {
-		showConfirmPopup(check_count+"<?php echo __MM('MSG_MULTI_DELETE_CONFIRM');?>", {"board_action":"multi_delete"}, sendBoardListData);
+		showConfirmPopup(check_count+"<?php echo __MM('MSG_MULTI_DELETE_CONFIRM'); // phpcs:ignore ?>", {"board_action":"multi_delete"}, sendBoardListData);
 	}else{
-		showAlertPopup({"code":"1000","message":"<?php echo __MM('MSG_DELETE_SELECT_EMPTY');?>"});
+		showAlertPopup({"code":"1000","message":"<?php echo __MM('MSG_DELETE_SELECT_EMPTY'); // phpcs:ignore ?>"});
 	}
 }
 function showMoveConfirm(type){	
 	var check_count	= jQuery(".mb-board input[name='check_array[]']").filter(":checked").length;	
 	if(check_count > 0) {
 		if(type=="multi_copy"){
-			showConfirmPopup(check_count+"<?php echo __MM('MSG_MULTI_COPY_CONFIRM');?>", {"board_action":type}, sendBoardListData);
+			showConfirmPopup(check_count+"<?php echo __MM('MSG_MULTI_COPY_CONFIRM'); // phpcs:ignore ?>", {"board_action":type}, sendBoardListData);
 		}else if(type=="multi_move"){
-			showConfirmPopup(check_count+"<?php echo __MM('MSG_MULTI_MOVE_CONFIRM');?>", {"board_action":type}, sendBoardListData);
+			showConfirmPopup(check_count+"<?php echo __MM('MSG_MULTI_MOVE_CONFIRM'); // phpcs:ignore ?>", {"board_action":type}, sendBoardListData);
 		}		
 	}else{
 		if(type=="multi_copy"){
-			showAlertPopup({"code":"1000","message":"<?php echo __MM('MSG_COPY_SELECT_EMPTY');?>"});
+			showAlertPopup({"code":"1000","message":"<?php echo __MM('MSG_COPY_SELECT_EMPTY'); // phpcs:ignore ?>"});
 		}else if(type=="multi_move"){
-			showAlertPopup({"code":"1000","message":"<?php echo __MM('MSG_MOVE_SELECT_EMPTY');?>"});
+			showAlertPopup({"code":"1000","message":"<?php echo __MM('MSG_MOVE_SELECT_EMPTY'); // phpcs:ignore ?>"});
 		}
 	}
 }
@@ -112,13 +112,14 @@ function sendBoardListDataHandler(response, state)
 
 			<?php
 			echo '<div class="mb-category">';			
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo mbw_get_category_template(mbw_get_board_option("fn_category_type"),mbw_get_board_option("fn_category_data"));
 			echo '</div>';	
 			?>
 
 			<?php if(intval(mbw_get_board_option("fn_use_list_search"))==1){ ?>
 			<div class="list-search">
-				<select id="search_field" name="search_field" class="search-field margin-right-5" title="<?php echo __MM("W_SEARCH_FIELD");?>"><?php echo $list_data["search"];?></select><input id="search_text" class="search-text" type="text" name="search_text" accesskey="s" title="<?php echo __MM("W_SEARCH_TEXT");?>" value="<?php echo mbw_htmlspecialchars(mbw_get_param("search_text"));?>" onkeypress="checkEnterKey(sendSearchCalendarData);"/><input style="display:none !important;" type="text" title="search"/><?php echo mbw_get_btn_template(array("name"=>"Search","onclick"=>"sendSearchCalendarData()","class"=>"btn btn-default btn-search margin-left-5")); ?>
+				<select id="search_field" name="search_field" class="search-field margin-right-5" title="<?php echo __MM("W_SEARCH_FIELD"); // phpcs:ignore ?>"><?php echo $list_data["search"]; // phpcs:ignore ?></select><input id="search_text" class="search-text" type="text" name="search_text" accesskey="s" title="<?php echo __MM("W_SEARCH_TEXT"); // phpcs:ignore ?>" value="<?php echo mbw_htmlspecialchars(mbw_get_param("search_text")); // phpcs:ignore ?>" onkeypress="checkEnterKey(sendSearchCalendarData);"/><input style="display:none !important;" type="text" title="search"/><?php echo mbw_get_btn_template(array("name"=>"Search","onclick"=>"sendSearchCalendarData()","class"=>"btn btn-default btn-search margin-left-5")); // phpcs:ignore ?>
 			</div>
 			<?php } ?>
 			<div class="clear"></div>
@@ -134,7 +135,7 @@ function sendBoardListDataHandler(response, state)
 		<input type="hidden" name="mode" id="mode" value="list" />
 		<input type="hidden" name="board_action" id="board_action" value="" />
 		<input type="hidden" name="board_pid" id="board_pid" value="" />
-		<?php echo mbw_create_nonce("form"); ?>
+		<?php echo mbw_create_nonce("form"); // phpcs:ignore ?>
 
 		<div class="main-style1" id="<?php echo esc_attr($mb_board_name);?>_board_box"></div>
 
@@ -144,13 +145,17 @@ function sendBoardListDataHandler(response, state)
 			<div class="btn-box-right" id="<?php echo esc_attr($mb_board_name);?>_btn_box">
 				<?php				
 					echo '<span class="btn-box-left" style="float:left;">';				
-					echo mbw_get_left_button("list");
-					if(mbw_get_param("search_text")!="")
+					echo mbw_get_left_button("list"); // phpcs:ignore
+					if(mbw_get_param("search_text")!=""){
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_btn_template(array("name"=>"Back","href"=>mbw_get_url(array("board_pid"=>"","mode"=>"list","page_size"=>"","search_text"=>"")),"class"=>"btn btn-default btn-list"));
+					}
 					echo '</span>';
-					if(intval(mbw_get_board_option("fn_delete_level")) <= $mb_user_level)
+					if(intval(mbw_get_board_option("fn_delete_level")) <= $mb_user_level){
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showDeleteConfirm()","class"=>"btn btn-default btn-delete"));
-
+					}
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_right_button("list");
 				?>
 			</div>

@@ -110,6 +110,7 @@ class MangBoard
 		if(mbw_get_param($board_mode."_type")=="" && !empty($args[$board_mode.'_type'])) mbw_set_param($board_mode."_type", mbw_value_filter($args[$board_mode.'_type']));
 
 		if($board_mode=="logout"){
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo mbw_get_move_script("logout");
 		}else{
 			mbw_init_board_panel();
@@ -154,6 +155,7 @@ class MangBoard
 			if(function_exists('mbw_get_board_class')) $board_class	= mbw_get_board_class();
 
 			echo '<div id="mb_top" class="mb-'.esc_attr($device_type).'">';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '<div id="'.esc_attr($mb_board_name).'_board" class="mb-board"'.$board_style.'>';
 				echo '<div class="'.esc_attr($board_class).'">';
 					if(!empty($template_class)){

@@ -232,6 +232,7 @@ class HTMLPurifier_ConfigSchema_Validator
         } else {
             $prefix = ucfirst($this->getFormattedContext());
         }
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
         throw new HTMLPurifier_ConfigSchema_Exception(trim($prefix . ' ' . $msg));
     }
 

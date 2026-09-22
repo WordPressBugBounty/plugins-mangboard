@@ -1,7 +1,8 @@
 <?php
 if(!function_exists('mbw_init_conversion_tracking')){
 	function mbw_init_conversion_tracking(){
-		loadScript(MBW_PLUGIN_URL."plugins/conversion_tracking/js/main.js");
+		$plugin_url	= plugins_url('', __FILE__)."/";
+		loadScript($plugin_url."js/main.js");
 	}
 }
 add_action('wp_enqueue_scripts', 'mbw_init_conversion_tracking',50);
@@ -67,7 +68,11 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					}
 					if(mbw_get_option("google_analytics_id")!=""){
 						if(!empty($google_tag)){
-							$tag_json			= json_encode($google_tag, JSON_UNESCAPED_UNICODE);
+							$tag_json			= wp_json_encode($google_tag, JSON_UNESCAPED_UNICODE);
+							if ( !is_string($tag_json) ) {
+								$tag_json		= "[]";
+							}
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'begin_checkout', {'currency': 'KRW','value': ".esc_js($order_price+$options_price).",'items': ".$tag_json."}); }</script>";
 						}else{
 							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'begin_checkout'); }</script>";
@@ -75,7 +80,11 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					}
 					if(mbw_get_option("naver_analytics_id")!=""){
 						if(!empty($naver_tag)){
-							$tag_json			= json_encode($naver_tag, JSON_UNESCAPED_UNICODE);
+							$tag_json			= wp_json_encode($naver_tag, JSON_UNESCAPED_UNICODE);
+							if ( !is_string($tag_json) ) {
+								$tag_json		= "[]";
+							}
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "<script type='text/javascript'> if(window.wcs){ var _conv={};_conv.type = 'begin_checkout';_conv.items=".$tag_json.";wcs.trans(_conv); }</script>";
 						}else{
 							echo "<script type='text/javascript'> if(window.wcs){ var _conv={};_conv.type = 'begin_checkout';wcs.trans(_conv); }</script>";
@@ -83,7 +92,11 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					}
 					if(mbw_get_option("facebook_pixel_id")!=""){
 						if(!empty($pixel_tag)){
-							$tag_json			= json_encode($pixel_tag, JSON_UNESCAPED_UNICODE);
+							$tag_json			= wp_json_encode($pixel_tag, JSON_UNESCAPED_UNICODE);
+							if ( !is_string($tag_json) ) {
+								$tag_json		= "[]";
+							}
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'InitiateCheckout', {'value': ".esc_js($order_price+$options_price).",'currency': 'KRW','contents': ".$tag_json."}); }</script>";
 						}else{
 							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'InitiateCheckout'); }</script>";
@@ -118,13 +131,21 @@ if(!function_exists('mbw_order_conversion_tracking')){
 				if(mbw_get_option("google_analytics_id")!=""){
 					$google_tag		= array();
 					$google_tag[]	= array( 'item_id'=>(mbw_get_board_item('fn_pid')),'item_name'=>$title,'price'=>(mbw_get_board_item('fn_sale_price')),'quantity'=>1, 'item_category'=>$category1,'item_category2'=>$category2,'item_category3'=>$category3 );
-					$tag_json			= json_encode($google_tag, JSON_UNESCAPED_UNICODE);
+					$tag_json			= wp_json_encode($google_tag, JSON_UNESCAPED_UNICODE);
+					if ( !is_string($tag_json) ) {
+						$tag_json		= "[]";
+					}
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'view_item', {'currency': 'KRW','value': ".esc_js(mbw_get_board_item('fn_sale_price')).",'items': ".$tag_json."}); }</script>";
 				}
 				if(mbw_get_option("naver_analytics_id")!=""){
 					$naver_tag		= array();
 					$naver_tag[]		= array( 'id'=>(mbw_get_board_item('fn_pid')),'name'=>$title,'payAmount'=>(mbw_get_board_item('fn_sale_price')),'quantity'=>1, 'category'=>$category1);
-					$tag_json			= json_encode($naver_tag, JSON_UNESCAPED_UNICODE);
+					$tag_json			= wp_json_encode($naver_tag, JSON_UNESCAPED_UNICODE);
+					if ( !is_string($tag_json) ) {
+						$tag_json		= "[]";
+					}
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo "<script type='text/javascript'> if(window.wcs){ var _conv={};_conv.type = 'view_product';_conv.items=".$tag_json.";wcs.trans(_conv); }</script>";
 				}
 				if(mbw_get_option("facebook_pixel_id")!=""){
@@ -176,7 +197,11 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					if(empty($order_price)) $order_price		= 1;
 					if(mbw_get_option("google_analytics_id")!=""){
 						if(!empty($google_tag)){
-							$tag_json			= json_encode($google_tag, JSON_UNESCAPED_UNICODE);
+							$tag_json			= wp_json_encode($google_tag, JSON_UNESCAPED_UNICODE);
+							if ( !is_string($tag_json) ) {
+								$tag_json		= "[]";
+							}
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'purchase', {'transaction_id': '".esc_js($order_id)."','value': ".esc_js($order_price).",'shipping': ".esc_js(mbw_get_board_item('fn_shipping_cost')).",'currency': 'KRW','items': ".$tag_json."}); }</script>";
 						}else{
 							echo "<script type='text/javascript'> if(window.gtag){ gtag('event', 'purchase', {'transaction_id': '".esc_js($order_id)."','value': ".esc_js($order_price).",'currency': 'KRW'}); }</script>";
@@ -184,7 +209,11 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					}
 					if(mbw_get_option("naver_analytics_id")!=""){
 						if(!empty($naver_tag)){
-							$tag_json			= json_encode($naver_tag, JSON_UNESCAPED_UNICODE);
+							$tag_json			= wp_json_encode($naver_tag, JSON_UNESCAPED_UNICODE);
+							if ( !is_string($tag_json) ) {
+								$tag_json		= "[]";
+							}
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "<script type='text/javascript'> if(window.wcs){ var _conv={};_conv.type = 'purchase';_conv.value='".esc_js($order_price)."';_conv.id='".esc_js($order_id)."';_conv.items=".$tag_json.";wcs.trans(_conv); }</script>";
 						}else{
 							echo "<script type='text/javascript'> if(window.wcs){ var _conv={};_conv.type = 'purchase';_conv.value='".esc_js($order_price)."';_conv.id='".esc_js($order_id)."';wcs.trans(_conv); }</script>";
@@ -193,7 +222,11 @@ if(!function_exists('mbw_order_conversion_tracking')){
 					//페이스북 결제완료
 					if(mbw_get_option("facebook_pixel_id")!=""){
 						if(!empty($pixel_tag)){
-							$tag_json			= json_encode($pixel_tag, JSON_UNESCAPED_UNICODE);
+							$tag_json			= wp_json_encode($pixel_tag, JSON_UNESCAPED_UNICODE);
+							if ( !is_string($tag_json) ) {
+								$tag_json		= "[]";
+							}
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'Purchase', {'value': ".esc_js($order_price).",'currency': 'KRW','contents': ".$tag_json."}); }</script>";
 						}else{
 							echo "<script type='text/javascript'> if(window.fbq){ fbq('track', 'Purchase', {'value': ".esc_js($order_price).",'currency': 'KRW'}); }</script>";

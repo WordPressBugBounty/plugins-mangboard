@@ -35,11 +35,13 @@ if(true)
 	//업로드 파일 삭제
 	global $wp_filesystem;
 	if ( is_object( $wp_filesystem ) ) {
-		$delete_dir		= trailingslashit($wp_filesystem->find_folder(WP_CONTENT_DIR));
-		$delete_dir		.= "uploads/mangboard/";
-		if($delete_dir!="/" && strpos($delete_dir, '/mangboard')!==false && $wp_filesystem->is_dir($delete_dir)){
-			$wp_filesystem->delete($delete_dir, true);
-		}
+		$delete_dir		= $wp_filesystem->find_folder(WP_CONTENT_DIR);
+		if ( !empty($delete_dir) ) {			
+			$delete_dir		= trailingslashit($delete_dir)."uploads/mangboard/";
+			if ( $wp_filesystem->is_dir($delete_dir) ) {
+				$wp_filesystem->delete($delete_dir, true);
+			}
+		}		
 	}
 }
 ?>

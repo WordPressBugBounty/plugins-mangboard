@@ -1,6 +1,6 @@
 <?php
 $editor_type							= "S";
-$editor_name							= "Smart Editor";
+$editor_name						= "Smart Editor";
 $mb_editors[$editor_type]			= array("type"=>$editor_type,"name"=>$editor_name,"script"=>"if(typeof oEditors !== 'undefined'){ oEditors.getById['se_content'].exec('UPDATE_CONTENTS_FIELD', []);}; sendBoardWriteData();");
 
 if(!function_exists('mbw_load_editor_s')){
@@ -8,16 +8,18 @@ if(!function_exists('mbw_load_editor_s')){
 		if(mbw_get_trace("mbw_load_editor_s")==""){
 			mbw_add_trace("mbw_load_editor_s");
 			wp_enqueue_script('smart-editor-js');
+			wp_enqueue_style('jquery-ui-css');
 		}
 	}
 }
 add_action('mbw_load_editor_'.$editor_type, 'mbw_load_editor_s',5); 
 if(!function_exists('mbw_editor_smart_init')){
 	function mbw_editor_smart_init(){
+		$editor_url	= plugins_url('', __FILE__)."/";
 		if(mbw_get_vars("device_type")=="desktop"){
-			wp_register_script('smart-editor-js', MBW_PLUGIN_URL.'plugins/editors/smart/js/service/HuskyEZCreator.js');
+			wp_register_script('smart-editor-js', $editor_url.'js/service/HuskyEZCreator.js');
 		}else{
-			wp_register_script('smart-editor-js', MBW_PLUGIN_URL.'plugins/editors/smart/js/service/HuskyEZCreator_mobile.js');
+			wp_register_script('smart-editor-js', $editor_url.'js/service/HuskyEZCreator_mobile.js');
 		}
 		
 		if(mbw_get_board_option("fn_editor_type")=="S" && mbw_get_param("mode")=="write"){
@@ -101,9 +103,9 @@ if(!function_exists('mbw_editor_smart_template')){
 					if($editor_locale!='ko_KR'){
 						$font_local_name	= trim(str_replace(" ", "", $font_name));
 					}
-					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:".$default_font_size.";font-family:'".esc_attr($font_local_name)."','".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
+					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:".esc_attr($default_font_size).";font-family:'".esc_attr($font_local_name)."','".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
 				}else{
-					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:".$default_font_size.";font-family:'".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
+					$data["value"]		= "<p style=\"line-height:1.8;\"><span style=\"font-size:".esc_attr($default_font_size).";font-family:'".esc_attr($font_name)."',sans-serif;\"><br></span></p>";
 				}
 			}
 			$item_html		= "";
@@ -119,6 +121,7 @@ if(!function_exists('mbw_editor_smart_template')){
 				}
 				$item_html		.= '},fOnAppLoad:function(){   oEditors.getById["'.esc_attr($editor_id).'"].setDefaultFont("'.($font_name).'", 10);   }}); ';
 			$item_html		.= '});</script>';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $item_html;
 		}
 	}

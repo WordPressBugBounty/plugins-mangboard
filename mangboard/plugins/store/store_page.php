@@ -91,9 +91,9 @@ if(function_exists('get_plugin_data')){
 
 if(!empty($_GET["install_product"])){	
 	if(!current_user_can('administrator')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.admin_url('admin.php').'?page=mbw_store&category="'.rawurlencode($category1).');</script>';
+		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
 	}else if(version_compare($mb_version2, $check_version, '<')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.admin_url('admin.php').'?page=mbw_store&category="'.rawurlencode($category1).');</script>';
+		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
 	}else{
 		echo '<div id="wpbody" role="main" class="mb-dash mb-'.esc_attr(mbw_get_vars("device_type")).'">';
 		echo '<div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">';
@@ -105,8 +105,8 @@ if(!empty($_GET["install_product"])){
 
 			mbw_install_store_product($product_pid,$response);			
 		}else if(!empty($response[0]['content'])){
-			echo $response[0]['content'];
-			echo '<div style="padding:10px 0;text-align:center;"><div class="button"><a href="'.admin_url('admin.php').'?page=mbw_store" target="">'.__MM("MSG_STORE_MOVE").'</a></div></div>';								
+			echo $response[0]['content']; // phpcs:ignore
+			echo '<div style="padding:10px 0;text-align:center;"><div class="button"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" target="">'.__MM("MSG_STORE_MOVE").'</a></div></div>'; // phpcs:ignore
 		}else{
 			echo '<div class="mb-board"><div class="message-panel"><div style="font-size:15px;font-weight:600;">MangBoard Store Install Error : 502</div></div></div>';	
 		}
@@ -115,9 +115,9 @@ if(!empty($_GET["install_product"])){
 	}
 }else if(!empty($_GET["delete_product"])){
 	if(!current_user_can('administrator')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.admin_url('admin.php').'?page=mbw_store&category="'.rawurlencode($category1).');</script>';
+		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
 	}else if(version_compare($mb_version2, $check_version, '<')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.admin_url('admin.php').'?page=mbw_store&category="'.rawurlencode($category1).');</script>';
+		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
 	}else{
 		echo '<div id="wpbody" role="main" class="mb-dash mb-'.esc_attr(mbw_get_vars("device_type")).'">';
 		echo '<div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">';
@@ -142,38 +142,38 @@ if(empty($response[0]['title'])){
 function mbw_get_store_product(product_pid,product_name,cid,token){
 	<?php
 		if(version_compare($mb_version2, $check_version, '<')){
-			echo 'alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");';
+			echo 'alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");'; // phpcs:ignore
 		}else{		
 	?>
-		if(confirm('"'+product_name+'"\n<?php echo __MM("MSG_INSTALL_SELECT_PRODUCT");?>')){
-			moveURL("<?php echo admin_url('admin.php');?>?page=mbw_store&install_product="+product_pid+"&cid="+cid+"&token="+token);	
+		if(confirm('"'+product_name+'"\n<?php echo __MM("MSG_INSTALL_SELECT_PRODUCT"); // phpcs:ignore ?>')){
+			moveURL("<?php echo esc_url(admin_url('admin.php'));?>?page=mbw_store&install_product="+decodeURIComponent(product_pid)+"&cid="+decodeURIComponent(cid)+"&token="+decodeURIComponent(token));	
 		}
 	<?php } ?>
 }
 function mbw_delete_store_product(product_pid,product_name,cid,token){
 	<?php
 		if(version_compare($mb_version2, $check_version, '<')){
-			echo 'alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");';
+			echo 'alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");'; // phpcs:ignore
 		}else{		
 	?>
-		if(confirm('"'+product_name+'"\n<?php echo __MM("MSG_DELETE_SELECT_PRODUCT");?>')){
-			moveURL("<?php echo admin_url('admin.php');?>?page=mbw_store&delete_product="+product_pid+"&cid="+cid+"&token="+token);	
+		if(confirm('"'+product_name+'"\n<?php echo __MM("MSG_DELETE_SELECT_PRODUCT"); // phpcs:ignore ?>')){
+			moveURL("<?php echo esc_url(admin_url('admin.php'));?>?page=mbw_store&delete_product="+decodeURIComponent(product_pid)+"&cid="+decodeURIComponent(cid)+"&token="+decodeURIComponent(token));	
 		}
 	<?php } ?>
 }
 function mbw_get_store_template(product_pid,product_name,cid,token){
 	<?php
 		if(version_compare($mb_version2, $check_version, '<')){
-			echo 'alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");';
+			echo 'alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");'; // phpcs:ignore
 		}else{
 	?>
-		if(confirm('"'+product_name+'"\n<?php echo __MM("MSG_INSTALL_SELECT_PRODUCT");?>')){
-			moveURL("<?php echo admin_url('admin.php');?>?page=mbw_store&install_product="+product_pid+"&cid="+cid+"&token="+token+"&import="+product_pid);	
+		if(confirm('"'+product_name+'"\n<?php echo __MM("MSG_INSTALL_SELECT_PRODUCT"); // phpcs:ignore ?>')){
+			moveURL("<?php echo esc_url(admin_url('admin.php'));?>?page=mbw_store&install_product="+decodeURIComponent(product_pid)+"&cid="+decodeURIComponent(cid)+"&token="+decodeURIComponent(token)+"&import="+decodeURIComponent(product_pid));	
 		}
 	<?php } ?>		
 }
 function mbw_set_store_category(category){
-	moveURL("<?php echo admin_url('admin.php');?>?page=mbw_store&category="+decodeURIComponent(category));	
+	moveURL("<?php echo esc_url(admin_url('admin.php'));?>?page=mbw_store&category="+decodeURIComponent(category));	
 }
 </script>
 
@@ -187,29 +187,31 @@ function mbw_set_store_category(category){
 		<div>
 			<?php
 			if(!empty($response[0]['title'])){
-				echo $response[0]['title'];
+				echo $response[0]['title']; // phpcs:ignore
 			}
 			?>			
 			<?php
 			if(!empty($response[0]['description'])){
-				echo $response[0]['description'];
+				echo $response[0]['description']; // phpcs:ignore
 			}
 			?>			
 		</div>
 	</div>
 	<div style="padding:17px 12px 2px;">
 	<?php
-		$category_label	= $response[0]['category_label'];
-		$category_data	= $response[0]['category_data'];
-		$label_array				= explode(",",$category_label);
-		$data_array				= explode(",",$category_data);
+		$category_label		= $response[0]['category_label'];
+		$category_data		= $response[0]['category_data'];
+		$label_array			= explode(",",$category_label);
+		$data_array			= explode(",",$category_data);
 		$index					= 0;
 		$category_value		= $category1;
-		if(empty($category_value)) $category_value		= "ALL";
+		if(empty($category_value)){
+			$category_value		= "ALL";
+		}
 		for($i=0;$i<count($data_array);$i++){
 			if($data_array[$i]==$category_value) $tab_menu_class			= "tab-menu-on";
-			else $tab_menu_class			= "tab-menu-off";			
-			echo '<button onclick="mbw_set_store_category(\''.esc_js($data_array[$i]).'\');return false;" class="'.esc_attr($tab_menu_class).'" title="'.esc_attr($label_array[$i]).'" type="button"><span>'.$label_array[$i].'</span></button>';
+			else $tab_menu_class			= "tab-menu-off";
+			echo '<button onclick="mbw_set_store_category(\''.esc_js($data_array[$i]).'\');return false;" class="'.esc_attr($tab_menu_class).'" title="'.esc_attr($label_array[$i]).'" type="button"><span>'.esc_html($label_array[$i]).'</span></button>';
 			$index++;
 		}
 	?>
@@ -217,7 +219,7 @@ function mbw_set_store_category(category){
 	<?php
 	if(mbw_get_vars("device_type")!="mobile"){
 		if(!empty($response[0]['banner'])){
-			echo $response[0]['banner'];
+			echo $response[0]['banner']; // phpcs:ignore
 		}
 	}
 	?>
@@ -234,18 +236,22 @@ function mbw_set_store_category(category){
 	if(!empty($product_items)){
 		foreach($product_items as $product) {
 			$title							= $product['title'];
-			$description				= $product['description'];
+			$description					= $product['description'];
 			$link_url						= $product['link_url'];
 			if(strpos($link_url, '?') === false)	$link_url		.= "?lang=".$mb_locale;
 			else $link_url		.= "&lang=".$mb_locale;
 
 			$image						= $product['image'];
 			$product_status			= "";
-			if(!empty($image)) $background_image		= 'background-image:url('.esc_url($image).');';
-			else $background_image		= "";
-
+			if ( !empty($image) ) {
+				$background_image		= 'background-image:url('.esc_url($image).');';
+			} else {
+				$background_image		= "";
+			}
+			
+			$is_store_dir		= mbw_check_store_dir($product['check_dir']);
 			if(!empty($product['is_order'])){
-				if(!empty($product['check_dir']) && is_dir(WP_CONTENT_DIR.'/'.$product['check_dir'])){		//설치가 되어있는지 체크
+				if(!empty($product['check_dir']) && $is_store_dir){		//설치가 되어있는지 체크
 					if(!empty($product['btn_html4'])){
 						$product['btn_html3']		= $product['btn_html4'];
 					}
@@ -256,12 +262,12 @@ function mbw_set_store_category(category){
 			}else if(!empty($product['btn_text3'])){				
 				$product_status	= '<div style="position:absolute;top:0;left:0;">'.$product['btn_text3'].'</div>';
 			}else{	//dev2
-				if(is_dir(WP_CONTENT_DIR.'/'.$product['check_dir']) && !empty($product['btn_text4'])){		//미등록된 설치 상품이 있는지 체크
+				if($is_store_dir && !empty($product['btn_text4'])){		//미등록된 설치 상품이 있는지 체크
 					$product_status	= '<div style="position:absolute;top:0;left:0;">'.$product['btn_text4'].'</div>';
 					$install_product_count2++;
 				}
 			}
-			if(!empty($product['check_dir']) && is_dir(WP_CONTENT_DIR.'/'.$product['check_dir']) && !empty($product['btn_html5'])){
+			if(!empty($product['check_dir']) && $is_store_dir && !empty($product['btn_html5'])){
 				$product['btn_html3']		= $product['btn_html5'].$product['btn_html3'];
 				$install_product_count1++;
 			}			
@@ -273,12 +279,12 @@ function mbw_set_store_category(category){
 			</div>
 			'.$product_status.'
 			<div class="gallery-hover-box" style="height:100%;">
-				<div style="text-align:center;line-height:18px;padding:7px 0 10px;">'.$title.'</div>
-				<div style="text-align:left;">'.$description.'</div>
+				<div style="text-align:center;line-height:18px;padding:7px 0 10px;">'.esc_html($title).'</div>
+				<div style="text-align:left;">'.esc_html($description).'</div>
 				<div style="position:absolute;bottom:5px;left:0;width:96%;margin:0 2%;">'.$product['btn_html1'].$product['btn_html2'].$product['btn_html3'].'</div>
 			</div>
 			<div class="mc-gallery-title text-center bold" style="font-size:13px;font-weight:600 !important;padding:7px 3px 2px;">
-				<a href="'.esc_url($link_url).'" title="'.esc_attr($title).'" target="_blank"><span>'.$title.'</span></a>
+				<a href="'.esc_url($link_url).'" title="'.esc_attr($title).'" target="_blank"><span>'.esc_html($title).'</span></a>
 			</div>
 			<div class="mc-gallery-price text-center" style="padding:0px 0 0px;">
 				<a href="'.esc_url($link_url).'" title="'.esc_attr($title).'" target="_blank">
@@ -291,7 +297,7 @@ function mbw_set_store_category(category){
 	update_option("mb_install_product",$install_product_count1.":".$install_product_count2, false);
 
 	$html	.= '</div></div>';
-	echo $html;
+	echo $html; // phpcs:ignore
 	?>
 	</div>
 </div>

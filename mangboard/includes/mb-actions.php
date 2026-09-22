@@ -15,7 +15,9 @@ if(!function_exists('mbw_head_meta')){
 			global $mstore,$mdb,$mb_admin_tables,$mb_fields,$mb_board_table_name;
 			global $post,$mb_table_prefix;
 			
-			if(empty($mb_board_table_name)) $mb_board_table_name		= mbw_get_board_table_name(mbw_get_board_name());
+			if( empty($mb_board_table_name) ){
+				$mb_board_table_name		= mbw_get_board_table_name(mbw_get_board_name());
+			}
 
 			$title					= "";
 			$image_path			= "";
@@ -319,14 +321,18 @@ add_action('wp_head', 'mbw_print_head_scripts',200);
 if(!function_exists('mbw_print_head_scripts')){
 	function mbw_print_head_scripts(){
 		mbw_add_trace("mbw_print_head_scripts");
-		if(mbw_get_option("facebook_pixel_id")!=""){
+		if( mbw_get_option("facebook_pixel_id") != "" ){
 			echo '<script type="text/javascript"> !function(f,b,e,v,n,t,s)  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?  n.callMethod.apply(n,arguments):n.queue.push(arguments)};  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";  n.queue=[];t=b.createElement(e);t.async=!0;  t.src=v;s=b.getElementsByTagName(e)[0];  s.parentNode.insertBefore(t,s)}(window, document,"script",  "https://connect.facebook.net/en_US/fbevents.js");  fbq("init", "'.esc_js(mbw_get_option('facebook_pixel_id')).'");  fbq("track", "PageView");</script><noscript><img height="1" width="1" style="display:none"  src="https://www.facebook.com/tr?id='.esc_js(mbw_get_option('facebook_pixel_id')).'&ev=PageView&noscript=1"/></noscript>';
 		}
-		if(mbw_get_option("google_analytics_id")!=""){			
-			echo "<script async src='https://www.googletagmanager.com/gtag/js?id=".esc_js(mbw_get_option("google_analytics_id"))."'></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '".esc_js(mbw_get_option("google_analytics_id"))."');</script>";
+		if( mbw_get_option("google_analytics_id") != "" ){			
+			wp_register_script('google-gtag','https://www.googletagmanager.com/gtag/js?id='.esc_attr(mbw_get_option("google_analytics_id")),array(),null,array('strategy'=>'async','in_footer'=>false));
+			wp_print_scripts('google-gtag');
+			echo "<script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '".esc_js(mbw_get_option("google_analytics_id"))."');</script>";
 		}
-		if(mbw_get_option("naver_analytics_id")!=""){
-			echo '<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script> <script type="text/javascript"> if(!wcs_add) {var wcs_add = {};}; wcs_add["wa"] = "'.esc_js(mbw_get_option("naver_analytics_id")).'";if(window.wcs){wcs.inflow();}</script>';
+		if( mbw_get_option("naver_analytics_id") != "" ){
+			wp_register_script('naver-wcslog','//wcs.naver.net/wcslog.js');
+			wp_print_scripts('naver-wcslog');
+			echo '<script type="text/javascript"> if(!wcs_add) {var wcs_add = {};}; wcs_add["wa"] = "'.esc_js(mbw_get_option("naver_analytics_id")).'";if(window.wcs){wcs.inflow();}</script>';
 		}
 	}
 }
@@ -340,7 +346,7 @@ if(!function_exists('mbw_footer')){
 		if(mbw_get_option("resize_responsive") && mbw_get_trace("mbw_get_resize_responsive")==""){
 			$resize_responsive_script	= mbw_get_resize_responsive(mbw_get_vars("device_type"));
 			if(!empty($resize_responsive_script)){
-				echo '<script type="text/javascript">'.$resize_responsive_script.'</script>';
+				echo '<script type="text/javascript">'.$resize_responsive_script.'</script>'; // phpcs:ignore
 			}
 		}
 		mbw_footer_scripts();
@@ -364,7 +370,7 @@ if(!function_exists('mbw_footer_scripts')){
 				$script		.= 'mb_urls["'.$key.'"]			= "'.esc_js($mb_api_urls[$key]).'";';
 			}
 			$script		.= '</script>';
-			echo $script;
+			echo $script; // phpcs:ignore
 		}
 	}
 }
@@ -384,61 +390,80 @@ if(!function_exists('mbw_plugin_add_trigger')){
 	}
 }
 add_action('template_redirect', 'mbw_plugin_trigger_check');
-if(!function_exists('mbw_plugin_trigger_check')){	
+if(!function_exists('mbw_plugin_trigger_check')){
 	function mbw_plugin_trigger_check() {
 		$mb_trigger	= get_query_var('mb_trigger');
 		$mb_ext			= get_query_var('mb_ext');
 		if($mb_trigger == "rss") {
-			if(is_file(MBW_PLUGIN_PATH."includes/mb-rss.php"))
+			if( is_file(MBW_PLUGIN_PATH."includes/mb-rss.php") ){
 				require(MBW_PLUGIN_PATH."includes/mb-rss.php");
+			}
 			exit;
 		}else if($mb_trigger == "rss2") {
-			if(is_file(MBW_PLUGIN_PATH."includes/mb-rss2.php"))
+			if( is_file(MBW_PLUGIN_PATH."includes/mb-rss2.php") ){
 				require(MBW_PLUGIN_PATH."includes/mb-rss2.php");
+			}
 			exit;
 		}else if($mb_trigger == "rss3") {
-			if(is_file(MBW_PLUGIN_PATH."includes/mb-rss3.php"))
+			if( is_file(MBW_PLUGIN_PATH."includes/mb-rss3.php") ){
 				require(MBW_PLUGIN_PATH."includes/mb-rss3.php");
+			}
 			exit;
 		}else if($mb_trigger == "file") {
-			$file_type			= "application/octet-stream";
-			if(mbw_get_param("file_type")!="") $file_type	= mbw_get_param("file_type");
-			$file_name		= date("Ymd").".xls";
-			if(mbw_get_param("file_name")!="") $file_name	= trim(mbw_get_param("file_name"));
-			$file_content		= mbw_value_filter(mbw_get_param("file_content"));
-			$file_path			= "";
-			if(strpos($file_content, 'tempfile_')===0){
-				if(strpos($file_content, 'tempfile_excel')===0){
-					$file_path		= MBW_UPLOAD_PATH.'excel/'.$file_content.'.xlsx';
-					$file_ext		= array_pop(explode('.',$file_name));
-					if($file_ext=="xls"){
-						$file_name	= str_replace(".xls", ".xlsx", $file_name);
+			if ( !mbw_verify_nonce() && mbw_is_login() && mbw_get_param("file_content") != "" ) {
+				$file_type			= "application/octet-stream";
+				if( mbw_get_param("file_type") != "" ){
+					$type		= mbw_value_filter(mbw_get_param("file_type"),"mime_type");
+					if( $type == "application/vnd.ms-excel" ){
+						$file_type		= "application/vnd.ms-excel";
+					}else if( $type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ){
+						$file_type		= "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+					}else if( $type == "application/msword" ){
+						$file_type		= "application/msword";
+					}else if( $type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ){
+						$file_type		= "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 					}
-				}else if(strpos($file_content, 'tempfile_word')===0){
-					$file_path		= MBW_UPLOAD_PATH.'word/'.$file_content.'.docx';
 				}
-			}
-			$file_name		= strip_tags($file_name);
-			$file_type			= strip_tags($file_type);
-			header('Expires: 0');
-			header('Pragma: public');
-			header('Cache-Control: must-revalidate');
-			header('Content-Description: File Transfer');
-			header("Content-type: ".$file_type.";charset=UTF-8");
-			if(preg_match('/(MSIE|Trident)/i', $_SERVER['HTTP_USER_AGENT'])){
-				header("Content-Disposition: attachment; filename=\"".rawurlencode($file_name)."\"");
-			}else{
-				header("Content-Disposition: attachment; filename=\"".$file_name."\"");
-			}
-			if(empty($file_path)){
-				echo '<html><head><meta http-equiv="Content-Type" content="'.esc_attr($file_type).'; charset=UTF-8"></head><body>';
-				echo mbw_get_param("file_content");
-				echo '</body></html>';
-			}else if(is_file($file_path)){
-				ob_clean();
-				flush();
-				@readfile($file_path);
-				@unlink($file_path);
+				$file_name		= date("Ymd").".xls";
+				if( mbw_get_param("file_name") != "" ){
+					$file_name	= sanitize_file_name(trim(mbw_get_param("file_name")));
+				}
+				$file_content		= mbw_value_filter(mbw_get_param("file_content"));
+				$file_path			= "";
+				if ( strpos($file_content, 'tempfile_') === 0 ) {
+					if ( strpos($file_content, 'tempfile_excel') === 0 ) {
+						$file_path		= MBW_UPLOAD_PATH.'excel/'.$file_content.'.xlsx';
+						$file_parts	= explode('.', $file_name);
+						$file_ext		= array_pop($file_parts);
+						if( $file_ext == "xls" ){
+							$file_name	= str_replace(".xls", ".xlsx", $file_name);
+						}
+					} else if ( strpos($file_content, 'tempfile_word') === 0 ) {
+						$file_path		= MBW_UPLOAD_PATH.'word/'.$file_content.'.docx';
+					}
+				}
+				header('Expires: 0');
+				header('Pragma: public');
+				header('Cache-Control: must-revalidate');
+				header('Content-Description: File Transfer');
+				header("Content-type: ".$file_type.";charset=UTF-8");
+				if(preg_match('/(MSIE|Trident)/i', $_SERVER['HTTP_USER_AGENT'])){
+					header("Content-Disposition: attachment; filename=\"".rawurlencode($file_name)."\"");
+				}else{
+					header("Content-Disposition: attachment; filename=\"".$file_name."\"");
+				}
+				if(empty($file_path)){
+					echo '<html><head><meta http-equiv="Content-Type" content="'.esc_attr($file_type).'; charset=UTF-8"></head><body>';				
+					if ( function_exists('mbw_get_htmlpurify') ) {
+						echo mbw_get_htmlpurify(mbw_get_param("file_content")); // phpcs:ignore
+					}
+					echo '</body></html>';
+				}else if(is_file($file_path)){
+					ob_clean();
+					flush();
+					@readfile($file_path);
+					@unlink($file_path);
+				}
 			}
 			exit;
 		}else if((get_query_var('mb_user')) == "logout") {
@@ -525,11 +550,15 @@ if(!function_exists('mbw_api_callback')){
 			$file_name		= str_replace( "skin-", "", $file_name);
 			if(defined('MBW_SKIN_PATH') && is_file(MBW_SKIN_PATH."api/".$file_name)){
 				require(MBW_SKIN_PATH."api/".$file_name);
+			}else if ( mbw_get_option("store_path") !="" && is_file(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name) ) {
+				require(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name);
 			}else if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
 				require(MBW_PLUGIN_PATH."api/".$file_name);
 			}
 		}else{
-			if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
+			if ( mbw_get_option("store_path") !="" && is_file(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name) ) {
+				require(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name);
+			}else if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
 				require(MBW_PLUGIN_PATH."api/".$file_name);
 			}
 		}
@@ -665,8 +694,15 @@ if(!function_exists('mbw_load_page_style')){
 			$index1			= strpos($content,'['.$mb_shortcode." path=")+21;
 			$path				= substr($content,$index1,strpos($content,"\"",$index1)-$index1);
 			$path_array		= explode(",",$path);
+			$store_path		= mbw_get_option("store_path");
 			foreach($path_array as $value){
-				if(!empty($value)) loadStyle(esc_url_raw(MBW_PLUGIN_URL.$value));
+				if(!empty($value)){
+					if ( $store_path != "" && is_file(WP_CONTENT_DIR.$store_path.$value) ) {
+						loadStyle(esc_url_raw(MBW_CONTENT_URL.$store_path.$value));
+					}else{
+						loadStyle(esc_url_raw(MBW_PLUGIN_URL.$value));
+					}
+				}
 			}
 		}
 	}
@@ -1053,7 +1089,7 @@ if(!function_exists('mbw_set_commerce_version_template')){
 				// 망보드 2.3.2 버전에서 포인트를 JSON 방식으로 저장하는 기능이 추가됨
 				add_filter('mf_board_create_template', 'mbw_filter_commerce_create_template1',5,3);
 			}
-		}	
+		}
 	}
 }
 add_action('wp', 'mbw_set_commerce_version_template', 0);

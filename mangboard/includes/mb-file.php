@@ -105,7 +105,7 @@ if(!empty($_REQUEST['path'])){
 					if($handle){
 						$rate	= 1024*1024;
 						while(!feof($handle)){
-							echo fread($handle, $rate);
+							echo fread($handle, $rate); // phpcs:ignore
 							ob_flush();
 							flush();
 						}

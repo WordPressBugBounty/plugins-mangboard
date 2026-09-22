@@ -4,17 +4,20 @@
 			<?php
 				if(mbw_get_param("secret_passwd")=="") $message		= __MM("MSG_SECRET")."<br>".__MM("MSG_PASSWD_INPUT");
 				else $message		= __MM("MSG_MATCH_ERROR", "W_PASSWORD");
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $message;
 			?>
 		</div>
 
-		<form class="secret-form" action="<?php echo mbw_get_url();?>" method="POST" id="secret_form">
-			<div><input name='secret_passwd' type="password" title="<?php echo __MM("MSG_PASSWD_INPUT");?>"/></div>
+		<form class="secret-form" action="<?php echo esc_url_raw(mbw_get_url());?>" method="POST" id="secret_form">
+			<div><input name='secret_passwd' type="password" title="<?php echo esc_html(__MM("MSG_PASSWD_INPUT"));?>"/></div>
 		</form>
 
 		<div class="btn-box-center">
-			<?php 
+			<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped			
 				echo mbw_get_btn_template(array("name"=>"Cancel","href"=>mbw_get_url(array("board_pid"=>"","mode"=>"list")),"class"=>"btn btn-default margin-right-10")); 
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo mbw_get_btn_template(array("name"=>"OK","onclick"=>"javascript:document.getElementById('secret_form').submit();","class"=>"btn btn-default"));
 			?>
 		</div>

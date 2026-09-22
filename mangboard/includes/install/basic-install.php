@@ -1,50 +1,15 @@
 <?php
 register_activation_hook(MBW_PLUGIN_FILE, 'mbw_basic_install_plugin');
+//add_action('mbw_activation_hook', 'mbw_basic_install_plugin', 1);
  
 // 테이블 생성 - Plugin 활성화 시
 if(!function_exists('mbw_basic_install_plugin')){
-	function mbw_basic_install_plugin(){	
+	function mbw_basic_install_plugin(){
 		mbw_basic_install();	
 		if(!is_dir(MBW_UPLOAD_PATH)){
 			@mkdir(MBW_UPLOAD_PATH, 0777, true);		
 			@chmod(MBW_UPLOAD_PATH, 0777);
 		}	
-	}
-}
-if(!function_exists('mbw_install_add_board_options')){
-	function mbw_install_add_board_options($options,$name="mb_board_options"){
-		$insert_prefix		= "INSERT INTO `%1s` (`board_name`, `description`, `skin_name`, `model_name`, `table_link`, `mobile_skin_name`, `board_header`, `board_footer`, `board_content_form`, `editor_type`, `api_type`, `page_size`, `comment_size`, `block_size`, `category_type`, `category_data`, `use_board_vote_good`, `use_board_vote_bad`, `use_comment`, `use_comment_vote_good`, `use_comment_vote_bad`, `use_secret`, `use_notice`, `use_list_title`, `use_list_search`, `list_level`, `view_level`, `write_level`, `reply_level`, `delete_level`, `modify_level`, `secret_level`, `manage_level`, `comment_level`, `point_board_read`, `point_board_write`, `point_board_reply`, `point_comment_write`, `board_type`, `reg_date`, `is_show`) VALUES ";
-		mbw_install_insert_query($insert_prefix,$options,$name,"board_name");
-	}
-}
-if(!function_exists('mbw_install_add_options')){
-	function mbw_install_add_options($options,$name="mb_options"){
-		$insert_prefix		= "INSERT INTO `%1s` (`option_load`, `option_category`, `option_title`, `option_name`, `option_value`, `option_data`, `option_label`, `option_class`, `option_style`, `option_event`, `option_attribute`, `option_type`, `description`) VALUES ";
-		mbw_install_insert_query($insert_prefix,$options,$name,"option_name");
-	}
-}
-if(!function_exists('mbw_install_add_options2')){
-	function mbw_install_add_options2($options,$name="mb_options"){
-		$insert_prefix		= "INSERT INTO `%1s` (`option_load`, `option_category`, `option_title`, `option_name`, `option_value`, `option_data`, `option_label`, `option_class`, `option_style`, `option_event`, `option_attribute`, `option_type`, `description`, `is_show`) VALUES ";
-		mbw_install_insert_query($insert_prefix,$options,$name,"option_name");
-	}
-}
-if(!function_exists('mbw_install_insert_query')){
-	function mbw_install_insert_query($insert_prefix,$options,$name="",$field=""){
-		if(!empty($name) && !empty($options)){
-			global $wpdb;
-			foreach($options as $key=>$option){
-				$row_check			= 0;
-				if(!empty($field)){
-					$row_check		= intval($wpdb->get_var($wpdb->prepare('SELECT count(*) from %1s where %1s=%s;',$name, $field, $key)));
-				}
-				if($row_check==0){
-					$query	= $wpdb->prepare($insert_prefix.$option,$name);					
-					$check	= $wpdb->query($query);
-					if(!$check){ $wpdb->query($query); }
-				}
-			}
-		}
 	}
 }
 if(!function_exists('mbw_basic_install')){

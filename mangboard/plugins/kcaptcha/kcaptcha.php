@@ -1,6 +1,7 @@
 <?php
-mbw_set_option("kcaptcha_image_url", MBW_PLUGIN_URL.'plugins/kcaptcha/kcaptcha_image.php');
-mbw_set_option("kcaptcha_image_path", MBW_PLUGIN_PATH.'plugins/kcaptcha/kcaptcha_image.php');
+$kcaptcha	= plugins_url('', __FILE__)."/";
+mbw_set_option("kcaptcha_image_url", $kcaptcha.'kcaptcha_image.php');
+mbw_set_option("kcaptcha_image_path", $kcaptcha.'kcaptcha_image.php');
 
 if(!function_exists('mbw_api_header_kcaptcha')){	
 	function mbw_api_header_kcaptcha(){	
@@ -27,5 +28,4 @@ if(!function_exists('mbw_api_header_kcaptcha')){
 }
 add_action('mbw_board_api_header', 'mbw_api_header_kcaptcha');
 add_action('mbw_comment_api_header', 'mbw_api_header_kcaptcha');
-
 ?>

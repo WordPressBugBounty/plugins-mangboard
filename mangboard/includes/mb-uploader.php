@@ -33,9 +33,11 @@ if($mode=="html5"){
 			$sFileInfo .= "&sFileName=".rawurlencode($file_name);
 			$sFileInfo .= "&sFileURL=".rawurlencode(mbw_get_image_url("path",$upload_data["path"]));
 			$sFileInfo .= "&bNewLine=true";
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $sFileInfo;
 		}else{
-			echo "NOTALLOW_".$file_name;
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo "NOTALLOW_".esc_html($file_name);
 		}
 	}
 }else if($mode=="flash"){
@@ -44,6 +46,7 @@ if($mode=="html5"){
 		$file_name		= $upload_data["name"];
 
 		if(mbw_get_result_data("state")=="error"){
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo mbw_data_encode(mbw_get_result_array());
 		}else if(!empty($upload_data["path"])){
 			$file_data					= array();
@@ -51,9 +54,14 @@ if($mode=="html5"){
 			$file_data["url"]			= mbw_get_image_url("url",$upload_data["path"]);
 
 			mbw_set_result_data(array("data"=>$file_data));
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));	
-		}else echo mbw_data_encode(mbw_get_result_array());
+		}else{
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo mbw_data_encode(mbw_get_result_array());
+		}
 	}else if(mbw_get_result_data("state")=="error"){
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo mbw_data_encode(mbw_get_result_array());
 	}
 }else if($mode=="plugin"){
@@ -64,7 +72,7 @@ if($mode=="html5"){
 		$file_name		= $upload_data["name"];		
 		if(!empty($upload_data["path"])){
 			if(!empty($_FILES["upload"]) && !empty($_REQUEST['CKEditorFuncNum'])){
-				$funcNum	= mbw_get_param('CKEditorFuncNum');
+				$funcNum	= mbw_value_filter(mbw_get_param('CKEditorFuncNum'));
 				$url			= mbw_get_image_url("path",$upload_data["path"]);
 				if($funcNum=='json'){
 					echo '{"filename":"'.esc_js($file_name).'","uploaded":1,"url":"'.esc_url($url).'"}';
@@ -73,14 +81,20 @@ if($mode=="html5"){
 					echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction(".esc_js($funcNum).", '".esc_url($url)."', '".esc_js($message)."');</script>";
 				}
 			}else{
-				$url = $_REQUEST["callback"].'&callback_func='.$_REQUEST["callback_func"];				
-				$url .= "&sFileName=".rawurlencode($file_name);
-				$url .= "&sFileURL=".rawurlencode(mbw_get_image_url("path",$upload_data["path"]));
-				$url .= "&bNewLine=true";
-				header('Location: '. $url);
+				if( isset($_REQUEST["callback"]) && isset($_REQUEST["callback_func"]) ){
+					$url = $_REQUEST["callback"].'&callback_func='.mbw_value_filter($_REQUEST["callback_func"]);
+					$url .= "&sFileName=".rawurlencode($file_name);
+					$url .= "&sFileURL=".rawurlencode(mbw_get_image_url("path",$upload_data["path"]));
+					$url .= "&bNewLine=true";
+					header('Location: '. esc_url_raw($url));					
+				}				
 			}
-		}else echo mbw_get_result_data("message");
+		}else{
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo mbw_get_result_data("message");
+		}
 	}else if(mbw_get_result_data("state")=="error"){
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo mbw_get_result_data("message");
 	}	
 }

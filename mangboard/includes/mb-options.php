@@ -30,6 +30,14 @@ if(empty($mb_version)) $mb_version	= "2.4.7";
 if(empty($mb_index)) $mb_index	= "203";
 if(empty($mb_db_version)) $mb_db_version	= "1.0.7";
 
+$store_path						= MBW_STORE_DIR;
+if ( isset($mb_vars) ) {
+	$mb_vars["store_path"]		= $store_path;
+}
+if ( !is_dir(WP_CONTENT_DIR.$store_path) ) {
+	$store_path	= "";
+}
+
 //설정 데이타
 $mb_options				= array("locale"=>$mb_locale,		//ko_KR, en_US   (DB에서 설정 불가)
 										"wp_multi_language"=>0,	//워드프레스에서 제공하는 다국어 기능 사용 : admin-ko_KR.mo 와 같은 언어 파일이 있어야 적용됨  (DB에서 설정 불가)
@@ -40,6 +48,8 @@ $mb_options				= array("locale"=>$mb_locale,		//ko_KR, en_US   (DB에서 설정 
 										"mb_index"=>$mb_index,
 										"db_version"=>$mb_db_version,
 										"encoding"=>"UTF-8",
+										"store_path"=>$store_path,
+										"use_store_path"=>1,
 
 										//모델 파일에서 수정하는 옵션 : start
 										"wp_post_id"=>0,
@@ -65,7 +75,7 @@ $mb_options				= array("locale"=>$mb_locale,		//ko_KR, en_US   (DB에서 설정 
 										"plugin_mode"=>1,			// 플러그인  기능 사용 1, 사용안함 0 (mangboard/plugins 폴더)
 										"widget_mode"=>1,			// 위젯 기능 사용 1, 사용안함 0 (mangboard/plugins/widgets 폴더)
 
-										"admin_email"=>"",	
+										"admin_email"=>"",
 										"user_login_point"=>"0",	// 로그인 포인트 (미사용시 0으로 설정)
 										"user_join_point"=>"0",	// 회원 가입 포인트 (미사용시 0으로 설정)										
 										
@@ -88,8 +98,7 @@ $mb_options				= array("locale"=>$mb_locale,		//ko_KR, en_US   (DB에서 설정 
 
 										"ssl_mode"=>0,					//ssl 인증서 설치 여부 (1 or 0)   :    user 플러그인 관련 주소(로그인,회원정보 등)만 적용됨
 										"ssl_domain"=>"",					//ssl 도메인 주소 (www.mangboard.com)
-										"ssl_port"=>"443",					//ssl 포트
-										
+										"ssl_port"=>"443",					//ssl 포트										
 
 										"make_img_small_size"=>"480",			//지정된 크기로 업로드 이미지의 축소된 비율의 이미지를 생성 : 모델에서 ("field":"fn_image_path","size":"small") 사이즈 지정 가능, small 이미지가 없으면 원본 이미지를 불러옴
 										"make_img_middle_size"=>0,			// 0 또는 "" 설정될 경우 이미지를 생성하지 않음

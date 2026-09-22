@@ -2,15 +2,25 @@
 if(!function_exists('loadScript')){
 	function loadScript($src, $handle="",$deps=array('jquery')){
 		// JS 파일 등록
-		if(mbw_is_ssl())
+		if( mbw_is_ssl() ){
 			$src		= str_replace("http://", "https://", $src);
-		if(empty($handle)){
-			if(strpos($src, '/mangboard/') === false)	$handle		= basename($src); 
-			else{
-				$temp	= explode('/mangboard/', $src);
-				$handle	= str_replace("/", "-", $temp[1]);
+		}
+		if( empty($handle) ){
+			if( strpos($src, '/mangboard') !== false ){				
+				$temp		= substr( strstr( $src, '/mangboard' ) ,11);
+				$parts		= explode( '/', $temp );
+				if ( count( $parts ) >= 4 ) {
+					$parts			= array_slice( $parts, -4 );
+				} 
+				$handle	= implode( '-', $parts );
+			}else{
+				$handle	= basename($src);
 			}
-			$handle	= str_replace( array(".","_"), "-", $handle);
+			if( strpos($handle, 'plugins-user-js') !== 0 ){
+				$handle	= str_replace( array(".","_"), "-", substr($handle, 0, -3));
+			}else{
+				$handle	= str_replace( array(".","_"), "-", $handle);				
+			}
 		}
 		wp_enqueue_script($handle, $src, $deps, mbw_get_option("mb_index"));
 	}
@@ -18,16 +28,32 @@ if(!function_exists('loadScript')){
 if(!function_exists('loadStyle')){
 	function loadStyle($src, $handle="", $deps=array()){
 		// CSS 파일 등록
-		if(mbw_is_ssl())
+		if( mbw_is_ssl() ){
 			$src		= str_replace("http://", "https://", $src);
-		if(empty($handle)){
-			if(strpos($src, '/mangboard/') === false)	$handle		= basename($src); 
-			else{
-				$temp	= explode('/mangboard/', $src);
-				$handle	= str_replace("/", "-", $temp[1]);
-			}
-			$handle	= str_replace( array(".","_"), "-", substr($handle, 0, -4));
 		}
+		if( empty($handle) ){
+			if( strpos($src, '/mangboard') !== false ){
+				$temp		= substr( strstr( $src, '/mangboard' ) ,11);
+				$parts		= explode( '/', $temp );
+				if ( count( $parts ) >= 4 ) {
+					$parts			= array_slice( $parts, -4 );
+				} 
+				$handle	= implode( '-', $parts );
+			}else{
+				$handle	= basename($src);
+			}
+			$handle	= str_replace(array(".","_"), "-", substr($handle, 0, -4));
+		}
+		wp_enqueue_style($handle, $src, $deps, mbw_get_option("mb_index"));
+	}
+}
+if(!function_exists('mbw_enqueue_script')){
+	function mbw_enqueue_script($handle, $src, $deps=array('jquery')){
+		wp_enqueue_script($handle, $src, $deps, mbw_get_option("mb_index"));
+	}
+}
+if(!function_exists('mbw_enqueue_style')){
+	function mbw_enqueue_style($handle, $src, $deps=array()){
 		wp_enqueue_style($handle, $src, $deps, mbw_get_option("mb_index"));
 	}
 }
@@ -161,14 +187,15 @@ if(!function_exists('mbw_get_url')){
 		else $result_url		= $result_url."&";
 		$result_url		= $result_url.$result_param;		
 		if(mbw_is_ssl() && strpos($result_url, 'http://')===0) $result_url		= mbw_get_ssl_url($result_url);
-		return strip_tags(rtrim($result_url,"&"));
+		return esc_url_raw(rtrim($result_url,"&"));
 	}
 }
 if(!function_exists('mbw_check_url')){
 	function mbw_check_url($url){
-		if(mbw_is_ssl())
+		if( mbw_is_ssl() ){
 			$url				= mbw_get_ssl_url($url);
-		return strip_tags($url);		
+		}
+		return esc_url_raw($url);		
 	}
 }
 
@@ -195,7 +222,7 @@ if(!function_exists('mbw_get_permalink')){
 				$permalink	= admin_url('admin.php')."?page=mbw_board_options&board_name=".$board_name."&vid=".$board_pid;
 			}
 		}
-		return $permalink;
+		return esc_url_raw($permalink);
 	}
 }
 
@@ -208,7 +235,7 @@ if(!function_exists('mbw_get_current_url')){
 		}else{
 			$url	= mbw_check_url(MBW_HOME_URL).$_SERVER["REQUEST_URI"]; 
 		}
-		return strip_tags($url);
+		return esc_url_raw($url);
 	}
 }
 
@@ -237,7 +264,7 @@ if(!function_exists('mbw_get_ssl_url')){
 		}else{
 			$ssl_url				= $url;
 		}
-		return strip_tags($ssl_url);
+		return esc_url_raw($ssl_url);
 	}
 }
 if(!function_exists('mbw_get_http_url')){
@@ -250,7 +277,7 @@ if(!function_exists('mbw_get_http_url')){
 		if(!empty($parse_url["port"]) && mbw_get_option("ssl_port")!=$parse_url["port"]) $port		= ":".$parse_url["port"];
 		if(!empty($parse_url["query"])) $query		= "?".$parse_url["query"];
 
-		return strip_tags("http://".$parse_url["host"].$port.$parse_url["path"].$query);
+		return esc_url_raw("http://".$parse_url["host"].$port.$parse_url["path"].$query);
 	}
 }
 
@@ -284,7 +311,7 @@ if(!function_exists('mbw_check_permalink')){
 		}
 		$url		= mbw_check_url($url);
 		$mb_post_url[$post_name]		= $url;
-		return strip_tags($url);
+		return esc_url_raw($url);
 	}
 }
 
@@ -564,16 +591,38 @@ if(!function_exists('mbw_get_dir_entry')){
 	function mbw_get_dir_entry($dir_name,$add_except=array(),$order="desc"){
 		$path					= MBW_PLUGIN_PATH.$dir_name;
 		$path					= rtrim($path,'/\\');
-		$dir					= dir($path);
-		$except				= array_merge(array(".",".."),$add_except);
-		$items				= array();
-
-		while (false !== ($entry = $dir->read())){
-			if(strpos($entry,'.')!==0 && is_dir($path."/".$entry)){
-				if(!in_array($entry, $except))
-					$items[]		= $entry;
+		$items					= array();
+		if ( is_dir($path) ) {
+			$dir					= dir($path);
+			$except				= array_merge(array(".",".."),$add_except);
+			while (false !== ($entry = $dir->read())){
+				if(strpos($entry,'.')!==0 && is_dir($path."/".$entry)){
+					if(!in_array($entry, $except)){
+						$key			= str_replace(array(" ","-","."), "_", $entry);
+						$items[$key]	= $entry;
+					}
+				}
 			}
 		}
+		
+		$store_path					= mbw_get_option("store_path");
+		if ( !empty($store_path) ) {
+			$path					= WP_CONTENT_DIR.$store_path.$dir_name;
+			$path					= rtrim($path,'/\\');
+			if ( is_dir($path) ) {
+				$dir					= dir($path);
+				$except				= array_merge(array(".",".."),$add_except);
+				while (false !== ($entry = $dir->read())){
+					if(strpos($entry,'.')!==0 && is_dir($path."/".$entry)){
+						if(!in_array($entry, $except)){
+							$key			= str_replace(array(" ","-","."), "_", $entry);
+							$items[$key]	= $entry;
+						}
+					}
+				}
+			}
+		}
+		
 		if($order=="desc"){
 			return array_reverse($items);
 		}else{
@@ -585,14 +634,35 @@ if(!function_exists('mbw_get_file_entry')){
 	function mbw_get_file_entry($dir_name,$add_except=array(),$order="desc"){
 		$path					= MBW_PLUGIN_PATH.$dir_name;
 		$path					= rtrim($path,'/\\');
-		$dir					= dir($path);
-		$except				= array_merge(array(".",".."),$add_except);
-		$items				= array();
+		$items					= array();
+		if ( is_dir($path) ) {
+			$dir					= dir($path);
+			$except				= array_merge(array(".",".."),$add_except);			
+			while (false !== ($entry = $dir->read())){
+				if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
+					if(!in_array($entry, $except)){
+						$key				= str_replace(array(" ","-",".php","."), "_", $entry);
+						$items[$key]		= str_replace(".php", "", $entry);
+					}
+				}
+			}
+		}
+		
+		$store_path					= mbw_get_option("store_path");
+		if ( !empty($store_path) ) {
+			$path					= WP_CONTENT_DIR.$store_path.$dir_name;
+			$path					= rtrim($path,'/\\');
+			if ( is_dir($path) ) {			
+				$dir					= dir($path);
+				$except				= array_merge(array(".",".."),$add_except);
 
-		while (false !== ($entry = $dir->read())){
-			if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
-				if(!in_array($entry, $except)){
-					$items[]		= str_replace(".php", "", $entry);
+				while (false !== ($entry = $dir->read())){
+					if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
+						if(!in_array($entry, $except)){
+							$key				= str_replace(array(" ","-",".php","."), "_", $entry);
+							$items[$key]		= str_replace(".php", "", $entry);
+						}
+					}
 				}
 			}
 		}
@@ -788,6 +858,8 @@ if(!function_exists('mbw_value_filter')){
 			$pattern		= "/[^0-9a-zA-Z\&\_\,\.\-\=]/";
 		}else if($type=='date1'){
 			$pattern		= "/[^0-9\s\/\:\-]/";		//숫자,공백,슬래시,:,-
+		}else if($type=='mime_type'){
+			$pattern		= "/[^0-9a-zA-Z\/\.\_\-\+\&]/";		//영문,숫자,/,.,-,_,+,&
 		}else if($type=='name'){
 			$pattern		= "/[^0-9a-zA-Z\_\-]/";		//영문,숫자,-,_
 		}else if($type=='class'){
@@ -857,15 +929,16 @@ if(!function_exists('__STYLE')){
 }
 if(!function_exists('__MW')){
 	function __MW($word,$count=1){		
-		if(is_array($word)){			
+		if(is_array($word)){
 			foreach($word as $key => $value){				
-				if(strpos($value, 'W_')===0 || strpos($value, 'MSG_')===0) $word[$key]	= mbw_get_message($value);
-				if(mbw_get_option("wp_multi_language")) $word[$key]		= __($value, "mangboard");
+				if( strpos($value, 'W_') === 0 || strpos($value, 'MSG_') === 0 ){
+					$word[$key]	= mbw_get_message($value);
+				}
 			}
 		}else{			
-			if(strpos($word, 'W_')===0 || strpos($word, 'MSG_')===0) $word		= mbw_get_message($word);
-			if(mbw_get_option("wp_multi_language")) $word	= __($word, "mangboard");
-
+			if( strpos($word, 'W_') === 0 || strpos($word, 'MSG_') === 0 ){
+				$word		= mbw_get_message($word);
+			}
 			if($count>1) $word		= $word."s";
 		}		
 		return $word;
@@ -885,9 +958,9 @@ if(!function_exists('__MM')){
 		if(isset($args) && strpos($message, '%')!==false){
 			$args		= __MW($args,$count);
 			if(is_array($args)){
-				$message			= vsprintf ( $message ,$args);
+				$message			= vsprintf($message, $args);
 			}else{
-				$message			= sprintf ( $message ,$args);
+				$message			= sprintf($message, $args);
 			}			
 		}
 		return $message;

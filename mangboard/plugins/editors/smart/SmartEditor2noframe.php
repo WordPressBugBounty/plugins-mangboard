@@ -5,22 +5,27 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title>네이버 :: Smart Editor 2 &#8482;</title>
-<link href="css/ko_KR/smart_editor2.css" rel="stylesheet" type="text/css">
 <style type="text/css">
 	body { margin: 10px; }
 </style>
-<script type="text/javascript" src="./js/lib/jindo2.all.js" charset="utf-8"></script>
-<script type="text/javascript" src="./js/lib/jindo_component.js" charset="utf-8"></script>
-<script type="text/javascript" src="./js/service/SE2M_Configuration.js" charset="utf-8"></script>	<!-- 설정 파일 -->
-<script type="text/javascript" src="./js/service/SE2BasicCreator.js" charset="utf-8"></script>
-<script type="text/javascript" src="./js/smarteditor2.min.js" charset="utf-8"></script>
+<?php
+$editor_url	= plugins_url('', __FILE__)."/";
+mbw_enqueue_style('smart-editor2-css', $editor_url.'css/smart_editor2.css');
+wp_print_styles( 'smart-editor2-css' );
 
+mbw_enqueue_script('se2-jindo2',$editor_url.'js/lib/jindo2.all.js');
+mbw_enqueue_script('se2-jindo-component',$editor_url.'js/lib/jindo_component.js');
+mbw_enqueue_script('se2-configuration', $editor_url.'js/service/SE2M_Configuration.js');
+mbw_enqueue_script('se2-basic-creator', $editor_url.'js/service/SE2BasicCreator.js');
+mbw_enqueue_script('se2-smarteditor2', $editor_url.'js/smarteditor2.min.js');
+mbw_enqueue_script('se2-attach-quick-photo', $editor_url.'sample/js/plugin/hp_SE2M_AttachQuickPhoto.js');
+wp_print_scripts( array( 'se2-jindo2', 'se2-jindo-component', 'se2-configuration', 'se2-basic-creator', 'se2-smarteditor2', 'se2-attach-quick-photo' ) );
+?>
+<script type="text/javascript">var mb_editor_url = "<?php echo esc_url($editor_url);?>";var board_name = "<?php echo esc_js(mbw_get_param('board_name'));?>"; </script>
 </head>
 <body>
 
 
-
-<span id="rev">Version: 2.9.0.4a256db </span>
 
 <!-- SE2 Markup Start -->	
 <div id="smart_editor2">
@@ -35,12 +40,14 @@
 						<div class="se2_in_layer">
 							<ul class="se2_l_font_fam">
 							<li style="display:none"><button type="button"><span>@DisplayName@<span>(</span><em style="font-family:FontFamily;">@SampleText@</em><span>)</span></span></button></li>
+							<?php if(mbw_get_vars("mb-font-url")==""){ ?>
 							<li class="se2_division husky_seditor_font_separator"></li>
 							<li><button type="button"><span>나눔고딕<span>(</span><em style="font-family:'나눔고딕',NanumGothic;">가나다라</em><span>)</span></span></button></li>
 							<li><button type="button"><span>나눔명조<span>(</span><em style="font-family:'나눔명조',NanumMyeongjo;">가나다라</em><span>)</span></span></button></li>
 							<li><button type="button"><span>나눔고딕코딩<span>(</span><em style="font-family:'나눔고딕코딩',NanumGothicCoding;">가나다라</em><span>)</span></span></button></li>
 							<li><button type="button"><span>나눔바른고딕<span>(</span><em style="font-family:'나눔바른고딕',NanumBarunGothic,NanumBarunGothicOTF;">가나다라</em><span>)</span></span></button></li>
 							<li><button type="button"><span>나눔바른펜<span>(</span><em style="font-family:'나눔바른펜',NanumBarunpen;">가나다라</em><span>)</span></span></button></li>
+							<?php } ?>
 							</ul>
 						</div>
 					</div>

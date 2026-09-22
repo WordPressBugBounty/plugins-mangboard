@@ -342,7 +342,6 @@ Class MStore
 
 
 	public function get_add_query($sData,$wData=null,$oData=null){
-		global $mstore;
 		global $mb_fields;
 		global $mb_board_table_name,$mb_comment_table_name,$mb_admin_tables;
 
@@ -685,7 +684,9 @@ Class MStore
 	public function get_message($key){
 		if(isset($this->messages[$key])){
 			return $this->messages[$key];
-		}else return $key;
+		}else{
+			return esc_html($key);
+		}
 	}
 	public function set_message($key,$value){
 		$this->messages[$key]			= $value;
@@ -717,7 +718,7 @@ Class MStore
 	}
 
 	public function get_board_meta($w_data,$column="*",$limit=1){
-		global $mb_fields,$mstore,$mdb,$mb_admin_tables;
+		global $mb_fields,$mdb,$mb_admin_tables;
 		$fields				= $mb_fields["meta"];
 		$o_data				= array($fields["fn_pid"]=>"DESC");
 		$select_query		= mbw_get_add_query(array("column"=>$column,"join"=>"none","table"=>$mb_admin_tables["meta"]),$w_data,$o_data)." limit ".$limit;
@@ -731,25 +732,23 @@ Class MStore
 	}
 
 	public function set_board_meta($command, $s_data,$w_data){
-		global $mb_fields,$mstore,$mb_admin_tables;
+		global $mb_fields,$mb_admin_tables;
 		$this->db->db_query($command,$mb_admin_tables["meta"], $s_data, $w_data);
 	}
 
 	public function set_db_options($key="",$category=""){		
 		global $mb_admin_tables,$mb_fields;
-		global $mb_vars,$mstore;
+		global $mb_vars;
 
 		if(mbw_get_trace("mbw_db_options_meta")=="" && !empty($this->db)){
 			$options					= array();
 			$where_query			= "";
-
 			if(!empty($key)){
 				$where_query	= $this->db->prepare(" where ".$mb_fields["options"]["fn_option_load"]."=%s", $key);
 				if(!empty($category)){
 					$where_query	= $this->db->prepare($where_query." and ".$mb_fields["options"]["fn_option_category"]."=%s", $category);
 				}
 			}			
-
 			$select_query		= $this->get_add_query(array("column"=>$mb_fields["meta"]["fn_meta_value"],"table"=>$mb_admin_tables["meta"]), array(array("field"=>$mb_fields["meta"]["fn_meta_table"],"value"=>'options'),array("field"=>$mb_fields["meta"]["fn_meta_key"],"value"=>'db_options')));
 			$options_meta		= $this->db->get_var($select_query." ORDER BY ".$mb_fields["meta"]["fn_pid"]." DESC limit 1");
 
@@ -804,10 +803,14 @@ Class MStore
 			}
 			$skin_path		= MBW_PLUGIN_PATH;
 			$skin_url			= MBW_PLUGIN_URL;
+			$store_path		= mbw_get_option("store_path");
 			//테마에 망보드 스킨 폴더에 스킨이 존재하면 테마에 있는 스킨 적용			
-			if(is_dir(get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/skins/".$skin_name."/")){
+			if ( is_dir(get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/skins/".$skin_name."/") ) {
 				$skin_path		= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/";
 				$skin_url			= get_stylesheet_directory_uri()."/".MBW_PLUGIN_DIR."/";
+			} else if ( $store_path != "" && is_dir(WP_CONTENT_DIR.$store_path."skins/".$skin_name."/") ) {
+				$skin_path		= WP_CONTENT_DIR.$store_path;
+				$skin_url			= MBW_CONTENT_URL.$store_path;
 			}
 			$skin_path		= $skin_path."skins/".$skin_name."/";
 			if(!defined("MBW_SKIN_PATH")) define("MBW_SKIN_PATH", $skin_path);
@@ -816,36 +819,51 @@ Class MStore
 			$this->set_board_languages();
 
 			//스킨 템플릿 파일 읽어오기
-			if(is_file($skin_path."includes/skin-template.php")) require($skin_path."includes/skin-template.php");
-
+			if( is_file($skin_path."includes/skin-template.php") ){
+				require($skin_path."includes/skin-template.php");
+			}
 			$require_files		= array();
 			//테마 템플릿 폴더의 파일 읽어오기
 			$require_files		= mbw_get_require_path("templates/","theme_file");
 			//망보드 템플릿 폴더의 파일 읽어오기
 			$require_files		= array_merge($require_files,mbw_get_require_path("templates/","file"));
-			if(!empty($require_files)){
+			if ( !empty($require_files) ) {
 				foreach($require_files  as $value){
 					require($value);
 				}
 			}
-			if(is_file($skin_path."includes/skin-filters.php")) require($skin_path."includes/skin-filters.php");
-			else require(MBW_PLUGIN_PATH."includes/skin-filters.php");
+			if ( is_file($skin_path."includes/skin-filters.php") ) {
+				require($skin_path."includes/skin-filters.php");
+			} else {
+				require(MBW_PLUGIN_PATH."includes/skin-filters.php");
+			}
 			
 			$mb_fields["select_board"]			= $mb_fields["board"];
-			$mb_fields["select_comment"]	= $mb_fields["comment"];
+			$mb_fields["select_comment"]		= $mb_fields["comment"];
 
 			//Model 설정이 되어 있지 않으면 스킨의 디폴트 파일(skin-model.php)을 불러옴
 			$model_name		= mbw_get_board_option("fn_model_name");
-			if(has_filter('mf_board_model_name')) $model_name			= apply_filters("mf_board_model_name",$model_name);
+			if ( has_filter('mf_board_model_name') ) {
+				$model_name			= apply_filters("mf_board_model_name",$model_name);
+			}
 
-			if(!empty($model_name)) $model_path		= MBW_PLUGIN_PATH."models/".$model_name.".php";
-			else $model_path		= $skin_path."includes/skin-model.php";
-			if(has_filter('mf_model_path')) $model_path	= apply_filters("mf_model_path",$model_path);
+			if ( !empty($model_name) ) {
+				if( $store_path != "" && is_file(WP_CONTENT_DIR.$store_path."models/".$model_name.".php") ) {
+					$model_path		= WP_CONTENT_DIR.$store_path."models/".$model_name.".php";
+				} else {
+					$model_path		= MBW_PLUGIN_PATH."models/".$model_name.".php";
+				}
+			} else {
+				$model_path		= $skin_path."includes/skin-model.php";
+			}
+			if ( has_filter('mf_model_path') ) {
+				$model_path	= apply_filters("mf_model_path",$model_path);
+			}
 
-			if(is_file($model_path)){  //모델 파일이 존재하는지 체크
+			if ( is_file($model_path) ) {  //모델 파일이 존재하는지 체크
 				require($model_path);
 
-				$board_model["desktop"]			= $desktop_model;			
+				$board_model["desktop"]			= $desktop_model;
 
 				if(!empty($mobile_model)) $board_model["mobile"]		= $mobile_model;
 				else $board_model["mobile"]		= $desktop_model;
@@ -857,26 +875,32 @@ Class MStore
 				else $board_model["desktop_large"]		= $desktop_model;
 
 				$this->set_models($board_model);
-			}else{
+			} else {
 				//모델 파일이 없으면 다른 모델 불러오거나 에러 출력
 				mbw_error_message("MSG_EXIST_ERROR2", array($model_path,"File"),"1501");
-			}		
+			}
 
 			$this->set_board_fields($mb_fields["select_board"]);
 			$this->set_comment_fields($mb_fields["select_comment"]);
 
-			if(mbw_get_request_mode()=="Frontend"){
-				if(!empty($skin_path) && is_dir($skin_path)){  //스킨 존재하는지 체크
+			if ( mbw_get_request_mode() == "Frontend" ) {
+				if ( !empty($skin_path) && is_dir($skin_path) ) {  //스킨 존재하는지 체크
 					$skin_settings_path		= $skin_path."includes/skin-settings.php";
-					if(has_filter('mf_skin_settings_path')) $skin_settings_path	= apply_filters("mf_skin_settings_path",$skin_settings_path);
-					if(is_file($skin_settings_path)) require($skin_settings_path);	//스킨 설정 파일
+					if ( has_filter('mf_skin_settings_path') ) {
+						$skin_settings_path	= apply_filters("mf_skin_settings_path",$skin_settings_path);
+					}
+					if ( is_file($skin_settings_path) ) {
+						require($skin_settings_path);	//스킨 설정 파일
+					}
 					$api_type		= $this->get_board_option("fn_api_type");
-					if(empty($api_type))	$api_type	= "mb";
+					if ( empty($api_type) ) {
+						$api_type	= "mb";
+					}
 					foreach($mb_api_urls as $key => $value){
 						$file_name					= str_replace("_api", ".php", $key);
 						$api_url						= MBW_PLUGIN_URL;
-						$mb_api_urls[$key]		= $api_type."_".str_replace("_api", "", $key);
-						if(is_file($skin_path."api/".$api_type."-".$file_name)){
+						$mb_api_urls[$key]			= $api_type."_".str_replace("_api", "", $key);
+						if( is_file($skin_path."api/".$api_type."-".$file_name) ) {
 							$mb_api_urls[$key]	= "skin_".$mb_api_urls[$key];
 						}
 					}

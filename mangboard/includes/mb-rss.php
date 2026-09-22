@@ -23,7 +23,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		<description><?php echo esc_xml(get_bloginfo_rss('description')); ?></description>
 		<language><?php echo esc_xml(get_bloginfo_rss( 'language' )); ?></language>
 		<generator>WordPress Mangboard</generator>
-		<pubDate><?php echo gmdate(DATE_RSS, mbw_get_timestamp());?></pubDate>
+		<pubDate><?php echo gmdate(DATE_RSS, mbw_get_timestamp());// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></pubDate>
 <?php foreach($board_items as $item){
 			mbw_set_board_item($item); 			
 			if(intval(mbw_get_board_option("fn_view_level"))==0) $content		= mbw_get_board_item('fn_content');
@@ -37,7 +37,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<link><![CDATA[<?php echo esc_url_raw(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink(mbw_get_board_option("fn_post_id")),""));?>]]></link>
 			<guid><![CDATA[<?php echo esc_url_raw(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink(mbw_get_board_option("fn_post_id")),""));?>]]></guid>
 			<description><![CDATA[<?php echo esc_xml($content);?>]]></description>
-			<pubDate><?php echo gmdate(DATE_RSS, strtotime(mbw_get_board_item('fn_reg_date',false)));?></pubDate>
+			<pubDate><?php echo gmdate(DATE_RSS, strtotime(mbw_get_board_item('fn_reg_date',false)));// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></pubDate>
 			<tag><![CDATA[<?php echo esc_xml(mbw_get_board_item('fn_tag'));?>]]></tag>
 		</item>
 <?php }?>

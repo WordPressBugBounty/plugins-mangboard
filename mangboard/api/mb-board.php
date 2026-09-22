@@ -4,7 +4,11 @@ if(!defined('_MB_')) exit();
 
 do_action('mbw_board_api_init');
 if(!mbw_verify_nonce()){
-	if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode(mbw_get_result_array());exit;}	
+	if( mbw_get_param("board_action") == "board_hit" ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo mbw_data_encode(mbw_get_result_array());
+		exit;
+	}	
 	mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
 }
 
@@ -30,6 +34,7 @@ if(mbw_get_param("mode")=="write"){
 }
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -397,6 +402,7 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 do_action('mbw_board_api_body');
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -405,6 +411,7 @@ if(mbw_get_result_data("state")=="error"){
 mbw_set_user_point("board",mbw_get_param("board_action"));
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -516,11 +523,13 @@ if(!empty($query_data)){
 }
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());
 	exit;
 }
 
 do_action('mbw_board_api_footer');
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
 exit;
 ?>

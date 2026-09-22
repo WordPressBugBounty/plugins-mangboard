@@ -257,6 +257,7 @@ if(!function_exists('mbw_set_option')){
 if(!function_exists('mbw_get_option')){
 	function mbw_get_option($key,$filter=true){
 		global $mstore;
+		if(empty($mstore)) return "";
 		return $mstore->get_option($key,$filter);
 	}
 }

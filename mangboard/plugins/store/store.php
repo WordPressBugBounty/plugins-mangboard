@@ -2,7 +2,7 @@
 if(!function_exists('mbw_admin_store_page')){
 	function mbw_admin_store_page($path,$page){
 		if($page=="store"){
-			$store_path		= MBW_PLUGIN_PATH."plugins/store/store_page.php";
+			$store_path	= plugin_dir_path(__FILE__)."store_page.php";
 			return $store_path;
 		}else{
 			return $path;

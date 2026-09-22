@@ -8,19 +8,20 @@ if(!function_exists('mbw_load_editor_c')){
 		if(mbw_get_trace("mbw_load_editor_c")==""){
 			mbw_add_trace("mbw_load_editor_c");
 			wp_enqueue_script('ck-editor-js');
-			loadStyle(MBW_PLUGIN_URL."plugins/editors/ck/css/style.css");
+			wp_enqueue_style('jquery-ui-css');
+			$editor_url	= plugins_url('', __FILE__)."/";
+			loadStyle($editor_url."css/style.css");
 		}
 	}
 }
 add_action('mbw_load_editor_'.$editor_type, 'mbw_load_editor_c',5); 
 if(!function_exists('mbw_editor_ck_init')){
 	function mbw_editor_ck_init(){
+		$editor_url	= plugins_url('', __FILE__)."/";
 		if(mbw_get_vars("device_type")=="mobile"){
-			//wp_register_script('ck-editor-js', '//cdn.ckeditor.com/4.22.1/full/ckeditor.js');
-			wp_register_script('ck-editor-js', MBW_PLUGIN_URL.'plugins/editors/ck/js/ckeditor.js');
+			wp_register_script('ck-editor-js', $editor_url.'js/ckeditor.js');
 		}else{
-			//wp_register_script('ck-editor-js', '//cdn.ckeditor.com/4.22.1/full/ckeditor.js');
-			wp_register_script('ck-editor-js', MBW_PLUGIN_URL.'plugins/editors/ck/js/ckeditor.js');
+			wp_register_script('ck-editor-js', $editor_url.'js/ckeditor.js');
 		}
 		if(mbw_get_board_option("fn_editor_type")=="C" && mbw_get_param("mode")=="write"){
 			mbw_load_editor_c();
@@ -89,6 +90,7 @@ if(!function_exists('mbw_editor_ck_template')){
 			$item_html		.= 'ckeditor = CKEDITOR.replace( "'.esc_js($editor_id).'",{"bodyClass":"mb-'.esc_js($device_type).' mb-editor mb-editor-ck","customConfig": "'.MBW_PLUGIN_URL.'plugins/editors/ck/'.esc_js($config_name).'.js","filebrowserUploadUrl":"'.esc_js($admin_ajax_url).'?mode=basic&action=mb_uploader&board_name='.esc_js($board_name).'&CKEditorFuncNum=json&'.mbw_create_nonce("param",$board_name).'"});';
 			$item_html		.= $editor_css;
 		$item_html		.= ' });</script>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $item_html;
 	}
 }

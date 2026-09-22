@@ -6,7 +6,10 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title>사진 첨부하기 :: SmartEditor2</title>
-<script type="text/javascript">var mb_editor_url="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/";var mb_admin_url="<?php echo mbw_check_url(admin_url());?>";var mb_editor_nonce="<?php echo mbw_create_nonce('param',mbw_get_param('board_name'));?>";var board_name="<?php echo mbw_get_param('board_name');?>";</script>
+<?php
+$uploader_url	= plugins_url('', __FILE__)."/";
+?>
+<script type="text/javascript">var mb_uploader_url="<?php echo esc_url($uploader_url);?>";var mb_admin_url="<?php echo esc_html(admin_url());?>";var mb_editor_nonce="<?php echo mbw_create_nonce('param',mbw_get_param('board_name')); // phpcs:ignore ?>";var board_name="<?php echo esc_js(mbw_get_param('board_name'));?>";</script>
 
 <style type="text/css">
 /* NHN Web Standard 1Team JJS 120106 */ 
@@ -29,7 +32,7 @@ h1{color:#333;font-size:14px;letter-spacing:-1px}
 .btn_area{word-spacing:2px}
 
 .pop_container .drag_area{overflow:hidden;overflow-y:auto;position:relative;height:129px;margin-top:4px;border:1px solid #eceff2}
-.pop_container .drag_area .bg{display:block;position:absolute;top:0;left:0;width:100%;height:129px;background:#fdfdfd url(<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>img/bg_drag_image.png) 0 0 no-repeat}
+.pop_container .drag_area .bg{display:block;position:absolute;top:0;left:0;width:100%;height:129px;background:#fdfdfd url("<?php echo esc_url($uploader_url);?>img/bg_drag_image.png") 0 0 no-repeat}
 .pop_container .nobg{background:none}
 .pop_container .bar{color:#e0e0e0}
 .pop_container .lst_type li{overflow:hidden;position:relative;padding:7px 0 6px 8px;border-bottom:1px solid #f4f4f4;vertical-align:top}
@@ -98,8 +101,11 @@ h1{color:#333;font-size:14px;letter-spacing:-1px}
     </div>
     <!-- //footer -->
 </div>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>jindo.min.js?ver=1.6.7" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>jindo.fileuploader.js?ver=1.6.7" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL."plugins/editors/smart/sample/photo_uploader/";?>attach_photo.js?ver=1.6.7" charset="utf-8"></script>
+<?php
+mbw_enqueue_script('se2-jindo',$uploader_url.'jindo.min.js');
+mbw_enqueue_script('se2-jindo-fileuploader',$uploader_url.'jindo.fileuploader.js');
+mbw_enqueue_script('se2-attach-photo',$uploader_url.'attach_photo.js');
+wp_print_scripts( array( 'se2-jindo', 'se2-jindo-fileuploader', 'se2-attach-photo' ) );
+?>
 </body>
 </html>

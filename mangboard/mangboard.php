@@ -1,11 +1,13 @@
 <?php
 /**
- * Plugin Name: MangBoard WP
+ * Plugin Name: MangBoard
  * Plugin URI: https://mangboard.com/
- * Description: MangBoard WP는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
- * Version: 2.4.1
+ * Description: MangBoard는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
+ * Version: 2.4.2
  * Author: Hometory
  * Author URI: https://www.hometory.com/
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
 if(!function_exists( 'add_filter' )) return;
@@ -25,11 +27,11 @@ define("MBW_CONTENT_URL", $content_url);
 define("MBW_PLUGIN_URL", $plugins_url);
 
 define("MBW_PLUGIN_DIR", "mangboard");
+define("MBW_STORE_DIR", "/plugins/mangboard-store/");
 define("MBW_UPLOAD_PATH", WP_CONTENT_DIR."/uploads/mangboard/");
 define("MBW_LOG_PATH", WP_CONTENT_DIR."/uploads/mangboard/log/");
 define("MBW_PLUGIN_PATH", plugin_dir_path(__FILE__));
 define("MBW_PLUGIN_FILE", __FILE__);
-
 
 define("MBW_SECURE_AUTH_COOKIE", "mb_sec_".md5(MBW_AUTH_SITE_URL));
 define("MBW_AUTH_COOKIE", "mb_".md5(MBW_AUTH_SITE_URL));
@@ -37,10 +39,8 @@ define("MBW_SHORTCODE_BOARD", "mb_board");
 define("MBW_QUERY_LOG", false);		//디비 쿼리 로그 설정: 관리자>MangBoard>Log 관리
 define("MBW_PARAM_LOG", false);		//파라미터 로그 설정: /wp-content/uploads/mangboard/log/log_xxxxxx.txt
 
-
 require_once(MBW_PLUGIN_PATH."includes/mb-settings.php");
 if(empty($mstore)) return;
-
 
 if(!function_exists('mbw_init')){
 	function mbw_init(){	
@@ -168,12 +168,13 @@ if(!function_exists('mbw_create_board')){
 				if($elementor_edit_mode=="builder"){
 					$elementor_data	 = get_post_meta( $post->ID, '_elementor_data' , true);
 					if(strpos($elementor_data, 'settings":{"editor":"<p>[mb_board') !== false){
-						mbw_error_message('엘리멘터에서 제공하는 "숏코드" 아이템을 이용하여 게시판 숏코드를 입력해 주세요<div style="font-size:14px;padding:8px 0 0;">(게시판 추가방법: <a href="https://www.mangboard.com/tip/?vid=47" target="_blank">https://www.mangboard.com/tip/?vid=47</a>)</div>',"","1104");
+						mbw_error_message('엘리멘터에서 제공하는 "숏코드" 아이템을 이용하여 게시판 숏코드를 입력해 주세요<div style="font-size:14px;padding:8px 0 0;">(게시판 추가방법: <a href="https://mangboard.com/tip/?vid=47" target="_blank">https://mangboard.com/tip/?vid=47</a>)</div>',"","1104");
 					}
 				}
 			}
 		}
 		if(mbw_get_result_data("state")=="error"){
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo mbw_echo_error_message();
 		}else{	
 			$MangBoard		= new MangBoard($mdb,$mstore);
@@ -183,18 +184,6 @@ if(!function_exists('mbw_create_board')){
 		if(empty($args['echo'])) return ob_get_clean();
 	}
 }
-
-if(!function_exists('mbw_disable_plugin_updates')){
-	function mbw_disable_plugin_updates($value){
-		if(isset($value->response['mangboard/mangboard.php'])){
-			if(get_option("mb_install_product")!="0:0" || get_option("mb_skin_model")!="3:4"){
-				unset($value->response['mangboard/mangboard.php']);
-			}
-		}
-		return $value;
-	}
-}
-add_filter('site_transient_update_plugins', 'mbw_disable_plugin_updates');
 
 if(!function_exists('mbw_check_shortcode')){
 	function mbw_check_shortcode($posts,$query){

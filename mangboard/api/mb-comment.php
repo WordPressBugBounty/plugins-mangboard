@@ -28,6 +28,7 @@ if(mbw_get_param("board_action")=="write" || mbw_get_param("board_action")=="mod
 }
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -106,6 +107,7 @@ if(mbw_get_param("mode")=="comment"){
 
 do_action('mbw_comment_api_body');
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -123,6 +125,7 @@ if($mb_user_level>=mbw_get_option("admin_level") && $parent_pid==0) {
 	$where_query				= "";
 }
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -267,6 +270,7 @@ if(!empty($comment_items)){
 }
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());	
 	exit;
 }
@@ -274,6 +278,7 @@ mbw_set_result_data(array("data"=>$comment_data));
 mbw_set_result_data(array("count"=>$comment_count));
 
 do_action('mbw_comment_api_footer');
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
 exit;
 ?>

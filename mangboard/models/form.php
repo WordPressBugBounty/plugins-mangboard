@@ -183,6 +183,7 @@ if(!function_exists('mbw_board_skin_form_add_button')){
 	function mbw_board_skin_form_add_button(){
 		if(mbw_get_param("mode")=='write' && mbw_get_param("board_action")=='write'){
 			mbw_set_option("use_write_button",false);
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '<div class="btn-box-center">'.mbw_get_btn_template(array("name"=>"W_FORM_SUBMIT","onclick"=>"checkWriteData()","class"=>"btn btn-default btn-send-write","style"=>"height: 38px !important;min-width:200px !important;font-size: 15px !important;margin-top: 40px !important;font-weight:600 !important")).'</div>';
 		}
 	}

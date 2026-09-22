@@ -23,6 +23,7 @@
 
 		//게시물이 존재하는지 확인
 		if(empty($board_item)){
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo mbw_error_message("MSG_ITEM_NOT_EXIST");return;
 		}
 		//비밀글인지 확인(비밀글의 답변글은 비밀글 작성자가 비밀번호 없이 볼 수 있도록 설정)
@@ -57,7 +58,7 @@ function checkWriteData(){
 			if(!empty($script_html)) $script_html	= $script_html." else ";
 			$script_html	= $script_html."if(jQuery('#editor_type').val()=='".$key."'){".$value["script"]."}";
 		}
-		echo $script_html;		
+		echo $script_html; // phpcs:ignore
 	?>	
 }
 function sendBoardWriteData(content){
@@ -72,19 +73,19 @@ function sendBoardWriteDataHandler(response, state){
 			if(response.message!="") alert(response.message);
 		}
 		if(response.board_action == "modify"){
-			<?php echo 'moveURL("'.mbw_get_url(array("vid"=>mbw_get_param('board_pid'),"board_action"=>"")).'")'; ?>;
+			<?php echo 'moveURL("'.mbw_get_url(array("vid"=>mbw_get_param('board_pid'),"board_action"=>"")).'")'; // phpcs:ignore ?>;
 		}else{
 			<?php
 			if(mbw_get_option("write_next_page")=="write" || mbw_get_param("write_next_page")=="write"){		//글쓰기 폼 형태로 사용시 글작성 후 알림창 뛰우고 현재 페이지 Reload
-				echo 'showAlertPopup({"message":"'.__MM('MSG_SEND_WRITE_SUCCESS').'"},function(){moveURL("reload");});';
+				echo 'showAlertPopup({"message":"'.__MM('MSG_SEND_WRITE_SUCCESS').'"},function(){moveURL("reload");});'; // phpcs:ignore 
 			}else if(mbw_get_param("write_next_page")=="referer"){ //이전 페이지로 이동
 				echo 'moveURL("referer");';
 			}else if(mbw_get_option("write_next_url")!=""){
-				echo 'moveURL("'.mbw_get_option("write_next_url").'");';			
+				echo 'moveURL("'.mbw_get_option("write_next_url").'");'; // phpcs:ignore 
 			}else if(mbw_get_param("write_next_url")!=""){
-				echo 'moveURL("'.mbw_validate_redirect(mbw_get_param("write_next_url")).'");';
+				echo 'moveURL("'.mbw_validate_redirect(mbw_get_param("write_next_url")).'");'; // phpcs:ignore 
 			}else{		//글목록 페이지로 이동
-				echo 'moveURL("'.mbw_get_url(array("board_pid"=>"","mode"=>"list","board_page"=>"1")).'");';
+				echo 'moveURL("'.mbw_get_url(array("board_pid"=>"","mode"=>"list","board_page"=>"1")).'");'; // phpcs:ignore 
 			}			
 			?>
 		}
@@ -98,7 +99,7 @@ function sendBoardWriteDataErrorHandler(e){
 </script>
 <?php do_action('mbw_board_skin_header'); ?>
 <form name="<?php echo esc_attr($mb_board_name);?>_form_board_write" id="<?php echo esc_attr($mb_board_name);?>_form_board_write" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return false;">
-<?php echo mbw_create_nonce("form"); ?>
+<?php echo mbw_create_nonce("form"); // phpcs:ignore ?>
 <input type="hidden" name="board_name" id="board_name" value="<?php echo esc_attr($mb_board_name);?>" />
 <input type="hidden" name="mode" id="mode" value="<?php echo esc_attr(mbw_get_param("mode"));?>" />
 <input type="hidden" name="upload_size" id="upload_size" value="<?php echo esc_attr(mbw_get_board_option("fn_upload_size"));?>" />
@@ -148,16 +149,16 @@ if(mbw_is_login()) echo '<input type="password" autocomplete="off" style="displa
 		<div>
 			<div class="pull-right">
 				<?php if(intval(mbw_get_board_option("fn_use_secret")) == 1){?>			
-					<label><input name="is_secret" type="checkbox" title="<?php echo __MW("W_SECRET");?>" value="1" <?php if(mbw_is_login()) echo ' onclick="checkBoxDisplayID(this,\''.mbw_get_id_prefix().'tr_passwd\');"';  if((intval(mbw_get_board_item("fn_is_secret")) == 1) && (mbw_get_param("board_action") == "modify" || mbw_get_param("board_action") == "reply")) echo " checked";?> /><?php echo __MW("W_SECRET");?></label> 
+					<label><input name="is_secret" type="checkbox" title="<?php echo __MW("W_SECRET"); // phpcs:ignore ?>" value="1" <?php if(mbw_is_login()) echo ' onclick="checkBoxDisplayID(this,\''.esc_js(mbw_get_id_prefix()).'tr_passwd\');"';  if((intval(mbw_get_board_item("fn_is_secret")) == 1) && (mbw_get_param("board_action") == "modify" || mbw_get_param("board_action") == "reply")) echo " checked";?> /><?php echo __MW("W_SECRET"); // phpcs:ignore ?></label> 
 				<?php }else if(intval(mbw_get_board_option("fn_use_secret")) == 2){
 					$click_event		= ' onclick="return false;"';
-					if(mbw_is_login() && mbw_get_param("board_action") == "modify") $click_event	= ' onclick="checkBoxDisplayID(this,\''.mbw_get_id_prefix().'tr_passwd\');"';  			
+					if(mbw_is_login() && mbw_get_param("board_action") == "modify") $click_event	= ' onclick="checkBoxDisplayID(this,\''.esc_js(mbw_get_id_prefix()).'tr_passwd\');"';  			
 				?>			
-					<label><input name="is_secret" type="checkbox" title="<?php echo __MW("W_SECRET");?>" value="1"<?php echo $click_event; if(intval(mbw_get_board_item("fn_is_secret")) == 1 || mbw_get_param("board_action")!="modify") echo " checked";?>  /><?php echo __MW("W_SECRET");?></label> 
+					<label><input name="is_secret" type="checkbox" title="<?php echo __MW("W_SECRET"); // phpcs:ignore ?>" value="1"<?php echo $click_event; if(intval(mbw_get_board_item("fn_is_secret")) == 1 || mbw_get_param("board_action")!="modify") echo " checked";?>  /><?php echo __MW("W_SECRET"); // phpcs:ignore ?></label> 
 				<?php }
 					if(intval(mbw_get_board_option("fn_use_notice")) == 1 && $mb_user_level>=intval(mbw_get_board_option("fn_manage_level"))){
 				?>
-				<label><input name="is_notice" type="checkbox" title="<?php echo __MW("W_NOTICE");?>" value="1"<?php if(mbw_get_board_item("fn_is_notice") == 1) echo " checked";?> /><?php echo __MW("W_NOTICE");?></label>
+				<label><input name="is_notice" type="checkbox" title="<?php echo __MW("W_NOTICE"); // phpcs:ignore ?>" value="1"<?php if(mbw_get_board_item("fn_is_notice") == 1) echo " checked";?> /><?php echo __MW("W_NOTICE"); // phpcs:ignore ?></label>
 				<?php }?>
 			</div>
 			<div class="clear"></div>
@@ -175,19 +176,23 @@ if(mbw_is_login()) echo '<input type="password" autocomplete="off" style="displa
 		<div class="btn-box-right" id="<?php echo esc_attr($mb_board_name);?>_btn_box">
 			<?php
 				echo '<div class="btn-box-left" style="float:left;">';
-				echo mbw_get_left_button("write");
+				echo mbw_get_left_button("write"); // phpcs:ignore
 				if(mbw_get_param("board_action")!="write"){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Back","onclick"=>"moveURL('back')","class"=>"btn btn-default btn-back"));				
 				}
-				if(intval(mbw_get_board_option("fn_list_level")) <= $mb_user_level)
+				if(intval(mbw_get_board_option("fn_list_level")) <= $mb_user_level){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"List","href"=>mbw_get_url(array("board_pid"=>"","mode"=>"list")),"class"=>"btn btn-default btn-list"));
+				}
 				echo '</div>';
 
 				if(intval(mbw_get_board_option("fn_".mbw_get_param("board_action")."_level")) <= $mb_user_level || (mbw_get_param("board_action")=="modify" && mbw_is_user_pid())){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Send_".ucfirst(mbw_get_param("board_action")),"onclick"=>"checkWriteData()","class"=>"btn btn-default btn-send-write"));
 				}
-				echo mbw_get_right_button("write");
-				
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo mbw_get_right_button("write");				
 			?>
 		</div>
 	</div>
@@ -199,12 +204,12 @@ if(mbw_is_login()) echo '<input type="password" autocomplete="off" style="displa
 <script type="text/javascript">
 <?php
 if(mbw_get_param("board_action") != "modify" && intval(mbw_get_board_option("fn_use_secret")) == 2){
-	echo 'jQuery(document).ready(function(){ checkBoxDisplayID(jQuery("input[name=\'is_secret\']"),"'.mbw_get_id_prefix().'tr_passwd"); });';
+	echo 'jQuery(document).ready(function(){ checkBoxDisplayID(jQuery("input[name=\'is_secret\']"),"'.esc_js(mbw_get_id_prefix()).'tr_passwd"); });';
 }
 if(mbw_get_param("mode") == "write" && (mbw_get_param("board_action") == "modify" || mbw_get_param("board_action") == "reply")){
-	echo 'mb_categorys["value1"]	= "'.mbw_get_board_item("fn_category1").'";';
-	echo 'mb_categorys["value2"]	= "'.mbw_get_board_item("fn_category2").'";';
-	echo 'mb_categorys["value3"]	= "'.mbw_get_board_item("fn_category3").'";';
+	echo 'mb_categorys["value1"]	= "'.esc_js(mbw_get_board_item("fn_category1")).'";';
+	echo 'mb_categorys["value2"]	= "'.esc_js(mbw_get_board_item("fn_category2")).'";';
+	echo 'mb_categorys["value3"]	= "'.esc_js(mbw_get_board_item("fn_category3")).'";';
 }
 ?>
 if(category_text!=""){

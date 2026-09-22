@@ -746,23 +746,23 @@ if(!function_exists('mbw_create_search_template')){
 			$input_keys			= ",".implode(",",$type_array);
 			$input_type			= "radio";				//select or radio
 			echo '<input type="hidden" name="search_add_field1" value="'.esc_attr($search_field).'" />';
-			echo mbw_get_item_template("search",array("item_name"=>"search_add_text1","type"=>$input_type,"width"=>"100px","data"=>$input_keys,"label"=>$input_values,"value"=>mbw_get_param("search_add_text1")));
+			echo mbw_get_item_template("search",array("item_name"=>"search_add_text1","type"=>$input_type,"width"=>"100px","data"=>$input_keys,"label"=>$input_values,"value"=>mbw_get_param("search_add_text1"))); // phpcs:ignore
 			echo '</div>';
 		}else if($type=="date_range"){		
 			wp_enqueue_style('jquery-ui-css');
 			echo '<div>';
 			if(mbw_get_vars("device_type")!="mobile"){
-				echo '<label for="search_range_today"><input type="radio" name="search_range" id="search_range_today" onclick="setSearchDate(\'today\')">'.__MW("W_TODAY").'</label>';
-				echo '<label for="search_range_yesterday"><input type="radio" name="search_range" id="search_range_yesterday" onclick="setSearchDate(\'yesterday\')">'.__MW("W_YESTERDAY").'</label>';
-				echo '<label for="search_range_week"><input type="radio" name="search_range" id="search_range_week" onclick="setSearchDate(\'week\')">'.__MW("W_ONE_WEEK").'</label>';
-				echo '<label for="search_range_month"><input type="radio" name="search_range" id="search_range_month" onclick="setSearchDate(\'month\')">'.__MW("W_ONE_MONTH").'</label>';
-				echo '<label for="search_range_this_month"><input type="radio" name="search_range" id="search_range_this_month" onclick="setSearchDate(\'this_month\')">'.__MW("W_THIS_MONTH").'</label>';
-				echo '<label for="search_range_last_month"><input type="radio" name="search_range" id="search_range_last_month" onclick="setSearchDate(\'last_month\')">'.__MW("W_LAST_MONTH").'</label>';
-				echo '<label for="search_range_total"><input type="radio" name="search_range" id="search_range_total" onclick="setSearchDate(\'total\')">'.__MW("W_TOTAL").'</label>';
+				echo '<label for="search_range_today"><input type="radio" name="search_range" id="search_range_today" onclick="setSearchDate(\'today\')">'.__MW("W_TODAY").'</label>'; // phpcs:ignore
+				echo '<label for="search_range_yesterday"><input type="radio" name="search_range" id="search_range_yesterday" onclick="setSearchDate(\'yesterday\')">'.__MW("W_YESTERDAY").'</label>'; // phpcs:ignore
+				echo '<label for="search_range_week"><input type="radio" name="search_range" id="search_range_week" onclick="setSearchDate(\'week\')">'.__MW("W_ONE_WEEK").'</label>'; // phpcs:ignore
+				echo '<label for="search_range_month"><input type="radio" name="search_range" id="search_range_month" onclick="setSearchDate(\'month\')">'.__MW("W_ONE_MONTH").'</label>'; // phpcs:ignore
+				echo '<label for="search_range_this_month"><input type="radio" name="search_range" id="search_range_this_month" onclick="setSearchDate(\'this_month\')">'.__MW("W_THIS_MONTH").'</label>'; // phpcs:ignore
+				echo '<label for="search_range_last_month"><input type="radio" name="search_range" id="search_range_last_month" onclick="setSearchDate(\'last_month\')">'.__MW("W_LAST_MONTH").'</label>'; // phpcs:ignore
+				echo '<label for="search_range_total"><input type="radio" name="search_range" id="search_range_total" onclick="setSearchDate(\'total\')">'.__MW("W_TOTAL").'</label>'; // phpcs:ignore
 			}
-			echo '<input type="text" id="start_date" class="show-datepicker" name="start_date" style="width:100px !important;" placeholder="'.__MW("W_START_DATE").'" value="'.esc_attr(mbw_get_param("start_date")).'" /> ~ ';
-			echo '<input type="text" id="end_date" class="show-datepicker" name="end_date" style="width:100px !important;" placeholder="'.__MW("W_END_DATE").'" value="'.esc_attr(mbw_get_param("end_date")).'" />';
-			echo mbw_get_btn_template(array("name"=>"Search","onclick"=>"sendSearchData()","class"=>"btn btn-default btn-search margin-left-5"));
+			echo '<input type="text" id="start_date" class="show-datepicker" name="start_date" style="width:100px !important;" placeholder="'.__MW("W_START_DATE").'" value="'.esc_attr(mbw_get_param("start_date")).'" /> ~ '; // phpcs:ignore
+			echo '<input type="text" id="end_date" class="show-datepicker" name="end_date" style="width:100px !important;" placeholder="'.__MW("W_END_DATE").'" value="'.esc_attr(mbw_get_param("end_date")).'" />'; // phpcs:ignore
+			echo mbw_get_btn_template(array("name"=>"Search","onclick"=>"sendSearchData()","class"=>"btn btn-default btn-search margin-left-5")); // phpcs:ignore
 			echo "</div>";
 		}
 	}
@@ -999,11 +999,19 @@ if(!function_exists('mbw_get_template_path')){
 			$path1			= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/templates/".$name.".".$ext;
 			if(is_file($path1)) return $path1;
 		}		
+		if ( mbw_get_option("store_path") !="" ) {
+			$template_path	= WP_CONTENT_DIR.mbw_get_option("store_path");			
+			if ( !is_file($template_path."templates/".$name.".".$ext) ) {
+				$template_path	= MBW_PLUGIN_PATH;
+			}
+		} else {
+			$template_path	= MBW_PLUGIN_PATH;
+		}		
 		if(!empty($add_name)) {
-			$path2			= MBW_PLUGIN_PATH."templates/".$name.$add_name.".".$ext;
+			$path2			= $template_path."templates/".$name.$add_name.".".$ext;
 			if(is_file($path2)) return $path2;
 		}
-		$path1			= MBW_PLUGIN_PATH."templates/".$name.".".$ext;
+		$path1			= $template_path."templates/".$name.".".$ext;
 		if(is_file($path1)) return $path1;
 		else return false;
 	}
@@ -1015,7 +1023,20 @@ if(!function_exists('mbw_get_template_url')){
 			if(is_file(get_stylesheet_directory().$path)) return get_stylesheet_directory_uri().$path;
 		}
 		$path					= "templates/".$name.".".$ext;
-		if(is_file(MBW_PLUGIN_PATH.$path)) return MBW_PLUGIN_URL.$path;
+		if ( mbw_get_option("store_path") !="" ) {
+			$template_path	= WP_CONTENT_DIR.mbw_get_option("store_path");
+			$template_url	= MBW_CONTENT_URL.mbw_get_option("store_path");
+			if ( !is_file($template_path.$path) ) {
+				$template_path	= MBW_PLUGIN_PATH;
+				$template_url	= MBW_PLUGIN_URL;	
+			}
+		} else {
+			$template_path	= MBW_PLUGIN_PATH;
+			$template_url	= MBW_PLUGIN_URL;
+		}
+		if ( is_file($template_path.$path) ) {
+			return $template_url.$path;
+		}
 		return false;
 	}
 }

@@ -1,11 +1,11 @@
-﻿=== Mang Board WP===
+﻿=== Mang Board===
 Contributors: kitae-park
 Donate link: https://www.mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
-Requires at least: 4.0.0
+Requires at least: 5.5.0
 Tested up to: 7.1
 Requires PHP: 5.5.1
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,9 +15,9 @@ MangBoard is bulletin board for your community website. (Gallery,Calendar,Forum,
 
 The plugin is available in English, Japanese(日本語), Chinese(中国語) and Korean(한국어).
 
-**Mang Board WP**
+**Mang Board**
 
-* Mang Board WP is a plugin formed of Wordpress BBS providing a variety of features such as storage BBS, Gallery BBS, Calendar BBS, membership management, analytics, ecommerce, social login, social sharing, and SEO (Search Engine Optimization)  
+* Mang Board is a plugin formed of Wordpress BBS providing a variety of features such as storage BBS, Gallery BBS, Calendar BBS, membership management, analytics, ecommerce, social login, social sharing, and SEO (Search Engine Optimization)  
 
 **Mang Board Features**
 
@@ -121,6 +121,14 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.5.3 (2.4.2) =
+* 보안 취약점 수정 [Patchstack에서 보안점검을 통해 알려주신 취약점 수정]
+* 워드프레스 보안 코드 적용 및 워드프레스 자동 업데이트를 막는 기능 삭제 (워드프레스 지적 사항)
+* 워드프레스 업데이트 진행시 추가로 설치한 상품이 삭제되지 않도록 스토어 설치 폴더 경로 수정
+  => /wp-content/plugins/mangboard => /wp-content/plugins/mangboard-store
+  (스토어 상품들은 2개 폴더 어디에 올려도 동작하도록 업데이트 진행완료, 신규 설치 상품부터는 mangboard-store 폴더에 저장)
+* 일부 환경에서 지도 스킨이 정상적으로 동작하지 않는 문제 수정 
 
 = 2.5.2 (2.4.1) =
 * 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 취약점 수정]

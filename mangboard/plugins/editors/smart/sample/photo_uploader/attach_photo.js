@@ -317,7 +317,7 @@
     		//List 마크업 생성하기
 			aFileList.push('	<li id="img'+nImageInfoCnt+'" class="imgLi"><span>'+ sFileName +'</span>');
 			aFileList.push('	<em>'+ sFileSize +'</em>');
-	        aFileList.push('	<a onclick="delImage(\'img'+nImageInfoCnt+'\')"><img class="del_button" src="'+mb_editor_url+'sample/photo_uploader/img/btn_del.png"  width="14" height="13" alt="첨부 사진 삭제"></a>');
+	        aFileList.push('	<a onclick="delImage(\'img'+nImageInfoCnt+'\')"><img class="del_button" src="'+mb_uploader_url+'img/btn_del.png"  width="14" height="13" alt="첨부 사진 삭제"></a>');
 			aFileList.push('	</li> ');   
 			
 			sLiTag = aFileList.join(" ");

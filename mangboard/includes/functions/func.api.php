@@ -570,11 +570,13 @@ if(!function_exists('mbw_check_upload_filename')){
 		$file_name		= str_replace('..','.',$file_name);
 		$file_name		= str_replace('#','＃',$file_name);
 		$file_name		= str_replace('%','％',$file_name);
-		
+		if(function_exists('sanitize_file_name')){
+			$file_name	= sanitize_file_name($file_name);
+		}		
 		$tmp_name		= strtolower($file_name);
 		if(strpos($tmp_name, '.php')!==false || strpos($tmp_name, '.phar')!==false || strpos($tmp_name, '.phtm')!==false){
 			mbw_error_message("MSG_ERROR", "[PHP] Upload","1500");
-		}
+		}		
 		return $file_name;
 	}
 }
@@ -1138,7 +1140,7 @@ if(!function_exists('mbw_file_check')){
 }
 if(!function_exists('mbw_data_encode')){
 	function mbw_data_encode($data,$type="JSON"){
-		return json_encode($data);
+		return wp_json_encode($data, JSON_UNESCAPED_UNICODE);
 	}
 }
 ?>

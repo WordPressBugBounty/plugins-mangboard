@@ -119,6 +119,7 @@ class HTMLPurifier_ConfigSchema_InterchangeBuilder
             }
             $directive->type = $type[0];
         } else {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
             throw new HTMLPurifier_ConfigSchema_Exception("TYPE in directive hash '$id' not defined");
         }
 
@@ -130,6 +131,7 @@ class HTMLPurifier_ConfigSchema_InterchangeBuilder
                     $directive->typeAllowsNull
                 );
             } catch (HTMLPurifier_VarParserException $e) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
                 throw new HTMLPurifier_ConfigSchema_Exception($e->getMessage() . " in DEFAULT in directive hash '$id'");
             }
         }
@@ -217,6 +219,7 @@ class HTMLPurifier_ConfigSchema_InterchangeBuilder
         $accessed = $hash->getAccessed();
         foreach ($hash as $k => $v) {
             if (!isset($accessed[$k])) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 trigger_error("String hash key '$k' not used by builder", E_USER_NOTICE);
             }
         }

@@ -87,9 +87,9 @@ if(!function_exists('mbw_check_request_size')){
 				mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_convert_to_bytes($upload_max,'mb'),"1503");
 
 				if(mbw_get_param('mode')=='basic' && mbw_get_param('action')=='mb_uploader'){
-					echo mbw_get_result_data("message");
+					echo mbw_get_result_data("message"); // phpcs:ignore
 				}else{
-					echo mbw_data_encode(mbw_get_result_array());	
+					echo mbw_data_encode(mbw_get_result_array()); // phpcs:ignore
 				}	
 				exit;			
 			}			
@@ -172,7 +172,6 @@ if(!function_exists('mbw_verify_nonce')){
 if(!function_exists('mbw_create_nonce')){
 	function mbw_create_nonce($type,$name=""){
 		global $mstore;
-
 		$board_name		= $name;
 		$time					= time();
 		if(empty($board_name)) {
@@ -185,27 +184,28 @@ if(!function_exists('mbw_create_nonce')){
 			$mstore->set_board_name($temp_name);
 		}
 		$table_name		= mbw_get_board_table_name($board_name);
-		$nonce				= $hash;
+		$nonce			= $hash;
 
 		if(mbw_get_param("lang")!=""){
-			$lang		= mbw_get_param("lang");
+			$lang		= mbw_value_filter(mbw_get_param("lang"));
 		}else{
-			$lang		= mbw_get_option("locale");
+			$lang		= mbw_value_filter(mbw_get_option("locale"));
 		}
+		$idx			= mbw_value_filter(mbw_get_param("idx"));
 		if($type=="form"){
-			$result			= '<input type="hidden" name="mb_nonce_value" value="' . $nonce . '" />';
-			$result			.= '<input type="hidden" name="mb_nonce_time" value="' . $time . '" />';
+			$result			= '<input type="hidden" name="mb_nonce_value" value="'.esc_attr($nonce).'" />';
+			$result			.= '<input type="hidden" name="mb_nonce_time" value="'.esc_attr($time).'" />';
 			$result			.= wp_nonce_field("mbw_api_nonce".$table_name,"wp_nonce_value",true,false);
-			if(mbw_get_param("idx")!=""){
-				$result			.= '<input type="hidden" name="mb_idx" value="'.mbw_get_param("idx").'" />';
+			if($idx!=""){
+				$result			.= '<input type="hidden" name="mb_idx" value="'.esc_attr($idx).'" />';
 			}
 			if(!empty($lang)){
-				$result			.= '<input type="hidden" name="lang" value="'.$lang.'" />';
+				$result			.= '<input type="hidden" name="lang" value="'.esc_attr($lang).'" />';
 			}
 		}else if($type=="param"){
 			$result			= "mb_nonce_value=".$nonce."&mb_nonce_time=".$time."&wp_nonce_value=".wp_create_nonce("mbw_api_nonce".$table_name);
-			if(mbw_get_param("idx")!=""){
-				$result			.= '&mb_idx='.mbw_get_param("idx");
+			if($idx!=""){
+				$result			.= '&mb_idx='.$idx;
 			}
 			if(!empty($lang)){
 				$result			.= '&lang='.$lang;
@@ -613,7 +613,7 @@ if(!function_exists('mbw_get_table_name')){
 		if( $mode == "comment" ){
 			if( $board_type == "custom" ){
 				if( $board_name !=" none" && strlen($board_name) > 3 && !$mstore->table_exists($board_name.$mb_table_comment_suffix) ){
-					wp_die( __MM('MSG_EXIST_ERROR2', array($board_name.$mb_table_comment_suffix, "Table")) );
+					wp_die( esc_html(__MM('MSG_EXIST_ERROR2', array($board_name.$mb_table_comment_suffix, "Table"))) );
 				}else{
 					return $board_name.$mb_table_comment_suffix;
 				}				
@@ -627,7 +627,7 @@ if(!function_exists('mbw_get_table_name')){
 		}else{
 			if( $board_type == "custom" ){
 				if( $board_name !=" none" && strlen($board_name) > 3 && !$mstore->table_exists($board_name) ){
-					wp_die( __MM('MSG_EXIST_ERROR2', array($board_name, "Table")) );
+					wp_die( esc_html(__MM('MSG_EXIST_ERROR2', array($board_name, "Table"))) );
 				}else{
 					return $board_name;
 				}
@@ -1198,12 +1198,13 @@ if(!function_exists('mbw_echo_error_message')){
 			if(has_filter('mf_page_login_template')) $script			= apply_filters("mf_page_login_template",$script);		
 			return $login_template;
 		}else{
-			if(!empty($html_message)) echo '<div class="mb-error-message-box">'.$html_message.'</div>';
-			if(!empty($html_tag)) echo '<div class="mb-error-message-box">'.$html_tag.'</div>';
+			if(!empty($html_message)) echo '<div class="mb-error-message-box">'.$html_message.'</div>'; // phpcs:ignore
+			if(!empty($html_tag)) echo '<div class="mb-error-message-box">'.$html_tag.'</div>'; // phpcs:ignore
 			if(!empty($script)){
-				if(strpos($script,'<script type="text/javascript">')!==0)
-					$script	= '<script type="text/javascript">jQuery( document ).ready(function() {'.$script.'});</script>';
-				echo $script;
+				if(strpos($script,'<script type="text/javascript">')!==0){
+					$script		= '<script type="text/javascript">jQuery( document ).ready(function() {'.$script.'});</script>';
+				}
+				echo $script; // phpcs:ignore
 			}
 			return "";
 		}
@@ -1240,15 +1241,6 @@ if(!function_exists('mbw_init_javascript')){
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script('jquery-ui-datepicker');
 
-		$jquery_ver		= "1.11.4";
-		if(!empty($wp_scripts->registered['jquery-ui-core']->ver)) $jquery_ver		= $wp_scripts->registered['jquery-ui-core']->ver;		
-		if(version_compare($jquery_ver, '1.12.1', '<')){
-			wp_register_style('jquery-ui-css', "//ajax.googleapis.com/ajax/libs/jqueryui/".$jquery_ver."/themes/smoothness/jquery-ui.css");
-		}else{
-			wp_register_style('jquery-ui-css', "//code.jquery.com/ui/".$jquery_ver."/themes/base/jquery-ui.css");
-		}		
-		if(mbw_is_admin_page()) wp_enqueue_style('jquery-ui-css');
-
 		$path					= MBW_PLUGIN_PATH.'assets/js';
 		$dir					= dir($path);
 		while (false !== ($entry = $dir->read())){
@@ -1269,7 +1261,7 @@ if(!function_exists('mbw_init_javascript')){
 		}
 		$admin_ajax_url		= mbw_check_url(admin_url( 'admin-ajax.php' ));
 		if(!mbw_is_ssl() && strpos($admin_ajax_url, 'https://') !== false) $admin_ajax_url		= mbw_get_http_url($admin_ajax_url);
-		wp_localize_script( 'assets-js-common-js', 'mb_ajax_object', array( 'ajax_url' => $admin_ajax_url,'admin_page' => (is_admin()? "true":"false")));
+		wp_localize_script( 'assets-js-common', 'mb_ajax_object', array( 'ajax_url' => $admin_ajax_url,'admin_page' => (is_admin()? "true":"false")));
 		
 		if(mbw_get_option("commerce_version")!="" && mbw_get_option("commerce_version")<"1.0.5") echo '<script type="text/javascript">var mb_urls = {};</script>';
 		$script		= "";
@@ -1326,7 +1318,7 @@ if(!function_exists('mbw_print_scripts')){
 		global $mb_scripts;
 		if(mbw_get_trace("mbw_init_javascript")!="" && !empty($mb_scripts)){
 			foreach($mb_scripts as $item){
-				echo $item;
+				echo $item; // phpcs:ignore
 			}
 			$mb_scripts		= array();
 			mbw_print_styles();
@@ -1339,7 +1331,7 @@ if(!function_exists('mbw_print_styles')){
 		global $mb_styles;
 		if(!empty($mb_styles)){			
 			foreach($mb_styles as $item){
-				echo $item;
+				echo $item; // phpcs:ignore
 			}
 			$mb_styles		= array();
 		}
@@ -1728,15 +1720,16 @@ if(!function_exists('mbw_is_image_file')){
 }
 if(!function_exists('mbw_get_id_prefix')){
 	function mbw_get_id_prefix(){
-		global $mb_table_prefix,$mb_board_name;
+		global $mb_board_name;
 		$name		= "";
 		if(empty($mb_board_name)){
-			if(!empty($_REQUEST["board_name"]))
-				$name		= $_REQUEST["board_name"];
+			if(!empty($_REQUEST["board_name"])){
+				$name		= mbw_value_filter($_REQUEST["board_name"], "name");
+			}
 		}else{
 			$name		= $mb_board_name;
 		}
-		return $mb_table_prefix.$name."_";
+		return "mb_".$name."_";
 	}
 }
 

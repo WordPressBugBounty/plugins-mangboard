@@ -5,18 +5,23 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title>네이버 :: Smart Editor 2 &#8482;</title>
-<link href="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/css/zh_CN/smart_editor2.css" rel="stylesheet" type="text/css">
 <style type="text/css">
 	body { margin: 10px; }
 </style>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/js/lib/jindo2.all.js?ver=1.5.1" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/js/lib/jindo_component.js?ver=1.5.1" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/js/service/SE2M_Configuration.js?ver=1.5.1" charset="utf-8"></script>	<!-- 설정 파일 -->
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/js/service/SE2BasicCreator.js?ver=1.5.1" charset="utf-8"></script>
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/js/smarteditor2.min.js?ver=1.5.1" charset="utf-8"></script>
-<!-- 사진첨부기능 edit --> 
-<script type="text/javascript" src="<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/sample/js/plugin/hp_SE2M_AttachQuickPhoto.js?ver=1.5.1" charset="utf-8"></script>
-<script type="text/javascript">var mb_editor_url = "<?php echo MBW_PLUGIN_URL;?>plugins/editors/smart/";var board_name = "<?php echo esc_js(mbw_get_param('board_name'));?>"; </script>
+<?php
+$editor_url	= plugins_url('', __FILE__)."/";
+mbw_enqueue_style('smart-editor2-css', $editor_url.'css/zh_CN/smart_editor2.css');
+wp_print_styles( 'smart-editor2-css' );
+
+mbw_enqueue_script('se2-jindo2',$editor_url.'js/lib/jindo2.all.js');
+mbw_enqueue_script('se2-jindo-component',$editor_url.'js/lib/jindo_component.js');
+mbw_enqueue_script('se2-configuration', $editor_url.'js/service/SE2M_Configuration.js');
+mbw_enqueue_script('se2-basic-creator', $editor_url.'js/service/SE2BasicCreator.js');
+mbw_enqueue_script('se2-smarteditor2', $editor_url.'js/smarteditor2.min.js');
+mbw_enqueue_script('se2-attach-quick-photo', $editor_url.'sample/js/plugin/hp_SE2M_AttachQuickPhoto.js');
+wp_print_scripts( array( 'se2-jindo2', 'se2-jindo-component', 'se2-configuration', 'se2-basic-creator', 'se2-smarteditor2', 'se2-attach-quick-photo' ) );
+?>
+<script type="text/javascript">var mb_editor_url = "<?php echo esc_url($editor_url);?>";var board_name = "<?php echo esc_js(mbw_get_param('board_name'));?>"; </script>
 </head>
 <body>
 

@@ -83,9 +83,9 @@
 		}
 		
 		if(action=="delete"){
-			showConfirmPopup("<?php echo __MM('MSG_DELETE_CONFIRM');?>", {"board_action":action,"pid":pid}, sendCommentDeleteHandler);
+			showConfirmPopup("<?php echo __MM('MSG_DELETE_CONFIRM'); // phpcs:ignore ?>", {"board_action":action,"pid":pid}, sendCommentDeleteHandler);
 		}else if(action=="delete_passwd"){
-			showConfirmPopup("<?php echo __MM('MSG_DELETE_CONFIRM').'<br>'.__MM('MSG_PASSWD_INPUT');?>", {"type":"passwd","board_action":"delete","pid":pid}, sendCommentDeleteHandler);
+			showConfirmPopup("<?php echo __MM('MSG_DELETE_CONFIRM').'<br>'.__MM('MSG_PASSWD_INPUT'); // phpcs:ignore ?>", {"type":"passwd","board_action":"delete","pid":pid}, sendCommentDeleteHandler);
 		}else if(action=="modify"){			
 			if(form_type==2){
 				jQuery("#mb_comment_reply"+comment_index).html("");
@@ -109,13 +109,15 @@
 			<?php		
 				$comment_reply_data				= mbw_json_decode(mbw_get_model("comment_reply"));
 				foreach($comment_reply_data as $data){
-					if(mbw_check_item($data)) echo "addHtml=addHtml+'".mbw_get_comment_template($data,null,false,"reply")."';";
+					if(mbw_check_item($data)){
+						echo "addHtml=addHtml+'".mbw_get_comment_template($data,null,false,"reply")."';"; // phpcs:ignore
+					}
 				}
 			?>
 			addHtml=addHtml+ '</form>';
 			addHtml= addHtml+'</div>';				
 			addHtml= addHtml+'<div class="comment-btn"><div class="btn-box-right">';
-			addHtml= addHtml+<?php echo "'".mbw_get_btn_template(array("name"=>"Send_Comment_Reply","onclick"=>"sendCommentData(\'reply\')","class"=>"btn btn-default btn-cmt btn-reply"))."'"; ?>;
+			addHtml= addHtml+<?php echo "'".mbw_get_btn_template(array("name"=>"Send_Comment_Reply","onclick"=>"sendCommentData(\'reply\')","class"=>"btn btn-default btn-cmt btn-reply"))."'"; // phpcs:ignore ?>;
 			addHtml= addHtml+'</div></div>';
 			addHtml= addHtml+'</div>';
 
@@ -164,13 +166,13 @@
 								
 				if(parseInt(value[fn_reply])>0){
 					reply_class		= ' cmt-reply-item';
-					reply_sign		= '<img class="list-i-reply" alt="reply" src="<?php echo MBW_SKIN_URL;?>images/icon_reply_head.gif" /> ';
+					reply_sign		= '<img class="list-i-reply" alt="reply" src="<?php echo MBW_SKIN_URL; // phpcs:ignore ?>images/icon_reply_head.gif" /> ';
 				} else {
 					reply_class		= "";
 					reply_sign		= "";
 				}
 				if(value[fn_is_secret]=="1"){
-					reply_sign		= reply_sign+'<img class="list-i-secret" alt="secret" src="<?php echo MBW_SKIN_URL;?>images/icon_secret.gif" /> ';
+					reply_sign		= reply_sign+'<img class="list-i-secret" alt="secret" src="<?php echo MBW_SKIN_URL; // phpcs:ignore ?>images/icon_secret.gif" /> ';
 				}
 
 				comment_item	= "";
@@ -179,7 +181,9 @@
 				<?php
 					$comment_list_data				= mbw_json_decode(mbw_get_model("comment_list"));
 					foreach($comment_list_data as $data){
-						if(mbw_check_item($data)) echo "comment_item	= comment_item+'".mbw_get_comment_template($data,array("t_td"=>"p"),false,"list")."';";
+						if(mbw_check_item($data)){
+							echo "comment_item	= comment_item+'".mbw_get_comment_template($data,array("t_td"=>"p"),false,"list")."';"; // phpcs:ignore
+						}
 					}
 				?>
 
@@ -189,27 +193,27 @@
 					echo "if(value['secret_type']!='lock'){";
 
 						if(mbw_get_board_option("fn_use_comment_vote_good") == 1) 
-							echo "if(reply_class=='') comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Vote_Good","add_name"=>"('+value['".$mb_fields["select_comment"]["fn_vote_good_count"]."']+')","onclick"=>"sendCommentData(\'vote_good\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default  btn-cmt btn-vote-good"))."';" ;
+							echo "if(reply_class=='') comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Vote_Good","add_name"=>"('+value['".$mb_fields["select_comment"]["fn_vote_good_count"]."']+')","onclick"=>"sendCommentData(\'vote_good\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default  btn-cmt btn-vote-good"))."';" ; // phpcs:ignore
 						
 						if(mbw_get_board_option("fn_use_comment_vote_bad") == 1)
-							echo "if(reply_class=='') comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Vote_Bad","add_name"=>"('+value['".$mb_fields["select_comment"]["fn_vote_bad_count"]."']+')","onclick"=>"sendCommentData(\'vote_bad\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-vote-bad"))."';" ;		
+							echo "if(reply_class=='') comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Vote_Bad","add_name"=>"('+value['".$mb_fields["select_comment"]["fn_vote_bad_count"]."']+')","onclick"=>"sendCommentData(\'vote_bad\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-vote-bad"))."';" ; // phpcs:ignore
 
 						echo "if(value['mode']=='list'){";
-							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"View","onclick"=>"moveViewPage('+value[fn_parent_pid]+',\'".mbw_get_param("board_name")."\',\'".mbw_get_param("page")."\')","class"=>"btn btn-default btn-cmt btn-modify"))."'; " ;
+							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"View","onclick"=>"moveViewPage('+value[fn_parent_pid]+',\'".mbw_get_param("board_name")."\',\'".mbw_get_param("page")."\')","class"=>"btn btn-default btn-cmt btn-modify"))."'; " ; // phpcs:ignore
 						echo "}";
 
 						echo "if(value['delete_type']=='user'){";
-							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showCommentForm(\'delete\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-delete"))."'; " ;
+							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showCommentForm(\'delete\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-delete"))."'; " ; // phpcs:ignore
 						echo "}else if(value['delete_type']=='guest'){";
-							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showCommentForm(\'delete_passwd\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-delete"))."'; " ;
+							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showCommentForm(\'delete_passwd\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-delete"))."'; " ; // phpcs:ignore
 						echo "}";
 
 						echo "if(value['modify_type']=='user' || value['modify_type']=='guest' ){";
-							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Modify","onclick"=>"showCommentForm(\'modify\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-modify"))."'; " ;
+							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Modify","onclick"=>"showCommentForm(\'modify\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-modify"))."'; " ; // phpcs:ignore
 						echo "}";						
 
 						echo "if(reply_class==''){ if(value['reply_type']=='user' || value['reply_type']=='guest'){";
-							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Comment_Reply","onclick"=>"showCommentForm(\'reply\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-reply"))."';" ;
+							echo "comment_item	= comment_item+'".mbw_get_btn_template(array("name"=>"Comment_Reply","onclick"=>"showCommentForm(\'reply\','+value[fn_pid]+','+select_index+')","class"=>"btn btn-default btn-cmt btn-reply"))."';" ; // phpcs:ignore
 						echo "}}";
 
 					echo "}";
@@ -250,7 +254,7 @@
 	<div>
 		<div style="width:100%;min-height:32px;">
 			<p class='cmt-count-box bold' style="display:none;">
-				<?php echo __MW("W_COMMENT"); ?><span class="cmt-count"> [<span class="cmt-count-num" id='mb_comment_totalcount'><?php echo esc_attr($comment_total_count);?></span>]</span>
+				<?php echo __MW("W_COMMENT"); // phpcs:ignore ?><span class="cmt-count"> [<span class="cmt-count-num" id='mb_comment_totalcount'><?php echo esc_attr($comment_total_count);?></span>]</span>
 			</p>	
 		</div>
 		<?php if((intval(mbw_get_board_option("fn_comment_level"))==1 || intval(mbw_get_board_option("fn_comment_level")) <= $mb_user_level) && mbw_get_param("board_pid")!=""){ ?>
@@ -268,6 +272,7 @@
 			<div class="comment-btn">
 				<div class="btn-box-right">
 					<?php
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_btn_template(array("name"=>"Send_Comment_Write","onclick"=>"sendCommentData('write')","class"=>"btn btn-default"));
 					?>	
 				</div>
@@ -279,7 +284,7 @@
 	</div>	
 </div>
 <?php
-	echo '<div id="comment_add_list" class="cmt-add-list" style="display:none;">'.mbw_get_btn_template(array("name"=>"More","onclick"=>"sendCommentList()","class"=>"btn btn-default btn-more"))."</div>";
+	echo '<div id="comment_add_list" class="cmt-add-list" style="display:none;">'.mbw_get_btn_template(array("name"=>"More","onclick"=>"sendCommentList()","class"=>"btn btn-default btn-more"))."</div>"; // phpcs:ignore
 	if($comment_total_count>0)
 		echo '<script type="text/javascript"> jQuery( document ).ready(function(){ sendCommentList("init"); });</script>';
 ?>

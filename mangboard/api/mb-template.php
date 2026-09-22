@@ -16,6 +16,7 @@ $query_data				= array();
 do_action('mbw_template_api_header');
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());
 	exit;
 }
@@ -106,8 +107,13 @@ if(mbw_get_param("mode")=="user"){
 
 	global $mb_board_table_name;
 	if((mbw_is_admin_table($mb_board_table_name) || $board_type=="user" || ($board_type=="commerce" && $mb_board_table_name!="mb_commerce_product")) && !mbw_is_admin_page()){
-		if(mbw_get_param("board_action")=="board_hit") {echo mbw_data_encode(mbw_get_result_array());exit;}	
+		if(mbw_get_param("board_action")=="board_hit") {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo mbw_data_encode(mbw_get_result_array());
+			exit;
+		}	
 		mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo mbw_data_encode(mbw_get_result_array());
 		exit;
 	}
@@ -247,11 +253,13 @@ if(mbw_get_param("mode")=="user"){
 }
 
 if(mbw_get_result_data("state")=="error"){
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo mbw_data_encode(mbw_get_result_array());
 	exit;
 }
 
 do_action('mbw_template_api_footer');
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
 exit;
 ?>

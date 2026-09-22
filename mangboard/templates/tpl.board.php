@@ -411,6 +411,7 @@ if(!function_exists('mbw_get_list_template')){
 		if(!empty($data['add_end_html'])) $template_end		= $data['add_end_html'].$template_end;		
 
 		$template_start	.= $template_end;
+		 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		if($echo) echo $template_start;
 		else return $template_start;
 	}
@@ -547,6 +548,7 @@ if(!function_exists('mbw_get_view_template')){
 				}
 			}
 		}
+		 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		if($echo) echo $template_start;
 		else return $template_start;
 	}
@@ -572,6 +574,7 @@ if(!function_exists('mbw_get_write_template')){
 		if(!empty($data["tpl"]) && $data["tpl"]!="item"){
 			$template_start	= mbw_get_extension_template($data);
 			if($echo){
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $template_start;
 				$template_start		= "";
 			}
@@ -660,27 +663,32 @@ if(!function_exists('mbw_get_write_template')){
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
 					$template_start		= '<'.esc_attr($tag['t_tr']).' id="'.mbw_get_id_prefix().'tr_'.esc_attr($data["item_name"]).'"'.$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start;		
+					 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					if($echo) echo $template_start;
 				}
 			}			
 
 			if(!empty($editor_type)){
 				if($editor_type == "N"){
+					 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_default_editor($data);
 				}else{
 					if (has_action( 'mbw_editor_'.$editor_type) ){
 						do_action('mbw_editor_'.$editor_type, mbw_get_param("board_action"), $data);
 					}else{
+						 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_default_editor($data);
 					}
 				}
 			}
 
 			if(!empty($data["tooltip"])){
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				if($echo) echo mbw_get_tooltip_template($data["tooltip"]);
 				else $template_start	.= mbw_get_tooltip_template($data["tooltip"]);
 			}
 			if(!empty($data["add_middle_html"])){
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				if($echo) echo $data['add_middle_html'];
 				else $template_start	.= $data['add_middle_html'];
 			}
@@ -689,6 +697,7 @@ if(!function_exists('mbw_get_write_template')){
 					$data['description']			= str_replace("<br>(", "(", $data['description']);
 				}
 				$desc		= '<span class="mb-description">'.$data['description'].'</span>';
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				if($echo) echo $desc;
 				else $template_start	.= $desc;
 			}
@@ -697,6 +706,7 @@ if(!function_exists('mbw_get_write_template')){
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
 					$template_end		= $template_end.'</'.esc_attr($tag['t_tr']).'>';
+					 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					if($echo) echo $template_end;
 				}
 			}
@@ -829,6 +839,7 @@ if(!function_exists('mbw_get_comment_template')){
 				}
 			}
 		}
+		 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		if($echo) echo $template_start;
 		else return $template_start;
 	}

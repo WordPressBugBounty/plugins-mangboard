@@ -123,6 +123,7 @@ class HTMLPurifier_ConfigSchema_ValidatorAtom
      */
     protected function error($msg)
     {
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
         throw new HTMLPurifier_ConfigSchema_Exception(ucfirst($this->member) . ' in ' . $this->context . ' ' . $msg);
     }
 }

@@ -4,7 +4,8 @@ if(!function_exists('mbw_init_htmlpurifier')){
 		if(mbw_get_trace("mbw_init_htmlpurifier")==""){
 			mbw_add_trace("mbw_init_htmlpurifier");
 			if(!class_exists('HTMLPurifier')){
-				require_once(MBW_PLUGIN_PATH."plugins/htmlpurifier/HTMLPurifier.standalone.php");
+				$plugin_path	= plugin_dir_path(__FILE__);		
+				require_once($plugin_path."HTMLPurifier.standalone.php");
 			}
 
 			if(!class_exists('HTMLPurifier_Filter_EscapeTextContent')){

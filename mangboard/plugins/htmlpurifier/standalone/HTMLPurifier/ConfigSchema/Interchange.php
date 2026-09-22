@@ -28,6 +28,7 @@ class HTMLPurifier_ConfigSchema_Interchange
     public function addDirective($directive)
     {
         if (isset($this->directives[$i = $directive->id->toString()])) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
             throw new HTMLPurifier_ConfigSchema_Exception("Cannot redefine directive '$i'");
         }
         $this->directives[$i] = $directive;

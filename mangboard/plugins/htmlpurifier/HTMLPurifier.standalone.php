@@ -822,6 +822,7 @@ class HTMLPurifier_AttrTypes
         }
 
         if (!isset($this->info[$type])) {
+			// phpcs:ignore
             trigger_error('Cannot retrieve undefined attribute type ' . $type, E_USER_ERROR);
             return;
         }
@@ -1735,6 +1736,7 @@ class HTMLPurifier_CSSDefinition extends HTMLPurifier_Definition
             foreach ($allowed_properties as $name => $d) {
                 // :TODO: Is this htmlspecialchars() call really necessary?
                 $name = htmlspecialchars($name);
+				// phpcs:ignore
                 trigger_error("Style attribute '$name' is not supported $support", E_USER_WARNING);
             }
         }
@@ -2333,9 +2335,8 @@ class HTMLPurifier_Config
             if ($optimized) {
                 if (is_null($this->get($type . '.DefinitionID'))) {
                     // fatally error out if definition ID not set
-                    throw new HTMLPurifier_Exception(
-                        "Cannot retrieve raw version without specifying %$type.DefinitionID"
-                    );
+					// phpcs:ignore
+                    throw new HTMLPurifier_Exception("Cannot retrieve raw version without specifying %$type.DefinitionID");
                 }
             }
             if (!empty($this->definitions[$type])) {
@@ -2344,25 +2345,21 @@ class HTMLPurifier_Config
                     $extra = $this->chatty ?
                         " (try moving this code block earlier in your initialization)" :
                         "";
-                    throw new HTMLPurifier_Exception(
-                        "Cannot retrieve raw definition after it has already been setup" .
-                        $extra
-                    );
+					// phpcs:ignore
+                    throw new HTMLPurifier_Exception("Cannot retrieve raw definition after it has already been setup" .$extra);
                 }
                 if ($def->optimized === null) {
                     $extra = $this->chatty ? " (try flushing your cache)" : "";
-                    throw new HTMLPurifier_Exception(
-                        "Optimization status of definition is unknown" . $extra
-                    );
+					// phpcs:ignore
+                    throw new HTMLPurifier_Exception("Optimization status of definition is unknown" . $extra);
                 }
                 if ($def->optimized !== $optimized) {
                     $msg = $optimized ? "optimized" : "unoptimized";
                     $extra = $this->chatty ?
                         " (this backtrace is for the first inconsistent call, which was for a $msg raw definition)"
                         : "";
-                    throw new HTMLPurifier_Exception(
-                        "Inconsistent use of optimized and unoptimized raw definition retrievals" . $extra
-                    );
+					// phpcs:ignore
+                    throw new HTMLPurifier_Exception("Inconsistent use of optimized and unoptimized raw definition retrievals" . $extra);
                 }
             }
             // check if definition was in memory
@@ -2440,9 +2437,8 @@ class HTMLPurifier_Config
         } elseif ($type == 'URI') {
             $def = new HTMLPurifier_URIDefinition();
         } else {
-            throw new HTMLPurifier_Exception(
-                "Definition of $type type not supported"
-            );
+			// phpcs:ignore
+            throw new HTMLPurifier_Exception("Definition of $type type not supported");
         }
         $this->definitions[$type] = $def;
         return $def;
@@ -2704,8 +2700,8 @@ class HTMLPurifier_Config
                 $extra = " invoked on line {$frame['line']} in file {$frame['file']}";
                 break;
             }
-        }
-        trigger_error($msg . $extra, $no);
+        }		
+        trigger_error($msg . $extra, $no); // phpcs:ignore
     }
 
     /**
@@ -2800,7 +2796,7 @@ class HTMLPurifier_ConfigSchema
         $r = unserialize($contents);
         if (!$r) {
             $hash = sha1($contents);
-            trigger_error("Unserialization of configuration schema failed, sha1 of file was $hash", E_USER_ERROR);
+            trigger_error("Unserialization of configuration schema failed, sha1 of file was $hash", E_USER_ERROR); // phpcs:ignore
         }
         return $r;
     }
@@ -3022,11 +3018,7 @@ class HTMLPurifier_ContentSets
     {
         $value = $def->content_model;
         if (is_object($value)) {
-            trigger_error(
-                'Literal object child definitions should be stored in '.
-                'ElementDef->child not ElementDef->content_model',
-                E_USER_NOTICE
-            );
+            trigger_error('Literal object child definitions should be stored in '.'ElementDef->child not ElementDef->content_model',E_USER_NOTICE); // phpcs:ignore
             return $value;
         }
         switch ($def->content_model_type) {
@@ -3048,10 +3040,7 @@ class HTMLPurifier_ContentSets
             return $return;
         }
         // error-out
-        trigger_error(
-            'Could not determine which ChildDef class to instantiate',
-            E_USER_ERROR
-        );
+        trigger_error('Could not determine which ChildDef class to instantiate',E_USER_ERROR); // phpcs:ignore
         return false;
     }
 
@@ -3100,10 +3089,7 @@ class HTMLPurifier_Context
     public function register($name, &$ref)
     {
         if (array_key_exists($name, $this->_storage)) {
-            trigger_error(
-                "Name $name produces collision, cannot re-register",
-                E_USER_ERROR
-            );
+            trigger_error("Name $name produces collision, cannot re-register",E_USER_ERROR); // phpcs:ignore
             return;
         }
         $this->_storage[$name] =& $ref;
@@ -3119,10 +3105,7 @@ class HTMLPurifier_Context
     {
         if (!array_key_exists($name, $this->_storage)) {
             if (!$ignore_error) {
-                trigger_error(
-                    "Attempted to retrieve non-existent variable $name",
-                    E_USER_ERROR
-                );
+                trigger_error("Attempted to retrieve non-existent variable $name",E_USER_ERROR); // phpcs:ignore
             }
             $var = null; // so we can return by reference
             return $var;
@@ -3137,10 +3120,7 @@ class HTMLPurifier_Context
     public function destroy($name)
     {
         if (!array_key_exists($name, $this->_storage)) {
-            trigger_error(
-                "Attempted to destroy non-existent variable $name",
-                E_USER_ERROR
-            );
+            trigger_error("Attempted to destroy non-existent variable $name",E_USER_ERROR); // phpcs:ignore
             return;
         }
         unset($this->_storage[$name]);
@@ -3243,7 +3223,7 @@ abstract class HTMLPurifier_DefinitionCache
     public function checkDefType($def)
     {
         if ($def->type !== $this->type) {
-            trigger_error("Cannot use definition of type {$def->type} in cache for {$this->type}");
+            trigger_error("Cannot use definition of type {$def->type} in cache for {$this->type}"); // phpcs:ignore
             return false;
         }
         return true;
@@ -3377,7 +3357,7 @@ class HTMLPurifier_DefinitionCacheFactory
             $cache = new $class($type);
         } else {
             if ($method != 'Serializer') {
-                trigger_error("Unrecognized DefinitionCache $method, using Serializer instead", E_USER_WARNING);
+                trigger_error("Unrecognized DefinitionCache $method, using Serializer instead", E_USER_WARNING); // phpcs:ignore
             }
             $cache = new HTMLPurifier_DefinitionCache_Serializer($type);
         }
@@ -3569,7 +3549,7 @@ class HTMLPurifier_DoctypeRegistry
             $doctype = $this->aliases[$doctype];
         }
         if (!isset($this->doctypes[$doctype])) {
-            trigger_error('Doctype ' . htmlspecialchars($doctype) . ' does not exist', E_USER_ERROR);
+            trigger_error('Doctype ' . htmlspecialchars($doctype) . ' does not exist', E_USER_ERROR); // phpcs:ignore
             $anon = new HTMLPurifier_Doctype($doctype);
             return $anon;
         }
@@ -3855,7 +3835,7 @@ class HTMLPurifier_Encoder
      */
     private function __construct()
     {
-        trigger_error('Cannot instantiate encoder, call methods statically', E_USER_ERROR);
+        trigger_error('Cannot instantiate encoder, call methods statically', E_USER_ERROR); // phpcs:ignore
     }
 
     /**
@@ -3898,7 +3878,7 @@ class HTMLPurifier_Encoder
             // is utf-8
             if ($in == 'utf-8') {
                 if ($max_chunk_size < 4) {
-                    trigger_error('max_chunk_size is too small', E_USER_WARNING);
+                    trigger_error('max_chunk_size is too small', E_USER_WARNING); // phpcs:ignore
                     return false;
                 }
                 // split into 8000 byte chunks, but be careful to handle
@@ -4233,7 +4213,7 @@ class HTMLPurifier_Encoder
             $str = self::unsafeIconv($encoding, 'utf-8//IGNORE', $str);
             if ($str === false) {
                 // $encoding is not a valid encoding
-                trigger_error('Invalid encoding ' . $encoding, E_USER_ERROR);
+                trigger_error('Invalid encoding ' . $encoding, E_USER_ERROR); // phpcs:ignore
                 return '';
             }
             // If the string is bjorked by Shift_JIS or a similar encoding
@@ -4249,11 +4229,7 @@ class HTMLPurifier_Encoder
         if ($bug == self::ICONV_OK) {
             trigger_error('Encoding not supported, please install iconv', E_USER_ERROR);
         } else {
-            trigger_error(
-                'You have a buggy version of iconv, see https://bugs.php.net/bug.php?id=48147 ' .
-                'and http://sourceware.org/bugzilla/show_bug.cgi?id=13541',
-                E_USER_ERROR
-            );
+            trigger_error('You have a buggy version of iconv, see https://bugs.php.net/bug.php?id=48147 ' .'and http://sourceware.org/bugzilla/show_bug.cgi?id=13541',E_USER_ERROR); // phpcs:ignore
         }
     }
 
@@ -4388,11 +4364,7 @@ class HTMLPurifier_Encoder
             } elseif (($c = strlen($r)) < 9000) {
                 $code = self::ICONV_TRUNCATES;
             } elseif ($c > 9000) {
-                trigger_error(
-                    'Your copy of iconv is extremely buggy. Please notify HTML Purifier maintainers: ' .
-                    'include your iconv version as per phpversion()',
-                    E_USER_ERROR
-                );
+                trigger_error('Your copy of iconv is extremely buggy. Please notify HTML Purifier maintainers: ' .'include your iconv version as per phpversion()',E_USER_ERROR); // phpcs:ignore
             } else {
                 $code = self::ICONV_OK;
             }
@@ -5737,10 +5709,7 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
         if (isset($this->info_content_sets['Block'][$block_wrapper])) {
             $this->info_block_wrapper = $block_wrapper;
         } else {
-            trigger_error(
-                'Cannot use non-block element as block wrapper',
-                E_USER_ERROR
-            );
+            trigger_error('Cannot use non-block element as block wrapper',E_USER_ERROR);
         }
 
         $parent = $config->get('HTML.Parent');
@@ -5749,10 +5718,7 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
             $this->info_parent = $parent;
             $this->info_parent_def = $def;
         } else {
-            trigger_error(
-                'Cannot use unrecognized element as parent',
-                E_USER_ERROR
-            );
+            trigger_error('Cannot use unrecognized element as parent',E_USER_ERROR);
             $this->info_parent_def = $this->manager->getElement($this->info_parent, true);
         }
 
@@ -5781,7 +5747,7 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
             // emit errors
             foreach ($allowed_elements as $element => $d) {
                 $element = htmlspecialchars($element); // PHP doesn't escape errors, be careful!
-                trigger_error("Element '$element' is not supported $support", E_USER_WARNING);
+                trigger_error("Element '$element' is not supported $support", E_USER_WARNING); // phpcs:ignore
             }
         }
 
@@ -5822,11 +5788,7 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
                     }
                     if ($delete) {
                         if ($this->info[$tag]->attr[$attr]->required) {
-                            trigger_error(
-                                "Required attribute '$attr' in element '$tag' " .
-                                "was not allowed, which means '$tag' will not be allowed either",
-                                E_USER_WARNING
-                            );
+                            trigger_error("Required attribute '$attr' in element '$tag' " ."was not allowed, which means '$tag' will not be allowed either",E_USER_WARNING); // phpcs:ignore
                         }
                         unset($this->info[$tag]->attr[$attr]);
                     }
@@ -5842,26 +5804,16 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
                             $element = htmlspecialchars($bits[0]);
                             $attribute = htmlspecialchars($bits[1]);
                             if (!isset($this->info[$element])) {
-                                trigger_error(
-                                    "Cannot allow attribute '$attribute' if element " .
-                                    "'$element' is not allowed/supported $support"
-                                );
+                                trigger_error("Cannot allow attribute '$attribute' if element " ."'$element' is not allowed/supported $support"); // phpcs:ignore
                             } else {
-                                trigger_error(
-                                    "Attribute '$attribute' in element '$element' not supported $support",
-                                    E_USER_WARNING
-                                );
+                                trigger_error("Attribute '$attribute' in element '$element' not supported $support",E_USER_WARNING); // phpcs:ignore
                             }
                             break;
                         }
                         // otherwise fall through
                     case 1:
                         $attribute = htmlspecialchars($bits[0]);
-                        trigger_error(
-                            "Global attribute '$attribute' is not ".
-                            "supported in any elements $support",
-                            E_USER_WARNING
-                        );
+                        trigger_error("Global attribute '$attribute' is not "."supported in any elements $support",E_USER_WARNING); // phpcs:ignore
                         break;
                 }
             }
@@ -5886,11 +5838,7 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
                     continue;
                 } elseif (isset($forbidden_attributes["$tag.$attr"])) { // this segment might get removed eventually
                     // $tag.$attr are not user supplied, so no worries!
-                    trigger_error(
-                        "Error with $tag.$attr: tag.attr syntax not supported for " .
-                        "HTML.ForbiddenAttributes; use tag@attr instead",
-                        E_USER_WARNING
-                    );
+                    trigger_error("Error with $tag.$attr: tag.attr syntax not supported for " ."HTML.ForbiddenAttributes; use tag@attr instead",E_USER_WARNING); // phpcs:ignore
                 }
             }
         }
@@ -5902,10 +5850,7 @@ class HTMLPurifier_HTMLDefinition extends HTMLPurifier_Definition
                 continue;
             }
             if ($key[1] == '.') {
-                trigger_error(
-                    "Error with $key: *.attr syntax not supported for HTML.ForbiddenAttributes; use attr instead",
-                    E_USER_WARNING
-                );
+                trigger_error("Error with $key: *.attr syntax not supported for HTML.ForbiddenAttributes; use attr instead",E_USER_WARNING); // phpcs:ignore
             }
         }
 
@@ -6145,7 +6090,7 @@ class HTMLPurifier_HTMLModule
             $this->info[$element] = new HTMLPurifier_ElementDef();
             $this->info[$element]->standalone = false;
         } else {
-            trigger_error("Definition for $element already exists in module, cannot redefine");
+            trigger_error("Definition for $element already exists in module, cannot redefine"); // phpcs:ignore
         }
         return $this->info[$element];
     }
@@ -6436,21 +6381,18 @@ class HTMLPurifier_HTMLModuleManager
             if (!$ok) {
                 $module = $original_module;
                 if (!class_exists($module)) {
-                    trigger_error(
-                        $original_module . ' module does not exist',
-                        E_USER_ERROR
-                    );
+                    trigger_error($original_module . ' module does not exist',E_USER_ERROR); // phpcs:ignore
                     return;
                 }
             }
             $module = new $module();
         }
         if (empty($module->name)) {
-            trigger_error('Module instance of ' . get_class($module) . ' must have name');
+            trigger_error('Module instance of ' . get_class($module) . ' must have name'); // phpcs:ignore
             return;
         }
         if (!$overload && isset($this->registeredModules[$module->name])) {
-            trigger_error('Overloading ' . $module->name . ' without explicit overload parameter', E_USER_WARNING);
+            trigger_error('Overloading ' . $module->name . ' without explicit overload parameter', E_USER_WARNING); // phpcs:ignore
         }
         $this->registeredModules[$module->name] = $module;
     }
@@ -7441,11 +7383,7 @@ class HTMLPurifier_LanguageFactory
 
             // infinite recursion guard
             if (isset($languages_seen[$code])) {
-                trigger_error(
-                    'Circular fallback reference in language ' .
-                    $code,
-                    E_USER_ERROR
-                );
+                trigger_error('Circular fallback reference in language ' .$code,E_USER_ERROR); // phpcs:ignore
                 $fallback = 'en';
             }
             $language_seen[$code] = true;
@@ -7769,10 +7707,8 @@ class HTMLPurifier_Lexer
                     $inst = new HTMLPurifier_Lexer_PH5P();
                     break;
                 default:
-                    throw new HTMLPurifier_Exception(
-                        "Cannot instantiate unrecognized Lexer type " .
-                        htmlspecialchars($lexer)
-                    );
+					// phpcs:ignore
+                    throw new HTMLPurifier_Exception("Cannot instantiate unrecognized Lexer type " .htmlspecialchars($lexer));
             }
         }
 
@@ -8236,6 +8172,7 @@ class HTMLPurifier_PropertyList
         if ($this->parent) {
             return $this->parent->get($name);
         }
+		// phpcs:ignore
         throw new HTMLPurifier_Exception("Key '$name' not found");
     }
 
@@ -8973,10 +8910,7 @@ class HTMLPurifier_URI
             if (!$scheme_obj) {
                 if ($def->defaultScheme !== null) {
                     // something funky happened to the default scheme object
-                    trigger_error(
-                        'Default scheme object "' . $def->defaultScheme . '" was not readable',
-                        E_USER_WARNING
-                    );
+                    trigger_error('Default scheme object "' . $def->defaultScheme . '" was not readable',E_USER_WARNING); // phpcs:ignore
                 } // suppress error if it's null
                 return false;
             }
@@ -10018,6 +9952,7 @@ class HTMLPurifier_VarParser
     {
         if (is_string($type)) {
             if (!isset(HTMLPurifier_VarParser::$types[$type])) {
+				// phpcs:ignore
                 throw new HTMLPurifier_VarParserException("Invalid type '$type'");
             } else {
                 $type = HTMLPurifier_VarParser::$types[$type];
@@ -10102,6 +10037,7 @@ class HTMLPurifier_VarParser
      */
     protected function error($msg)
     {
+		// phpcs:ignore
         throw new HTMLPurifier_VarParserException($msg);
     }
 
@@ -10116,10 +10052,8 @@ class HTMLPurifier_VarParser
      */
     protected function errorInconsistent($class, $type)
     {
-        throw new HTMLPurifier_Exception(
-            "Inconsistency in $class: " . HTMLPurifier_VarParser::getTypeName($type) .
-            " not implemented"
-        );
+		// phpcs:ignore
+        throw new HTMLPurifier_Exception("Inconsistency in $class: " . HTMLPurifier_VarParser::getTypeName($type) ." not implemented");
     }
 
     /**
@@ -13000,11 +12934,7 @@ class HTMLPurifier_AttrDef_HTML_ID extends HTMLPurifier_AttrDef
                 $id = $prefix . $id;
             }
         } elseif ($config->get('Attr.IDPrefixLocal') !== '') {
-            trigger_error(
-                '%Attr.IDPrefixLocal cannot be used unless ' .
-                '%Attr.IDPrefix is set',
-                E_USER_WARNING
-            );
+            trigger_error('%Attr.IDPrefixLocal cannot be used unless ' .'%Attr.IDPrefix is set',E_USER_WARNING);
         }
 
         if (!$this->selector) {
@@ -13959,7 +13889,7 @@ class HTMLPurifier_AttrTransform_ImgSpace extends HTMLPurifier_AttrTransform
     {
         $this->attr = $attr;
         if (!isset($this->css[$attr])) {
-            trigger_error(htmlspecialchars($attr) . ' is not valid space attribute');
+            trigger_error(htmlspecialchars($attr) . ' is not valid space attribute'); // phpcs:ignore
         }
     }
 
@@ -15793,10 +15723,7 @@ class HTMLPurifier_DefinitionCache_Serializer extends HTMLPurifier_DefinitionCac
         $chmod = $config->get('Cache.SerializerPermissions');
         if ($chmod === null) {
             if (!@mkdir($directory) && !is_dir($directory)) {
-                trigger_error(
-                    'Could not create directory ' . $directory . '',
-                    E_USER_WARNING
-                );
+                trigger_error('Could not create directory ' . $directory . '',E_USER_WARNING); // phpcs:ignore
                 return false;
             }
             return true;
@@ -15804,20 +15731,13 @@ class HTMLPurifier_DefinitionCache_Serializer extends HTMLPurifier_DefinitionCac
         if (!is_dir($directory)) {
             $base = $this->generateBaseDirectoryPath($config);
             if (!is_dir($base)) {
-                trigger_error(
-                    'Base directory ' . $base . ' does not exist,
-                    please create or change using %Cache.SerializerPath',
-                    E_USER_WARNING
-                );
+                trigger_error('Base directory ' . $base . ' does not exist,please create or change using %Cache.SerializerPath',E_USER_WARNING); // phpcs:ignore
                 return false;
             } elseif (!$this->_testPermissions($base, $chmod)) {
                 return false;
             }
             if (!@mkdir($directory, $chmod) && !is_dir($directory)) {
-                trigger_error(
-                    'Could not create directory ' . $directory . '',
-                    E_USER_WARNING
-                );
+                trigger_error('Could not create directory ' . $directory . '',E_USER_WARNING); // phpcs:ignore
                 return false;
             }
             if (!$this->_testPermissions($directory, $chmod)) {
@@ -15845,10 +15765,7 @@ class HTMLPurifier_DefinitionCache_Serializer extends HTMLPurifier_DefinitionCac
         if (!is_dir($dir)) {
             // generally, you'll want to handle this beforehand
             // so a more specific error message can be given
-            trigger_error(
-                'Directory ' . $dir . ' does not exist',
-                E_USER_WARNING
-            );
+            trigger_error('Directory ' . $dir . ' does not exist',E_USER_WARNING); // phpcs:ignore
             return false;
         }
         if (function_exists('posix_getuid') && $chmod !== null) {
@@ -15866,18 +15783,10 @@ class HTMLPurifier_DefinitionCache_Serializer extends HTMLPurifier_DefinitionCac
                 // need to give global permissions
                 $chmod = $chmod | 0777;
             }
-            trigger_error(
-                'Directory ' . $dir . ' not writable, ' .
-                'please chmod to ' . decoct($chmod),
-                E_USER_WARNING
-            );
+            trigger_error('Directory ' . $dir . ' not writable, ' .'please chmod to ' . decoct($chmod),E_USER_WARNING); // phpcs:ignore
         } else {
             // generic error message
-            trigger_error(
-                'Directory ' . $dir . ' not writable, ' .
-                'please alter file permissions',
-                E_USER_WARNING
-            );
+            trigger_error('Directory ' . $dir . ' not writable, ' .'please alter file permissions',E_USER_WARNING); // phpcs:ignore
         }
         return false;
     }
@@ -17621,10 +17530,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
             }
         }
         if ($i == $c) {
-            trigger_error(
-                'Tidy level ' . htmlspecialchars($level) . ' not recognized',
-                E_USER_WARNING
-            );
+            trigger_error('Tidy level ' . htmlspecialchars($level) . ' not recognized',E_USER_WARNING); // phpcs:ignore
             return array();
         }
         $ret = array();
@@ -17648,10 +17554,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
             return;
         }
         if (!isset($this->fixesForLevel[$this->defaultLevel])) {
-            trigger_error(
-                'Default level ' . $this->defaultLevel . ' does not exist',
-                E_USER_ERROR
-            );
+            trigger_error('Default level ' . $this->defaultLevel . ' does not exist',E_USER_ERROR); // phpcs:ignore
             return;
         }
         $this->fixesForLevel[$this->defaultLevel] = array_keys($fixes);
@@ -17698,7 +17601,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
                     $e->$type = $fix;
                     break;
                 default:
-                    trigger_error("Fix type $type not supported", E_USER_ERROR);
+                    trigger_error("Fix type $type not supported", E_USER_ERROR); // phpcs:ignore
                     break;
             }
         }
@@ -19780,6 +19683,7 @@ class HTMLPurifier_Lexer_DirectLex extends HTMLPurifier_Lexer
         $old_cursor = -1;
         while ($cursor < $size) {
             if ($old_cursor >= $cursor) {
+				// phpcs:ignore
                 throw new Exception("Infinite loop detected");
             }
             $old_cursor = $cursor;
@@ -20395,7 +20299,7 @@ class HTMLPurifier_Strategy_MakeWellFormed extends HTMLPurifier_Strategy
                 continue;
             }
             array_splice($this->injectors, $ix, 1); // rm the injector
-            trigger_error("Cannot enable {$injector->name} injector because $error is not allowed", E_USER_WARNING);
+            trigger_error("Cannot enable {$injector->name} injector because $error is not allowed", E_USER_WARNING); // phpcs:ignore
         }
 
         // -- end INJECTOR --
@@ -20644,9 +20548,8 @@ class HTMLPurifier_Strategy_MakeWellFormed extends HTMLPurifier_Strategy
                     if ($token instanceof HTMLPurifier_Token_Start) {
                         $this->stack[] = $token;
                     } elseif ($token instanceof HTMLPurifier_Token_End) {
-                        throw new HTMLPurifier_Exception(
-                            'Improper handling of end tag in start code; possible error in MakeWellFormed'
-                        );
+						// phpcs:ignore
+                        throw new HTMLPurifier_Exception('Improper handling of end tag in start code; possible error in MakeWellFormed');
                     }
                 }
                 continue;
@@ -20654,6 +20557,7 @@ class HTMLPurifier_Strategy_MakeWellFormed extends HTMLPurifier_Strategy
 
             // sanity check: we should be dealing with a closing tag
             if (!$token instanceof HTMLPurifier_Token_End) {
+				// phpcs:ignore
                 throw new HTMLPurifier_Exception('Unaccounted for tag token in input stream, bug in HTML Purifier');
             }
 
@@ -20812,12 +20716,14 @@ class HTMLPurifier_Strategy_MakeWellFormed extends HTMLPurifier_Strategy
             $token = array(1);
         }
         if (!is_array($token)) {
+			// phpcs:ignore
             throw new HTMLPurifier_Exception('Invalid token type from injector');
         }
         if (!is_int($token[0])) {
             array_unshift($token, 1);
         }
         if ($token[0] === 0) {
+			// phpcs:ignore
             throw new HTMLPurifier_Exception('Deleting zero tokens is not valid');
         }
 
@@ -21474,6 +21380,7 @@ class HTMLPurifier_Token_End extends HTMLPurifier_Token_Tag
     public $start;
 
     public function toNode() {
+		// phpcs:ignore
         throw new Exception("HTMLPurifier_Token_End->toNode not supported!");
     }
 }
@@ -21905,6 +21812,7 @@ class HTMLPurifier_URIFilter_Munge extends HTMLPurifier_URIFilter
         $this->doEmbed = $config->get('URI.MungeResources');
         $this->secretKey = $config->get('URI.MungeSecretKey');
         if ($this->secretKey && !function_exists('hash_hmac')) {
+			// phpcs:ignore
             throw new Exception("Cannot use %URI.MungeSecretKey without hash_hmac support.");
         }
         return true;
@@ -22544,6 +22452,7 @@ class HTMLPurifier_VarParser_Flexible extends HTMLPurifier_VarParser
                     } elseif ($var == 'off' || $var == 'false' || $var == '0') {
                         $var = false;
                     } else {
+						// phpcs:ignore
                         throw new HTMLPurifier_VarParserException("Unrecognized value '$var' for $type");
                     }
                 }
@@ -22606,11 +22515,7 @@ class HTMLPurifier_VarParser_Flexible extends HTMLPurifier_VarParser
                 if ($type === self::LOOKUP) {
                     foreach ($var as $key => $value) {
                         if ($value !== true) {
-                            trigger_error(
-                                "Lookup array has non-true value at key '$key'; " .
-                                "maybe your input array was not indexed numerically",
-                                E_USER_WARNING
-                            );
+                            trigger_error("Lookup array has non-true value at key '$key'; " ."maybe your input array was not indexed numerically",E_USER_WARNING); // phpcs:ignore
                         }
                         $var[$key] = true;
                     }

@@ -30,7 +30,7 @@ add_shortcode("mb_latest", 'mbw_create_latest_mb_basic');
 if(!function_exists('mbw_create_latest_mb_basic')){
 	function mbw_create_latest_mb_basic($args){
 		if(!empty($args['echo'])){
-			echo mbw_get_latest_mb_basic("shortcode",$args);
+			echo mbw_get_latest_mb_basic("shortcode",$args); // phpcs:ignore
 		}else{
 			return mbw_get_latest_mb_basic("shortcode",$args);
 		}
@@ -334,11 +334,11 @@ if ( ! class_exists( 'mbw_latest_mb_basic', false ) ){
 
 		function widget($args, $instance) {
 			extract($args);
-			echo $before_widget;
+			echo $before_widget; // phpcs:ignore
 			if ( !empty( $instance['title'] ) ) { $title	= apply_filters('widget_title', $instance['title'] ); };
-			if ( !empty( $title ) ) { echo $before_title . $title . $after_title; };
-			echo mbw_get_latest_mb_basic("sidebar",$instance);
-			echo $after_widget;
+			if ( !empty( $title ) ) { echo $before_title . $title . $after_title; }; // phpcs:ignore
+			echo mbw_get_latest_mb_basic("sidebar",$instance); // phpcs:ignore
+			echo $after_widget; // phpcs:ignore
 		}
 
 		 
@@ -359,8 +359,8 @@ if ( ! class_exists( 'mbw_latest_mb_basic', false ) ){
 			$mbw_list = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "posts where post_status='publish' and post_content like '%".MBW_SHORTCODE_BOARD." name=%' order by ID DESC");
 			?>
 			 
-			<p><label><?php _e('Title','mangboard') ?>: <input class="widefat" name="<?php echo esc_attr($this->get_field_name('title')); ?>"  type="text" value="<?php echo esc_attr($title); ?>" /></label></p>
-			<p><label><?php _e('Size','mangboard') ?>: 
+			<p><label><?php esc_html_e('Title','mangboard') ?>: <input class="widefat" name="<?php echo esc_attr($this->get_field_name('title')); ?>"  type="text" value="<?php echo esc_attr($title); ?>" /></label></p>
+			<p><label><?php esc_html_e('Size','mangboard') ?>: 
 			<select class="widefat" name="<?php echo esc_attr($this->get_field_name('list_size')); ?>">
 				<?php
 				$list_size = count($size_options);
@@ -370,13 +370,13 @@ if ( ! class_exists( 'mbw_latest_mb_basic', false ) ){
 					if ($instance['list_size'] == $size_options[$i]) $option_html		= $option_html.' selected="selected"'; 
 					$option_html		= $option_html.'>'.esc_html($size_options[$i]).'</option>';
 				}
-				echo $option_html;
+				echo $option_html; // phpcs:ignore
 				?>
 			</select></label></p>
 
-			<p><label><?php _e('Max Length','mangboard') ?>: <input class="widefat" name="<?php echo esc_attr($this->get_field_name('maxlength')); ?>"  type="text" value="<?php echo esc_attr($maxlength); ?>" /></label></p>
+			<p><label><?php esc_html_e('Max Length','mangboard') ?>: <input class="widefat" name="<?php echo esc_attr($this->get_field_name('maxlength')); ?>"  type="text" value="<?php echo esc_attr($maxlength); ?>" /></label></p>
 
-			<p><label><?php _e('Target','mangboard') ?>: 
+			<p><label><?php esc_html_e('Target','mangboard') ?>: 
 			<select class="widefat" name="<?php echo esc_attr($this->get_field_name('post_id')); ?>" onchange='mb_latest_target_change(this);'>
 				<?php
 				$list_size = count($mbw_list);
@@ -404,11 +404,11 @@ if ( ! class_exists( 'mbw_latest_mb_basic', false ) ){
 					if(empty($name)) $name		= $board_name;
 					$board_names[]		= "'".$board_name."'";				
 				}
-				echo $option_html;
+				echo $option_html; // phpcs:ignore
 				?>
 			</select></label></p>		
 
-			<p><label><?php _e('Category','mangboard') ?>: <input class="widefat" name="<?php echo esc_attr($this->get_field_name('category1')); ?>"  type="text" value="<?php echo esc_attr($category1); ?>" /></label></p>
+			<p><label><?php esc_html_e('Category','mangboard') ?>: <input class="widefat" name="<?php echo esc_attr($this->get_field_name('category1')); ?>"  type="text" value="<?php echo esc_attr($category1); ?>" /></label></p>
 
 			<input class="mb-latest-name" name="<?php echo esc_attr($this->get_field_name('name')); ?>" readonly type="hidden" value="<?php echo esc_attr($name); ?>" />
 			<script type='text/javascript'>

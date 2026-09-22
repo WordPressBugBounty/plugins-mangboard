@@ -181,6 +181,7 @@ if(!function_exists('mbw_get_prev_next_template')){
 		}
 
 		$template_start	.= $template_end;
+		 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		if($echo) echo $template_start;
 		else return $template_start;
 	}

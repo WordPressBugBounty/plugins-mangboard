@@ -8,17 +8,17 @@ function mbw_dashboard_plugin_update($version){
 	if(empty($version)) return false;	
 	$update_file		= download_url("https://mangboard.com/update/mangboard.".$version.".zip");
 
-	if(is_wp_error($update_file)){echo '<script>alert("MangBoard '.esc_js($version).' download failed");moveURL("'.admin_url("admin.php?page=mbw_dashboard").'");</script>';exit;}
+	if(is_wp_error($update_file)){echo '<script>alert("MangBoard '.esc_js($version).' download failed");moveURL("'.esc_url(admin_url("admin.php?page=mbw_dashboard")).'");</script>';exit;}
 
 	global $wp_filesystem;
-	$path			= trailingslashit($wp_filesystem->find_folder(WP_CONTENT_DIR.'/plugins'));
+	$path			= trailingslashit($wp_filesystem->find_folder( preg_replace( '#/mangboard/?$#', '', MBW_PLUGIN_PATH ) ));
 	$unzipfile		= @unzip_file($update_file, $path);
    
 	if($unzipfile){
 		if(mbw_get_option("mb_version")!=$version) mbw_update_option('mb_version',$version);
-		echo '<script>alert("MangBoard '.esc_js($version).' Update Completed");moveURL("'.admin_url("admin.php?page=mbw_dashboard").'");</script>';
+		echo '<script>alert("MangBoard '.esc_js($version).' Update Completed");moveURL("'.esc_url(admin_url("admin.php?page=mbw_dashboard")).'");</script>';
 	}else{
-		echo '<script>alert("MangBoard '.esc_js($version).' Update Failed");moveURL("'.admin_url("admin.php?page=mbw_dashboard").'");</script>';exit;
+		echo '<script>alert("MangBoard '.esc_js($version).' Update Failed");moveURL("'.esc_url(admin_url("admin.php?page=mbw_dashboard")).'");</script>';exit;
 	}  
 	return true;
 }
@@ -36,7 +36,7 @@ if(!empty($_REQUEST["lang"]) && mbw_is_admin()){
 }
 if(!empty($_REQUEST["update_version"])){
 	if(!current_user_can('activate_plugins') || !wp_verify_nonce(mbw_get_param('mbw-update-nonce'), 'mbw-update-key')){
-		echo '<script>alert("'.__MM('MSG_UPDATE_PERMISSION_ERROR').'");moveURL("'.admin_url("admin.php?page=mbw_dashboard").'");</script>';
+		echo '<script>alert("'.__MM('MSG_UPDATE_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url("admin.php?page=mbw_dashboard")).'");</script>'; // phpcs:ignore
 	}else{
 		$update_version		= mbw_value_filter($_REQUEST["update_version"]);
 		$url					= wp_nonce_url(admin_url("admin.php?page=mbw_dashboard&update_version=".$update_version), 'mangboard-'.$update_version);
@@ -90,7 +90,6 @@ if(count($items)==1) $items[]	= array("today_page_view"=>0,"today_write"=>0,"tod
 }
 body.mobile .mb-dash .mb-info-panel-column, body.mobile .mb-dash .mb-info-panel .mb-info-panel-column:first-child {display: block;float: none;width: 100%;min-width: 200px;}
 
-
 .mb-dash .mb-info-panel td{line-height:2.3 !important;}
 .mb-mobile.mb-dash .mb-info-panel td{line-height:1.3 !important;padding:7px 2px 7px;}
 .mb-dash .mb-info-panel-content{margin-left:13px;max-width:1500px;}
@@ -120,9 +119,8 @@ if(version_compare($mb_version2, '2.4.8', '>=')){
 </style>
 <script type="text/javascript">
 function mbw_update_confirm(){		
-	if(confirm("<?php echo __MM('MSG_UPDATE_CONFIRM'); ?>")){
+	if(confirm("<?php echo __MM('MSG_UPDATE_CONFIRM'); // phpcs:ignore ?>")){
 		document.forms['mb_dashboard_update'].submit();
-		//moveURL("<?php echo admin_url('admin.php?page=mbw_dashboard&update_version='.$latest_version);?>");
 	}
 }
 function mbw_send_update_form(){		
@@ -131,13 +129,6 @@ function mbw_send_update_form(){
 	}
 }
 function mbw_send_language_form(){
-	/*
-	var objSelect1	= document.getElementById("mb_site_locale");
-	var lang1			= objSelect1.options[objSelect1.selectedIndex].value;
-	var objSelect2	= document.getElementById("mb_admin_locale");
-	var lang2			= objSelect2.options[objSelect2.selectedIndex].value;	
-	moveURL("<?php echo admin_url('admin.php?page=mbw_dashboard&site_lang=');?>"+lang1+"&lang="+lang2);
-	*/
 	if(document.getElementById('mb_site_locale').value!="" && document.getElementById('mb_admin_locale').value!=""){
 		document.forms['mb_dashboard_language'].submit();
 	}
@@ -145,53 +136,52 @@ function mbw_send_language_form(){
 <?php
 if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_version"])){
 	if($mb_locale=="ko_KR"){
-		echo 'jQuery( document ).ready(function() {   if(confirm("'.__MM('MSG_UPDATE_LATEST_VERSION',$latest_version).'.\n'.__MM('MSG_UPDATE_CONFIRM2').'")){ mbw_send_update_form(); } });';
+		echo 'jQuery( document ).ready(function() {   if(confirm("'.__MM('MSG_UPDATE_LATEST_VERSION',$latest_version).'.\n'.__MM('MSG_UPDATE_CONFIRM2').'")){ mbw_send_update_form(); } });'; // phpcs:ignore
 	}
 }
 ?>
 </script>
 <?php do_action('mbw_dashboard_header'); ?>
 
-<?php if(!empty($dashboard_title)) echo "<div>".$dashboard_title."</div>"; ?>		
-<div id="wpbody" role="main" class="mb-dash mb-<?php echo mbw_get_vars("device_type");?>">
+<?php if(!empty($dashboard_title)) echo "<div>".esc_html($dashboard_title)."</div>"; ?>		
+<div id="wpbody" role="main" class="mb-dash mb-<?php echo esc_html(mbw_get_vars("device_type"));?>">
 <div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;">
 
 	<div id="mb-info-panel" class="mb-info-panel">
 	<div class="mb-info-panel-content">
 		
 		<div>
-			<div class="mb-dash-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_DASHBOARD');?></div>
+			<div class="mb-dash-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_DASHBOARD'); // phpcs:ignore ?></div>
 			<div style="float:left;">
-				<div class="button"><a href="https://www.mangboard.com/manual/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank"><?php echo __MW('W_MANUAL'); ?></a></div>
-				<div class="button"><a href="https://www.mangboard.com/tech_support/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank"><?php echo __MW('W_TECH_SUPPORT'); ?></a></div>				
+				<div class="button"><a href="https://www.mangboard.com/manual/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank"><?php echo __MW('W_MANUAL'); // phpcs:ignore ?></a></div>
+				<div class="button"><a href="https://www.mangboard.com/tech_support/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank"><?php echo __MW('W_TECH_SUPPORT'); // phpcs:ignore ?></a></div>				
 			</div>
 			<div class="clear"></div>
-		</div>
-		
+		</div>		
 		
 		<p class="about-description"></p>
 		<div class="mb-info-panel-column-container">
 			<div class="mb-info-panel-column">
-				<div class="mb-dash-panel-title"><?php echo __MW('W_SUMMARY_STATISTICS'); ?></div>			
+				<div class="mb-dash-panel-title"><?php echo __MW('W_SUMMARY_STATISTICS'); // phpcs:ignore ?></div>
 				<div style="text-align:center;width:90%;">
 					<?php
 					echo '<table cellspacing="0" cellpadding="0" style="width:100%;">';
 					echo '<colgroup><col style="40%"><col style="width:30%"><col style="width:30%"></colgroup>';
-					echo '<thead><tr><th scope="col">'.__MW('W_TYPE').'</th><th scope="col">'.__MW('W_YESTERDAY').'</th><th scope="col">'.__MW('W_TODAY').'</th></tr></thead>';
+					echo '<thead><tr><th scope="col">'.__MW('W_TYPE').'</th><th scope="col">'.__MW('W_YESTERDAY').'</th><th scope="col">'.__MW('W_TODAY').'</th></tr></thead>'; // phpcs:ignore
 					echo '<tbody>';
-					echo '<tr><td>'.__MW('W_TODAY_PAGE_VIEW').'</td><td>'.number_format($items[1]["today_page_view"]).'</td><td>'.number_format($items[0]["today_page_view"]).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TODAY_WRITE').'</td><td>'.number_format(intval($items[1]["today_write"])+intval($items[1]["today_reply"])).'</td><td>'.number_format(intval($items[0]["today_write"])+intval($items[0]["today_reply"])).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TODAY_COMMENT').'</td><td>'.number_format($items[1]["today_comment"]).'</td><td>'.number_format($items[0]["today_comment"]).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TODAY_JOIN').'</td><td>'.number_format($items[1]["today_join"]).'</td><td>'.number_format($items[0]["today_join"]).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TODAY_UPLOAD').'</td><td>'.number_format($items[1]["today_upload"]).'</td><td>'.number_format($items[0]["today_upload"]).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TODAY_VISIT').'</td><td>'.number_format($items[1]["today_visit"]).'</td><td>'.number_format($items[0]["today_visit"]).'</td></tr>';
+					echo '<tr><td>'.__MW('W_TODAY_PAGE_VIEW').'</td><td>'.number_format($items[1]["today_page_view"]).'</td><td>'.number_format($items[0]["today_page_view"]).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TODAY_WRITE').'</td><td>'.number_format(intval($items[1]["today_write"])+intval($items[1]["today_reply"])).'</td><td>'.number_format(intval($items[0]["today_write"])+intval($items[0]["today_reply"])).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TODAY_COMMENT').'</td><td>'.number_format($items[1]["today_comment"]).'</td><td>'.number_format($items[0]["today_comment"]).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TODAY_JOIN').'</td><td>'.number_format($items[1]["today_join"]).'</td><td>'.number_format($items[0]["today_join"]).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TODAY_UPLOAD').'</td><td>'.number_format($items[1]["today_upload"]).'</td><td>'.number_format($items[0]["today_upload"]).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TODAY_VISIT').'</td><td>'.number_format($items[1]["today_visit"]).'</td><td>'.number_format($items[0]["today_visit"]).'</td></tr>'; // phpcs:ignore
 					echo '</tbody></table>';
 					?>
 				</div>
 				<div style="padding:6px 0px;"></div>
 			</div>
 			<div class="mb-info-panel-column mb-info-panel-last">
-				<div class="mb-dash-panel-title"><?php echo __MW('W_REFERER_LATESET'); ?><span style="font-size:12px;color:#999;line-height:1.2;"> (<?php echo __MW('W_ONE_WEEK'); ?>)</span></div>				
+				<div class="mb-dash-panel-title"><?php echo __MW('W_REFERER_LATESET'); // phpcs:ignore ?><span style="font-size:12px;color:#999;line-height:1.2;"> (<?php echo __MW('W_ONE_WEEK'); // phpcs:ignore ?>)</span></div>
 				<div style="text-align:center;width:90%;">
 					<?php
 					$search_date	= date("Y-m-d H:i:s", (mbw_get_timestamp()-(60*60*24*7)));
@@ -199,11 +189,11 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 					$url_items	= $mdb->get_results($mdb->prepare("select ".$field.", count(".$field.") as count  from ".$mb_admin_tables["referers"]." where ".$mb_fields["referers"]["fn_reg_date"].">%s and ".$field."!='' group by ".$field." order by count desc limit 6;",$search_date),ARRAY_A);
 					echo '<table cellspacing="0" cellpadding="0" style="width:100%;">';
 					echo '<colgroup><col style="15%"><col style="width:65%"><col style="width:20%"></colgroup>';
-					echo '<thead><tr><th scope="col">'.__MW('W_RANK').'</th><th scope="col">URL</th><th scope="col">'.__MW('W_SESSION').'</th></tr></thead>';
+					echo '<thead><tr><th scope="col">'.__MW('W_RANK').'</th><th scope="col">URL</th><th scope="col">'.__MW('W_SESSION').'</th></tr></thead>'; // phpcs:ignore
 					echo '<tbody>';				
 					$rank		= 1;
 					foreach($url_items as $item){
-						echo '<tr><td>'.$rank.'</td><td class="text-left">'.esc_html($item[$field]).'</td><td>'.$item["count"].'</td></tr>';
+						echo '<tr><td>'.esc_html($rank).'</td><td class="text-left">'.esc_html($item[$field]).'</td><td>'.esc_html($item["count"]).'</td></tr>';
 						$rank++;
 					}					
 					echo '</tbody></table>';
@@ -212,30 +202,30 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 				<div style="padding:6px 0px;"></div>
 			</div>
 			<div class="mb-info-panel-column">
-				<div class="mb-dash-panel-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_CURRENT_STATE');?></div>
+				<div class="mb-dash-panel-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_CURRENT_STATE'); // phpcs:ignore ?></div>
 				<div style="text-align:center;width:90%;">
 					<?php					
 					echo '<table cellspacing="0" cellpadding="0" style="width:100%;">';
 					echo '<colgroup><col style="38%"><col style="width:62%"></colgroup>';
-					echo '<thead><tr><th scope="col">'.__MW('W_TYPE').'</th><th scope="col">'.__MW('W_VALUE').'</th></tr></thead>';
+					echo '<thead><tr><th scope="col">'.__MW('W_TYPE').'</th><th scope="col">'.__MW('W_VALUE').'</th></tr></thead>'; // phpcs:ignore
 					echo '<tbody>';				
 					
 					$update_button		= "";
 					if(version_compare($mb_version, $latest_version, '<')){
 						$update_button		= '=&gt;<div class="button"><a href="javascript:;" onclick="mbw_update_confirm();return false;">'.$latest_version." ".__MW('W_UPDATE').'</a></div>';
-						echo '<form id="mb_dashboard_update" name="mb_dashboard_update" action="'.admin_url('admin.php?page=mbw_dashboard').'" method="post">';
+						echo '<form id="mb_dashboard_update" name="mb_dashboard_update" action="'.esc_url(admin_url('admin.php?page=mbw_dashboard')).'" method="post">';
 							echo '<input type="hidden" id="mb_latest_version" name="update_version" value="'.esc_attr($latest_version).'">';
-							echo wp_nonce_field('mbw-update-key', 'mbw-update-nonce');
+							echo wp_nonce_field('mbw-update-key', 'mbw-update-nonce'); // phpcs:ignore
 						echo '</form>';
 					}else{
 						$update_button		= '(DB:'.mbw_get_option("db_version").') ';
 					}
-					echo '<tr><td>'.__MW('W_MANGBOARD_VERSION').'</td><td>'.$mb_version." ".$update_button.'</td></tr>';
+					echo '<tr><td>'.__MW('W_MANGBOARD_VERSION').'</td><td>'.esc_html($mb_version)." ".$update_button.'</td></tr>'; // phpcs:ignore
 
-					echo '<tr><td>'.__MW('W_PHP_VERSION').'</td><td>'.phpversion()." (Upload Max: ".ini_get("upload_max_filesize").", Post: ".ini_get("post_max_size").')</td></tr>';
+					echo '<tr><td>'.__MW('W_PHP_VERSION').'</td><td>'.esc_html(phpversion())." (Upload Max: ".esc_html(ini_get("upload_max_filesize")).", Post: ".esc_html(ini_get("post_max_size")).')</td></tr>'; // phpcs:ignore
 					
 					include(MBW_PLUGIN_PATH."templates/mtpl.input.php");
-					$lang_html		= '<form id="mb_dashboard_language" name="mb_dashboard_language" action="'.admin_url('admin.php?page=mbw_dashboard').'" method="post">';
+					$lang_html		= '<form id="mb_dashboard_language" name="mb_dashboard_language" action="'.esc_url(admin_url('admin.php?page=mbw_dashboard')).'" method="post">';
 						$data					= array("type"=>"select","ext"=>"","style"=>"");
 						$data["value"]		= $mb_locale;
 						$data["item_name"]		= "site_lang";
@@ -258,11 +248,11 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 						$lang_html		.= wp_nonce_field('mbw-language-key', 'mbw-language-nonce');
 					$lang_html		.= '</form>';
 
-					echo '<tr><td>'.__MW('W_SITE_LOCALE').'<span class="max-width-m100">(Home/Admin)</span></td><td>'.$lang_html.'</td></tr>';
+					echo '<tr><td>'.__MW('W_SITE_LOCALE').'<span class="max-width-m100">(Home/Admin)</span></td><td>'.$lang_html.'</td></tr>'; // phpcs:ignore
 
-					echo '<tr><td>'.__MW('W_TOTAL_USER').'</td><td>'.number_format($mdb->get_var($mdb->prepare("SELECT count(*) FROM %1s;",$mb_admin_tables["users"]))).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TOTAL_FILE').'</td><td>'.number_format($mdb->get_var($mdb->prepare("SELECT count(*) FROM %1s;",$mb_admin_tables["files"]))).'</td></tr>';
-					echo '<tr><td>'.__MW('W_TOTAL_VISIT').'</td><td>'.number_format($items[0]["total_visit"]).'</td></tr>';
+					echo '<tr><td>'.__MW('W_TOTAL_USER').'</td><td>'.number_format($mdb->get_var($mdb->prepare("SELECT count(*) FROM %1s;",$mb_admin_tables["users"]))).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TOTAL_FILE').'</td><td>'.number_format($mdb->get_var($mdb->prepare("SELECT count(*) FROM %1s;",$mb_admin_tables["files"]))).'</td></tr>'; // phpcs:ignore
+					echo '<tr><td>'.__MW('W_TOTAL_VISIT').'</td><td>'.number_format($items[0]["total_visit"]).'</td></tr>'; // phpcs:ignore
 					echo '</tbody></table>';
 					?>
 				</div>
@@ -280,7 +270,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 
 	</div>
 	<?php
-		if(!empty($dashboard_desc)) echo $dashboard_desc;
+		if(!empty($dashboard_desc)) echo $dashboard_desc; // phpcs:ignore
 		$index			= 1; 
 		$maxlength	= 50;
 	?>
@@ -290,7 +280,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 		<div id="postbox-container-<?php echo esc_attr($index);?>" class="postbox-container">
 		<div id="box<?php echo esc_attr($index);?>-sortables" class="meta-box-sortables ui-sortable"><div id="dashboard_primary" class="postbox ">
 			<div class="handlediv" title=""><br></div>
-			<div class="mb-dash-box-title  ui-sortable-handle"><span><?php echo __MW('W_BOARD_LATESET'); ?></span></div>
+			<div class="mb-dash-box-title  ui-sortable-handle"><span><?php echo __MW('W_BOARD_LATESET'); // phpcs:ignore ?></span></div>
 			<div class="inside">				
 				<div class="rss-widget">
 					<ul>
@@ -319,7 +309,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 								$title		= $row['title'];
 								if(mb_strlen($title)>$maxlength) $title		= mb_substr($title, 0,$maxlength)."...";
 								if(!empty($title)){ 
-									echo '<li><a class="rsswidget" href="'.esc_url($url).'">'.esc_html($title).'</a> <span class="rss-date">'.date("Y-m-d H:i:s", $item["time"]).'</span></li>';
+									echo '<li><a class="rsswidget" href="'.esc_url($url).'">'.esc_html($title).'</a> <span class="rss-date">'.date("Y-m-d H:i:s", $item["time"]).'</span></li>'; // phpcs:ignore
 									$list_index++;
 								}
 							}							
@@ -338,7 +328,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 		<div id="postbox-container-<?php echo esc_attr($index);?>" class="postbox-container">
 		<div id="box<?php echo esc_attr($index);?>-sortables" class="meta-box-sortables ui-sortable"><div id="dashboard_primary" class="postbox ">
 			<div class="handlediv" title=""><br></div>
-			<div class="mb-dash-box-title ui-sortable-handle"><span><?php echo __MW('W_COMMENT_LATESET'); ?></span></div>
+			<div class="mb-dash-box-title ui-sortable-handle"><span><?php echo __MW('W_COMMENT_LATESET'); // phpcs:ignore ?></span></div>
 			<div class="inside">				
 				<div class="rss-widget">
 					<ul>
@@ -364,7 +354,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 							if(!empty($title)){
 								if(mb_strlen($title)>$maxlength) $title		= mb_substr($title, 0,$maxlength)."...";
 								if(!empty($title)){
-									echo '<li><a class="rsswidget" href="'.esc_url($url).'">'.esc_html($title).'</a> <span class="rss-date">'.date("Y-m-d H:i:s", $item["time"]).'</span></li>';
+									echo '<li><a class="rsswidget" href="'.esc_url($url).'">'.esc_html($title).'</a> <span class="rss-date">'.date("Y-m-d H:i:s", $item["time"]).'</span></li>'; // phpcs:ignore
 									$list_index++;
 								}
 							}
@@ -384,7 +374,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 		<div id="postbox-container-<?php echo esc_attr($index);?>" class="postbox-container">
 		<div id="box<?php echo esc_attr($index);?>-sortables" class="meta-box-sortables ui-sortable"><div id="dashboard_primary" class="postbox ">
 			<div class="handlediv" title=""><br></div>
-			<div class="mb-dash-box-title ui-sortable-handle"><span><?php echo $data["title"];?></span></div>
+			<div class="mb-dash-box-title ui-sortable-handle"><span><?php echo esc_html($data["title"]);?></span></div>
 			<div class="inside">				
 				<div class="rss-widget">
 					<?php $default_args = array( 'show_author' => 0, 'show_date' => 1, 'show_summary' => 0 ); wp_widget_rss_output(trim($data["link"]),$default_args); ?>

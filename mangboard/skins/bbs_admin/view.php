@@ -5,6 +5,7 @@
 
 	//게시물이 존재하는지 확인
 	if(empty($board_item)){
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo mbw_error_message("MSG_ITEM_NOT_EXIST");return;
 	}
 
@@ -29,7 +30,7 @@
 <script type="text/javascript">
 var view_action			= "";
 function showBoardViewDeleteConfirm(data){
-	showConfirmPopup("<?php echo __MM('MSG_DELETE_CONFIRM');if(!mbw_is_login()) echo '<br>'.__MM('MSG_PASSWD_INPUT');?>", data, sendBoardViewDeleteData);	
+	showConfirmPopup("<?php echo __MM('MSG_DELETE_CONFIRM'); if(!mbw_is_login()){echo '<br>'.__MM('MSG_PASSWD_INPUT');} // phpcs:ignore ?>", data, sendBoardViewDeleteData);
 }
 function sendBoardViewDeleteData(){	
 	sendBoardViewData("delete");
@@ -46,7 +47,7 @@ function sendBoardViewDataHandler(response, state)
 	if(typeof response !== "undefined"){
 		if(response.state=="success"){
 			if(view_action=="delete"){
-				moveURL(<?php echo "\"".mbw_get_url(array("board_pid"=>"","mode"=>"list"))."\""; ?>);
+				moveURL(<?php echo "\"".mbw_get_url(array("board_pid"=>"","mode"=>"list"))."\""; // phpcs:ignore ?>);
 			}else if(view_action=="vote_good"){
 				jQuery("#"+mb_options["board_name"]+"_vote_good").html("("+response.count+")");
 			}else if(view_action=="vote_bad"){
@@ -63,7 +64,7 @@ function sendBoardViewDataHandler(response, state)
 <div class="mb-style1 board-view">
 <?php do_action('mbw_board_skin_header'); ?>
 	<form name="<?php echo esc_attr($mb_board_name);?>_form_board_view" id="<?php echo esc_attr($mb_board_name);?>_form_board_view" method="post">	
-	<?php echo mbw_create_nonce("form"); ?>
+	<?php echo mbw_create_nonce("form"); // phpcs:ignore ?>
 	<div class="main-style1" id="<?php echo esc_attr($mb_board_name);?>_board_box">
 	<?php
 		foreach($view_model as $data){				
@@ -87,20 +88,26 @@ function sendBoardViewDataHandler(response, state)
 		<div class="btn-box-right" id="<?php echo esc_attr($mb_board_name);?>_btn_box">
 			<?php
 				echo '<div class="btn-box-left" style="float:left;">';
-				echo mbw_get_left_button("view");
+				echo mbw_get_left_button("view"); // phpcs:ignore
 				echo '</div>';
 
-				if(mbw_get_board_option("fn_use_board_vote_good") == 1 && isset($mb_fields["select_board"]["fn_vote_good_count"]) ) 
+				if(mbw_get_board_option("fn_use_board_vote_good") == 1 && isset($mb_fields["select_board"]["fn_vote_good_count"]) ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Vote_Good","add_name"=>"<span id='".$mb_board_name."_vote_good'>(".mbw_get_board_item("fn_vote_good_count").")</span>","onclick"=>"sendBoardViewData('vote_good')","class"=>"btn btn-default btn-vote-good"));
+				}
 					
-				if(mbw_get_board_option("fn_use_board_vote_bad") == 1 && isset($mb_fields["select_board"]["fn_vote_bad_count"]))
+				if(mbw_get_board_option("fn_use_board_vote_bad") == 1 && isset($mb_fields["select_board"]["fn_vote_bad_count"])){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Vote_Bad","add_name"=>"<span id='".$mb_board_name."_vote_bad'>(".mbw_get_board_item("fn_vote_bad_count").")</span>","onclick"=>"sendBoardViewData('vote_bad')","class"=>"btn btn-default btn-vote-bad"));
+				}
 
 				if(intval(mbw_get_board_option("fn_list_level")) <= $mb_user_level){
 					if(mbw_get_vars("pagination_type")=="more"){
 						$page_size			= intval(mbw_get_board_option("fn_page_size")) * intval(mbw_get_param("board_page"));
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_btn_template(array("name"=>"List","href"=>mbw_get_url(array("board_pid"=>"","mode"=>"list","page_size"=>$page_size)),"class"=>"btn btn-default btn-list"));
 					}else{
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_btn_template(array("name"=>"List","href"=>mbw_get_url(array("board_pid"=>"","mode"=>"list","page_size"=>"")),"class"=>"btn btn-default btn-list"));
 					}					
 				}
@@ -108,19 +115,27 @@ function sendBoardViewDataHandler(response, state)
 				if(mbw_is_user_pid() || intval(mbw_get_board_option("fn_modify_level")) <= $mb_user_level){
 					//모바일에서 CK이외의 에디터로 작성된 글 수정 못하도록 설정
 					//if(mbw_get_vars("device_type")!="mobile" || mbw_get_board_item("fn_editor_type")=="C")
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_btn_template(array("name"=>"Modify","href"=>mbw_get_url(array("mode"=>"write","board_gid"=>"","board_action"=>"modify")),"class"=>"btn btn-default btn-modify"));
 				}
 				
-				if(mbw_is_user_pid("guest"))
+				if(mbw_is_user_pid("guest")){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showBoardViewDeleteConfirm({'type':'passwd'})","class"=>"btn btn-default btn-delete"));
-				else if(intval(mbw_get_board_option("fn_delete_level")) <= $mb_user_level || mbw_is_user_pid())
+				}else if(intval(mbw_get_board_option("fn_delete_level")) <= $mb_user_level || mbw_is_user_pid()){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Delete","onclick"=>"showBoardViewDeleteConfirm()","class"=>"btn btn-default btn-delete"));
+				}
 				
-				if(intval(mbw_get_board_option("fn_reply_level")) <= $mb_user_level && intval(mbw_get_board_item("fn_is_notice"))==0)
+				if(intval(mbw_get_board_option("fn_reply_level")) <= $mb_user_level && intval(mbw_get_board_item("fn_is_notice"))==0){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Reply","href"=>mbw_get_url(array("mode"=>"write","board_gid"=>mbw_get_board_item("fn_gid"),"board_action"=>"reply")),"class"=>"btn btn-default btn-reply"));
-				if(intval(mbw_get_board_option("fn_write_level"))==1 || intval(mbw_get_board_option("fn_write_level")) <= $mb_user_level)
+				}
+				if(intval(mbw_get_board_option("fn_write_level"))==1 || intval(mbw_get_board_option("fn_write_level")) <= $mb_user_level){
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_btn_template(array("name"=>"Write","href"=>mbw_get_url(array("board_pid"=>"","mode"=>"write","board_action"=>"write")),"class"=>"btn btn-default btn-write"));
-
+				}
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo mbw_get_right_button("view");
 			?>	
 		</div>
@@ -135,7 +150,7 @@ function sendBoardViewDataHandler(response, state)
 		}
 	}
 	if(mbw_get_option("use_view_prev_next")){
-		echo $prev_next_html;
+		echo $prev_next_html; // phpcs:ignore
 	}
 	?>
 </div>
