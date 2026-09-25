@@ -1243,10 +1243,15 @@ if(!function_exists('mbw_init_javascript')){
 
 		$path					= MBW_PLUGIN_PATH.'assets/js';
 		$dir					= dir($path);
+		$localize_name		= 'mb-assets-common';
 		while (false !== ($entry = $dir->read())){
 			if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
 				if(substr($entry, -3) === '.js'){
-					loadScript(MBW_PLUGIN_URL.'assets/js/'.$entry);
+					if($entry=="common.js"){
+						loadScript(MBW_PLUGIN_URL.'assets/js/'.$entry, $localize_name);
+					}else{
+						loadScript(MBW_PLUGIN_URL.'assets/js/'.$entry);
+					}
 				}
 			}
 		}
@@ -1261,7 +1266,7 @@ if(!function_exists('mbw_init_javascript')){
 		}
 		$admin_ajax_url		= mbw_check_url(admin_url( 'admin-ajax.php' ));
 		if(!mbw_is_ssl() && strpos($admin_ajax_url, 'https://') !== false) $admin_ajax_url		= mbw_get_http_url($admin_ajax_url);
-		wp_localize_script( 'assets-js-common', 'mb_ajax_object', array( 'ajax_url' => $admin_ajax_url,'admin_page' => (is_admin()? "true":"false")));
+		wp_localize_script( $localize_name, 'mb_ajax_object', array( 'ajax_url' => $admin_ajax_url,'admin_page' => (is_admin()? "true":"false")));
 		
 		if(mbw_get_option("commerce_version")!="" && mbw_get_option("commerce_version")<"1.0.5") echo '<script type="text/javascript">var mb_urls = {};</script>';
 		$script		= "";

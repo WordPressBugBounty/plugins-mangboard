@@ -73,10 +73,14 @@ if(!function_exists('mbw_set_api_params')){
 		}
 		//XSS 필터 적용하기
 		$data_type	= mbw_get_param("data_type");
-		if( !empty($data_type) && is_array($data_type) ){
-			$data_type		= implode(",", $data_type);
+		if ( !empty($data_type) ) {
+			if ( is_array($data_type) ) {
+				$data_type		= implode(",", $data_type);
+			}
+			$data_type	= mbw_value_filter($data_type);
+			mbw_set_param("data_type", $data_type);
 		}		
-		if( ($check_htmlspecialchars && ( strpos($data_type, 'html') !== false )) || !is_string($data_type) ){
+		if( ($check_htmlspecialchars && ( strpos($data_type, "html") !== false )) || !is_string($data_type) ){
 			if(mbw_get_param("content")!=""){
 				$tmp_content		= mbw_get_param("content");
 				if(strpos($tmp_content, '<')!==false){
@@ -124,19 +128,25 @@ if(!function_exists('mbw_set_api_params')){
 		}		
 
 		foreach($check_fields as $key => $value){
-			$param_key		= str_replace("fn_", "",$key);	
+			$param_key		= str_replace("fn_", "", $key);	
 			if(strpos($key, 'fn_')===0 && isset($_REQUEST[$param_key]) && $key!="fn_pid"){
 				if(!empty($allow_fields) && strpos($allow_fields, ','.$param_key.',')===false) continue;
-
-				$param_data										= mbw_get_param($param_key);
-				if(is_array($param_data) && (mbw_get_param("mode")=="write" || mbw_get_param("mode")=="comment")){
+				$param_data				= mbw_get_param($param_key);				
+				
+				if ( $key == "fn_data_type" ) {
+					if ( is_array($param_data) ) {
+						$param_data		= implode(",", $param_data);
+					}
+					$param_data			= mbw_value_filter($param_data);
+				} else if (is_array($param_data) && (mbw_get_param("mode")=="write" || mbw_get_param("mode")=="comment")){
 					$param_data		= implode(",",$param_data);
 					$param_data		= strip_tags($param_data);
 				}
-				if($check_htmlspecialchars)
+				if ( $check_htmlspecialchars ) {
 					$send_data[$check_fields[$key]]			= mbw_htmlspecialchars2($param_data);
-				else
+				} else {
 					$send_data[$check_fields[$key]]			= mbw_stripslashes($param_data);
+				}
 			}
 		}
 

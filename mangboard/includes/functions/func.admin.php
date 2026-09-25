@@ -209,9 +209,9 @@ if(!function_exists('mbw_install_store_product')){
 			// wp_filesystem 객체 함수를 이용하기 위해서는 절대경로를 find_folder를 이용하여 public_html로 시작하는 상대경로로 변경 필요
 			// wp_filesystem->find_folder: /home/demo/public_html =>/public_html
 			$base_dir			= $wp_filesystem->find_folder($base_path);
-			// mbw_get_option("store_path") 함수는 설정된 경로의 폴더가 존재하지 않을 경우 빈값으로 설정되기 때문에 mbw_get_vars("store_path") 함수를 이용하여 가져옴
+			// mbw_get_option("store_path") 함수는 설정된 경로의 폴더가 존재하지 않을 경우 빈값으로 설정되기 때문에 MBW_STORE_DIR 를 이용하여 가져옴
 			if ( mbw_get_option("use_store_path") ) {
-				$store_path		= mbw_get_vars("store_path");
+				$store_path		= MBW_STORE_DIR;
 			} else {
 				$store_path		= "";
 			}

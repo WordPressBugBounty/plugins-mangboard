@@ -3,7 +3,7 @@
  * Plugin Name: MangBoard
  * Plugin URI: https://mangboard.com/
  * Description: MangBoard는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
- * Version: 2.4.2
+ * Version: 2.4.3
  * Author: Hometory
  * Author URI: https://www.hometory.com/
  * License: GPLv2 or later

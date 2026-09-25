@@ -7,19 +7,20 @@ if(!function_exists('loadScript')){
 		}
 		if( empty($handle) ){
 			if( strpos($src, '/mangboard') !== false ){				
-				$temp		= substr( strstr( $src, '/mangboard' ) ,11);
+				$temp		= substr( $src, strrpos($src, '/mangboard') + 11 );
+				$temp		= str_replace( array(".min.",".","_"), "/", $temp);
 				$parts		= explode( '/', $temp );
-				if ( count( $parts ) >= 4 ) {
-					$parts			= array_slice( $parts, -4 );
+				if ( count( $parts ) > 6 ) {
+					$parts			= array_slice( $parts, -6 );
 				} 
 				$handle	= implode( '-', $parts );
 			}else{
 				$handle	= basename($src);
 			}
-			if( strpos($handle, 'plugins-user-js') !== 0 ){
-				$handle	= str_replace( array(".","_"), "-", substr($handle, 0, -3));
+			if( strpos($handle, 'plugins-user-js') !== false ){
+				$handle	= "plugins-user-js-main-js";
 			}else{
-				$handle	= str_replace( array(".","_"), "-", $handle);				
+				$handle	= "mb-".str_replace(array("store-","-js","-main"), "", $handle);
 			}
 		}
 		wp_enqueue_script($handle, $src, $deps, mbw_get_option("mb_index"));
@@ -33,16 +34,17 @@ if(!function_exists('loadStyle')){
 		}
 		if( empty($handle) ){
 			if( strpos($src, '/mangboard') !== false ){
-				$temp		= substr( strstr( $src, '/mangboard' ) ,11);
+				$temp		= substr( $src, strrpos($src, '/mangboard') + 11 );
+				$temp		= str_replace( array(".min.",".","_"), "/", $temp);
 				$parts		= explode( '/', $temp );
-				if ( count( $parts ) >= 4 ) {
-					$parts			= array_slice( $parts, -4 );
+				if ( count( $parts ) > 6 ) {
+					$parts			= array_slice( $parts, -6 );
 				} 
 				$handle	= implode( '-', $parts );
 			}else{
 				$handle	= basename($src);
 			}
-			$handle	= str_replace(array(".","_"), "-", substr($handle, 0, -4));
+			$handle	= "mb-".str_replace(array("store-","-css","-style"), "", $handle);
 		}
 		wp_enqueue_style($handle, $src, $deps, mbw_get_option("mb_index"));
 	}

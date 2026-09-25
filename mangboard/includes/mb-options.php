@@ -30,12 +30,10 @@ if(empty($mb_version)) $mb_version	= "2.4.7";
 if(empty($mb_index)) $mb_index	= "203";
 if(empty($mb_db_version)) $mb_db_version	= "1.0.7";
 
-$store_path						= MBW_STORE_DIR;
-if ( isset($mb_vars) ) {
-	$mb_vars["store_path"]		= $store_path;
-}
-if ( !is_dir(WP_CONTENT_DIR.$store_path) ) {
-	$store_path	= "";
+if ( is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
+	$store_path	= MBW_STORE_DIR;	
+} else {
+	$store_path	= "";	
 }
 
 //설정 데이타
