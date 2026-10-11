@@ -26,12 +26,15 @@ else if($mb_locale=='ko') $mb_locale	= 'ko_KR';
 else if($mb_locale=='zh' || $mb_locale=='ch' || $mb_locale=='zh-hans' || $mb_locale=='zh-hant') $mb_locale	= 'zh_CN';
 else if($mb_locale=='jp') $mb_locale	= 'ja';
 
-if(empty($mb_version)) $mb_version	= "2.4.7";
-if(empty($mb_index)) $mb_index	= "203";
+if(empty($mb_version)) $mb_version	= "2.5.5";
+if(empty($mb_index)) $mb_index	= "230";
 if(empty($mb_db_version)) $mb_db_version	= "1.0.7";
 
-if ( is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
-	$store_path	= MBW_STORE_DIR;	
+if ( get_option('mb_store_path') != "" && get_option('mb_store_path') != "none" ) {
+	$store_path	= get_option('mb_store_path');
+}else if ( is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
+	$store_path	= MBW_STORE_DIR;
+	update_option('mb_store_path', $store_path, true);
 } else {
 	$store_path	= "";	
 }

@@ -39,7 +39,7 @@ if(!function_exists('mbw_get_btn_template')){
 			if(!empty($args['height'])) $main_tag		= $main_tag.' height="'.esc_attr($args['height']).'"';
 			if(!empty($data['img_style'])) $main_tag		= $main_tag.' style="'.esc_attr($data['img_style']).'"';
 			if(!empty($data['img_class'])) $main_tag		= $main_tag.' class="'.esc_attr($data['img_class']).'"';
-			$main_tag		= $main_tag.' />';		
+			$main_tag		= $main_tag.' />';
 			$btn_type		= "a";
 		}
 
@@ -65,25 +65,29 @@ if(!function_exists('mbw_get_btn_template')){
 				$template_btn	= $template_btn.' href="javascript:;" onclick="'.$data['onclick'].';return false;"';
 			}else{
 				$template_btn	= $template_btn.' onclick="'.$data['onclick'].';return false;"';
-			}			
+			}
 		}
 
 		if(!empty($data['title'])){
-			if(strpos($data['title'], 'title=') === false){
-				$template_btn	.= ' title="'.esc_attr($data['title']).'"';
-			}else{
-				$template_btn	.= " ".$data['title'];
-			}		
+			$btn_title			= $data['title'];
+			if(strpos($btn_title, 'title=') !== false){
+				if (preg_match('/title=["\']([^"\']+)["\']/', $btn_title, $matches)) {
+					$btn_title			= $matches[1];
+				}
+			}			
+			$template_btn	.= ' title="'.esc_attr(trim($btn_title)).'"';
 		}else if(strpos($btn_name, '<') === false){
 			$template_btn	.= ' title="'.esc_attr($btn_name).'"';
 		}
 
 		if(!empty($data['class'])){
-			if(strpos($data['class'], 'class=') === false){
-				$template_btn	.= ' class="'.esc_attr($data['class']).'"';
-			}else{
-				$template_btn	.= " ".$data['class'];
-			}		
+			$btn_class			= $data['class'];
+			if(strpos($btn_class, 'class=') !== false){
+				if (preg_match('/class=["\']([^"\']+)["\']/', $btn_class, $matches)) {
+					$btn_class			= $matches[1];
+				}
+			}
+			$template_btn	.= ' class="'.esc_attr(trim($btn_class)).'"';
 		}
 		if(!empty($data['style'])) $template_btn	.= ' style="'.esc_attr($data['style']).'"';
 		$template_btn				= $template_btn.$btn_attribute.'>'.$start_tag.$main_tag.$end_tag.'</'.$btn_type.'>';

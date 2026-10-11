@@ -56,7 +56,7 @@ if(!empty($_REQUEST['path'])){
 
 	$path				= str_replace($file_name,"",$path);	
 	$path				= str_replace(".","",$path).$file_name;	
-	$file_path			= $upload_path.$path;	
+	$file_path			= ($upload_path.$path);
 
 	if(is_file($file_path)){
 		global $mb_image_upload_files,$mb_board_upload_files;
@@ -112,6 +112,7 @@ if(!empty($_REQUEST['path'])){
 					}
 				}
 			}else{
+				$file_ext	= preg_replace("/[^0-9a-zA-Z]/u", '', $file_ext);
 				header("Content-type: image/".$file_ext);
 				if(preg_match('/(MSIE|Trident)/i', $_SERVER['HTTP_USER_AGENT'])){
 					header("Content-Disposition: inline; filename=\"".rawurlencode($file_name)."\"");

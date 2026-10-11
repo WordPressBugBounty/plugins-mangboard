@@ -118,6 +118,7 @@ if(!function_exists('mbw_request_store_api')){
 			$data['mb_home_url']	= urlencode(MBW_HOME_URL);
 			$data['mb_site_url']		= urlencode(MBW_SITE_URL);
 			$data['mb_version']		= mbw_get_option("mb_version");
+			$data['mb_index']		= mbw_get_option("mb_index");
 			$data['php_version']	= PHP_VERSION;
 			$data['locale']			= mbw_get_option("locale");
 			$url						= "https://mangboard.com?mb_store=product";
@@ -211,7 +212,10 @@ if(!function_exists('mbw_install_store_product')){
 			$base_dir			= $wp_filesystem->find_folder($base_path);
 			// mbw_get_option("store_path") 함수는 설정된 경로의 폴더가 존재하지 않을 경우 빈값으로 설정되기 때문에 MBW_STORE_DIR 를 이용하여 가져옴
 			if ( mbw_get_option("use_store_path") ) {
-				$store_path		= MBW_STORE_DIR;
+				$store_path		= MBW_STORE_DIR;				
+				if ( !empty($store_path) && get_option('mb_store_path') != $store_path ) {
+					update_option('mb_store_path', $store_path, true);
+				}				
 			} else {
 				$store_path		= "";
 			}
@@ -320,7 +324,7 @@ if(!function_exists('mbw_install_store_product')){
 								}
 								if(!empty($response[0]['content'])){
 									echo $response[0]['content']; // phpcs:ignore
-									echo '<div style="padding:10px 0;text-align:center;"><div class="button"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" target="">'.__MM("MSG_STORE_MOVE").'</a></div></div>'; // phpcs:ignore
+									echo '<div style="padding:10px 0;text-align:center;"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" style="display:inline-block;"><div class="button">'.__MM("MSG_STORE_MOVE").'</div></a></div>'; // phpcs:ignore
 								}
 							}else{
 								echo '<script>alert("'.esc_js($product['title']).' Install Failed");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store");</script>';
@@ -489,11 +493,13 @@ if(!function_exists('mbw_delete_store_product')){
 						$result_html		.= '<div style="font-size:15px;font-weight:600;">"'.$product['title'].'"</div>';
 						$result_html		.= '<div style="font-size:15px;font-weight:600;">'.__MM('MSG_DELETE_TEXT1').'</div>';
 						if(!empty($result_array)){							
-							$result_html		.= "<div>".implode("</div><div>",$result_array)."</div>";
+							$result_html		.= "<div style='padding:12px 20px 14px;border:1px solid #ddd;margin:12px 0 2px;display:inline-block;border-radius: 4px;'>";
+								$result_html		.= "<div>".implode("</div><div>",$result_array)."</div>";
+							$result_html		.= "</div>";
 						}
 					$result_html		.= '</div>';
 					echo $result_html; // phpcs:ignore
-					echo '<div style="padding:10px 0;text-align:center;"><div class="button"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" target="">'.__MM("MSG_STORE_MOVE").'</a></div></div>'; // phpcs:ignore
+					echo '<div style="padding:10px 0;text-align:center;"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" style="display:inline-block;"><div class="button">'.__MM("MSG_STORE_MOVE").'</div></a></div>'; // phpcs:ignore
 				}
 			}
 		}

@@ -344,8 +344,8 @@ if(!function_exists('mbw_get_list_template')){
 				if($data["type"]=="title_img" && $file_name!="" && intval(mbw_get_board_item("fn_is_secret"))!=1){
 					$index1			= strpos($file_name,"_")+1;
 					$file_name		= substr($file_name,$index1,strlen($file_name)-$index1);
-					if(empty($data["alt"])) $file_attr			= $file_attr.' alt="'.$file_name.'"';
-					if(empty($data["title"])) $file_attr			= $file_attr.' title="'.$file_name.'"';
+					if(empty($data["alt"])) $file_attr			= $file_attr.' alt="'.esc_attr($file_name).'"';
+					if(empty($data["title"])) $file_attr			= $file_attr.' title="'.esc_attr($file_name).'"';
 					if(empty($data["background-size"])) $data["background-size"] = "cover";
 					if(empty($data["background-position"])) $data["background-position"] = "center center";
 

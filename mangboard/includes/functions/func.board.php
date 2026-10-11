@@ -612,11 +612,13 @@ if(!function_exists('mbw_get_table_name')){
 
 		if( $mode == "comment" ){
 			if( $board_type == "custom" ){
-				if( $board_name !=" none" && strlen($board_name) > 3 && !$mstore->table_exists($board_name.$mb_table_comment_suffix) ){
-					wp_die( esc_html(__MM('MSG_EXIST_ERROR2', array($board_name.$mb_table_comment_suffix, "Table"))) );
-				}else{
-					return $board_name.$mb_table_comment_suffix;
-				}				
+				if( $board_name !=" none" && strlen($board_name) > 3 ){
+					$board_name		= mbw_value_filter($board_name,"name");
+					if( !$mstore->table_exists($board_name.$mb_table_comment_suffix) ){
+						mbw_error_message("MSG_EXIST_ERROR2", array($board_name.$mb_table_comment_suffix,"Table"),"1301");
+					}					
+				}
+				return $board_name.$mb_table_comment_suffix;
 			}else if( $board_type == "link" ){
 				$name	= $mdb->get_var($mdb->prepare("SELECT ".$mb_fields["board_options"]["fn_table_link"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_board_name2"]."=%s limit 1", $board_name));
 				if(empty($name)) $name		= $board_name;
@@ -626,11 +628,13 @@ if(!function_exists('mbw_get_table_name')){
 			}
 		}else{
 			if( $board_type == "custom" ){
-				if( $board_name !=" none" && strlen($board_name) > 3 && !$mstore->table_exists($board_name) ){
-					wp_die( esc_html(__MM('MSG_EXIST_ERROR2', array($board_name, "Table"))) );
-				}else{
-					return $board_name;
+				if( $board_name !=" none" && strlen($board_name) > 3 ){
+					$board_name		= mbw_value_filter($board_name,"name");
+					if( !$mstore->table_exists($board_name) ){
+						mbw_error_message("MSG_EXIST_ERROR2", array($board_name,"Table"),"1301");
+					}
 				}
+				return $board_name;
 			}else if( $board_type == "link" ){
 				$name	= $mdb->get_var($mdb->prepare("SELECT ".$mb_fields["board_options"]["fn_table_link"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_board_name2"]."=%s limit 1", $board_name));
 				if(empty($name)) $name		= $board_name;
@@ -1088,22 +1092,22 @@ if(!function_exists('mbw_set_log')){
 		$send_data			= array();
 		$where_data			= array();		
 
-		if(!empty($args["mode"])) $send_data[$mb_fields["logs"]["fn_mode"]]		= mbw_htmlspecialchars($args["mode"]);
-		else $send_data[$mb_fields["logs"]["fn_mode"]]							= mbw_htmlspecialchars(mbw_get_param("mode"));
+		if(!empty($args["mode"])) $send_data[$mb_fields["logs"]["fn_mode"]]		= mbw_htmlspecialchars2($args["mode"]);
+		else $send_data[$mb_fields["logs"]["fn_mode"]]							= mbw_htmlspecialchars2(mbw_get_param("mode"));
 
-		if(!empty($args["board_action"])) $send_data[$mb_fields["logs"]["fn_action"]]		= mbw_htmlspecialchars($args["board_action"]);
-		else $send_data[$mb_fields["logs"]["fn_action"]]						= mbw_htmlspecialchars(mbw_get_param("board_action"));
+		if(!empty($args["board_action"])) $send_data[$mb_fields["logs"]["fn_action"]]		= mbw_htmlspecialchars2($args["board_action"]);
+		else $send_data[$mb_fields["logs"]["fn_action"]]						= mbw_htmlspecialchars2(mbw_get_param("board_action"));
 
 		if($send_data[$mb_fields["logs"]["fn_action"]]=="") return;
 
-		if(!empty($args["board_name"])) $send_data[$mb_fields["logs"]["fn_board_name"]]		= mbw_htmlspecialchars($args["board_name"]);
-		else $send_data[$mb_fields["logs"]["fn_board_name"]]					= mbw_htmlspecialchars(mbw_get_param("board_name"));
+		if(!empty($args["board_name"])) $send_data[$mb_fields["logs"]["fn_board_name"]]		= mbw_htmlspecialchars2($args["board_name"]);
+		else $send_data[$mb_fields["logs"]["fn_board_name"]]					= mbw_htmlspecialchars2(mbw_get_param("board_name"));
 
-		if(!empty($args["user_pid"])) $send_data[$mb_fields["logs"]["fn_user_pid"]]		= mbw_htmlspecialchars($args["user_pid"]);
-		else $send_data[$mb_fields["logs"]["fn_user_pid"]]					= mbw_htmlspecialchars(mbw_get_param("user_pid"));
+		if(!empty($args["user_pid"])) $send_data[$mb_fields["logs"]["fn_user_pid"]]		= mbw_htmlspecialchars2($args["user_pid"]);
+		else $send_data[$mb_fields["logs"]["fn_user_pid"]]					= mbw_htmlspecialchars2(mbw_get_param("user_pid"));
 
-		if(!empty($args["user_name"])) $send_data[$mb_fields["logs"]["fn_user_name"]]		= mbw_htmlspecialchars($args["user_name"]);
-		else $send_data[$mb_fields["logs"]["fn_user_name"]]					= mbw_htmlspecialchars(mbw_get_param("user_name"));
+		if(!empty($args["user_name"])) $send_data[$mb_fields["logs"]["fn_user_name"]]		= mbw_htmlspecialchars2($args["user_name"]);
+		else $send_data[$mb_fields["logs"]["fn_user_name"]]					= mbw_htmlspecialchars2(mbw_get_param("user_name"));
 
 		if(strpos($send_data[$mb_fields["logs"]["fn_board_name"]], $mb_table_prefix)===0) $send_data[$mb_fields["logs"]["fn_board_name"]]		= str_replace($mb_table_prefix, "", $send_data[$mb_fields["logs"]["fn_board_name"]]);
 
@@ -1119,12 +1123,12 @@ if(!function_exists('mbw_set_log')){
 			}
 		}
 
-		$send_data[$mb_fields["logs"]["fn_type"]]							= mbw_htmlspecialchars($type);
+		$send_data[$mb_fields["logs"]["fn_type"]]							= mbw_htmlspecialchars2($type);
 		if(empty($content)) $content		= $type;
-		$send_data[$mb_fields["logs"]["fn_content"]]						= mbw_htmlspecialchars($content);
+		$send_data[$mb_fields["logs"]["fn_content"]]						= mbw_htmlspecialchars2($content);
 
-		$send_data[$mb_fields["logs"]["fn_ip"]]								= $_SERVER["REMOTE_ADDR"];
-		$send_data[$mb_fields["logs"]["fn_agent"]]							= mbw_get_vars("user_agent");
+		$send_data[$mb_fields["logs"]["fn_ip"]]								= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
+		$send_data[$mb_fields["logs"]["fn_agent"]]							= mbw_htmlspecialchars2(mbw_get_vars("user_agent"));
 		$send_data[$mb_fields["logs"]["fn_reg_date"]]						= mbw_get_current_time();
 		
 		if(mbw_is_login()){
@@ -1184,7 +1188,12 @@ if(!function_exists('mbw_echo_error_message')){
 		$args				= mbw_get_vars("shortcode_args");
 		if(!empty($args) && !empty($args['login_page'])) $login_page		= $args['login_page'];
 		if(!empty($login_page) && !empty($script) && $user_mode=="MB" && !mbw_is_login()){
-			loadStyle(MBW_PLUGIN_URL."plugins/user/css/login.css");
+			$store_path		= mbw_get_option("store_path");
+			if ( $store_path != "" && is_file(WP_CONTENT_DIR.$store_path."plugins/user/css/login.css") ) {
+				loadStyle(MBW_CONTENT_URL.$store_path."plugins/user/css/login.css");
+			}else{
+				loadStyle(MBW_PLUGIN_URL."plugins/user/css/login.css");
+			}			
 			mbw_set_result_data(array("state"=>"login","script"=>""));
 			mbw_set_option("user_login_redirect_url","reload");
 			mbw_init_user_panel("login");
@@ -1543,14 +1552,14 @@ if(!function_exists('mbw_check_cookie')){
 			$cookie_check			= $mdb->get_var($select_query.$where_query);
 
 			if(empty($cookie_check)){
-				$send_data[$mb_fields["cookies"]["fn_board_name"]]					= mbw_get_param("board_name");
+				$send_data[$mb_fields["cookies"]["fn_board_name"]]					= mbw_value_filter(mbw_get_param("board_name"));
 
-				$send_data[$mb_fields["cookies"]["fn_cookie_type"]]					= $data["type"];
-				$send_data[$mb_fields["cookies"]["fn_cookie_name"]]					= $data["name"];
-				$send_data[$mb_fields["cookies"]["fn_cookie_value"]]					= $data["value"];
+				$send_data[$mb_fields["cookies"]["fn_cookie_type"]]					= mbw_value_filter($data["type"]);
+				$send_data[$mb_fields["cookies"]["fn_cookie_name"]]					= mbw_value_filter($data["name"]);
+				$send_data[$mb_fields["cookies"]["fn_cookie_value"]]					= mbw_value_filter($data["value"]);
 
-				$send_data[$mb_fields["cookies"]["fn_ip"]]								= $_SERVER["REMOTE_ADDR"];
-				$send_data[$mb_fields["cookies"]["fn_agent"]]							= mbw_get_vars("user_agent");
+				$send_data[$mb_fields["cookies"]["fn_ip"]]								= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
+				$send_data[$mb_fields["cookies"]["fn_agent"]]							= mbw_htmlspecialchars2(mbw_get_vars("user_agent"));
 				$send_data[$mb_fields["cookies"]["fn_reg_date"]]						= mbw_get_current_time();
 				
 				$mdb->db_query("INSERT",$mb_admin_tables["cookies"], $send_data, array());
@@ -1872,15 +1881,16 @@ if(!function_exists('mbw_analytics')){
 		if($mode=="today_visit"){
 			if(mbw_get_cookie("mb_".$mode)==""){
 				if(!empty($_SERVER['HTTP_REFERER'])){
-					$ip					= $_SERVER['REMOTE_ADDR'];
+					$ip					= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
 					$parse_url		= parse_url($_SERVER['HTTP_REFERER']);
 					if(!empty($parse_url['host'])){
-						$referer_host		= $parse_url['host'];
+						$referer_host		= preg_replace( '/[^a-z0-9\-\._~\[\]%]/', '', strtolower($parse_url['host']) );
 						$referer_url		= $_SERVER['HTTP_REFERER'];
+						$referer_url		= str_replace(array('"', "'", '<', '>'), "", $referer_url);
 						$referer_log		= mbw_get_option("referer_log");
-						if($referer_log!=0 && strpos(MBW_HOME_URL, $referer_host) === false){
+						if($referer_log!=0 && stripos(MBW_HOME_URL, $referer_host) === false){
 							$referer_field		= $mstore->get_board_select_fields(array("fn_date","fn_reg_date","fn_referer_host","fn_referer_url","fn_ip","fn_agent"),"referers");
-							$mdb->query($mdb->prepare("INSERT INTO ".$mb_admin_tables["referers"]." (".implode( ",", $referer_field).") VALUES (%s,%s,%s,%s,%s,%s)",$today,mbw_get_current_time(),$referer_host,$referer_url,$ip,mbw_get_vars("user_agent")));
+							$mdb->query($mdb->prepare("INSERT INTO ".$mb_admin_tables["referers"]." (".implode( ",", $referer_field).") VALUES (%s,%s,%s,%s,%s,%s)",$today,mbw_get_current_time(),mbw_htmlspecialchars2($referer_host),mbw_htmlspecialchars2($referer_url),mbw_htmlspecialchars2($ip),mbw_htmlspecialchars2(mbw_get_vars("user_agent"))));
 						}
 					}
 				}

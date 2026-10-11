@@ -3,7 +3,7 @@
  * Plugin Name: MangBoard
  * Plugin URI: https://mangboard.com/
  * Description: MangBoard는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
- * Version: 2.4.3
+ * Version: 2.4.4
  * Author: Hometory
  * Author URI: https://www.hometory.com/
  * License: GPLv2 or later
@@ -26,11 +26,12 @@ define("MBW_AUTH_SITE_URL", $auth_site_url);
 define("MBW_CONTENT_URL", $content_url);
 define("MBW_PLUGIN_URL", $plugins_url);
 
+$content_dir	= wp_normalize_path(WP_CONTENT_DIR);
 define("MBW_PLUGIN_DIR", "mangboard");
 define("MBW_STORE_DIR", "/plugins/mangboard-store/");
-define("MBW_UPLOAD_PATH", WP_CONTENT_DIR."/uploads/mangboard/");
-define("MBW_LOG_PATH", WP_CONTENT_DIR."/uploads/mangboard/log/");
-define("MBW_PLUGIN_PATH", plugin_dir_path(__FILE__));
+define("MBW_UPLOAD_PATH", $content_dir."/uploads/mangboard/");
+define("MBW_LOG_PATH", $content_dir."/uploads/mangboard/log/");
+define("MBW_PLUGIN_PATH", wp_normalize_path(plugin_dir_path(__FILE__)));
 define("MBW_PLUGIN_FILE", __FILE__);
 
 define("MBW_SECURE_AUTH_COOKIE", "mb_sec_".md5(MBW_AUTH_SITE_URL));

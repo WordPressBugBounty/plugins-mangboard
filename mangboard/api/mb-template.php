@@ -147,7 +147,7 @@ if(mbw_get_param("mode")=="user"){
 				$content_items	= $mdb->get_results($select_query,ARRAY_A);
 				$content_html			= "";
 				foreach($content_items as $item){
-					$content		= mbw_htmlspecialchars_decode($item[$mb_fields["select_board"]["fn_content"]]);
+					$content		= ($item[$mb_fields["select_board"]["fn_content"]]);
 					if(!empty($mb_fields["select_board"]["fn_data_type"]) && !empty($item[$mb_fields["select_board"]["fn_data_type"]]) && ($item[$mb_fields["select_board"]["fn_data_type"]]=="html")){
 						$content			= mbw_htmlspecialchars_decode($content);
 						if(function_exists('mbw_replace_image_url')){

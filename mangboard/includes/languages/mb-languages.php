@@ -64,7 +64,7 @@ $mb_languages["MSG_CAPTCHA_INPUT"]	= "Enter the auto register prevention code";
 $mb_languages["MSG_TAG_INPUT"]	= "Enter a comma before tag";	
 		
 $mb_languages["MSG_UPDATE_PERMISSION_ERROR"]	= "You have no authority to update";	
-$mb_languages["MSG_UPDATE_CONFIRM"]	= "Check if you have a back-up file on added or modified files before update. Do you want to continue to update?";	
+$mb_languages["MSG_UPDATE_CONFIRM"]	= "Check if you have a back-up file on added or modified files before update. Do you want to proceed with the update?";	
 		
 $mb_languages["MSG_SELECTBOX"]	= "All";	
 

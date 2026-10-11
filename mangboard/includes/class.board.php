@@ -13,88 +13,107 @@ class MangBoard
 		global $list_model,$view_model,$write_model;
 		
 		$mb_board_name	= mbw_get_board_name();
-		if(empty($mb_board_name) && !empty($args['name'])) $mb_board_name		= mbw_value_filter($args['name']);
-		if(empty($mb_board_table_name) && !empty($mb_board_name)) $mb_board_table_name		= mbw_get_board_table_name($mb_board_name);
+		if ( empty($mb_board_name) && !empty($args['name']) ) {
+			$mb_board_name		= mbw_value_filter($args['name'], "name");
+		}
+		if ( empty($mb_board_table_name) && !empty($mb_board_name) ) {
+			$mb_board_table_name		= mbw_get_board_table_name($mb_board_name);
+		}
 
 		$mb_user_level		= mbw_get_user("fn_user_level");
 
-		if(mbw_get_param("mode")==""){
-			if(!empty($args['mode'])){
-				mbw_set_param("mode", mbw_value_filter($args['mode']));
-				if($args['mode']=="write") mbw_load_editor_plugin();
-			}else mbw_set_param("mode", "list");			
-		}
-		if(mbw_get_param("board_action")==""){
-			if(!empty($args['board_action'])) mbw_set_param("board_action", mbw_value_filter($args['board_action']));
-			else if(!empty($args['action'])) mbw_set_param("board_action", mbw_value_filter($args['action']));
-		}
-		if(mbw_get_param("board_pid")==""){			
-			if(!empty($args['board_pid'])){
-				mbw_set_param("board_pid", mbw_value_filter($args['board_pid']));
+		if ( mbw_get_param("mode") == "" ) {
+			if ( !empty($args['mode']) ) {
+				mbw_set_param("mode", mbw_value_filter($args['mode'], "name"));
+				if ( $args['mode'] == "write" ) {
+					mbw_load_editor_plugin();
+				}
+			} else {
+				mbw_set_param("mode", "list");
 			}
 		}
-		if(!isset($_GET["category1"]) && mbw_get_param("category1")==""){
-			if(!empty($args['category1'])) mbw_set_param("category1", $args['category1']);
-			if(!empty($args['category2'])) mbw_set_param("category2", $args['category2']);
-			if(!empty($args['category3'])) mbw_set_param("category3", $args['category3']);
+		if ( mbw_get_param("board_action") == "" ) {
+			if ( !empty($args['board_action']) ) {
+				mbw_set_param("board_action", mbw_value_filter($args['board_action'], "name"));
+			} else if ( !empty($args['action']) ) {
+				mbw_set_param("board_action", mbw_value_filter($args['action'], "name"));
+			}
+		}
+		if ( mbw_get_param("board_pid") == "" ) {			
+			if ( !empty($args['board_pid']) ) {
+				mbw_set_param("board_pid", mbw_value_filter($args['board_pid'], "int"));
+			}
+		}
+		if ( !isset($_GET["category1"]) && mbw_get_param("category1") == "" ) {
+			if ( !empty($args['category1']) ) {
+				mbw_set_param("category1", $args['category1']);
+			}
+			if ( !empty($args['category2']) ) {
+				mbw_set_param("category2", $args['category2']);
+			}
+			if ( !empty($args['category3']) ) {
+				mbw_set_param("category3", $args['category3']);
+			}
 			mbw_set_category_params();
 		}
-		if(!empty($args['search_field'])){
-			if(function_exists('mbw_set_search_field')) mbw_set_search_field($args);
+		if ( !empty($args['search_field']) ) {
+			if ( function_exists('mbw_set_search_field') ) {
+				mbw_set_search_field($args);
+			}
 		}
-		if(!empty($args['write_next_url'])){
-			if($args['write_next_url']=="write" || $args['write_next_url']=="referer"){
+		if ( !empty($args['write_next_url']) ) {
+			if ( $args['write_next_url'] == "write" || $args['write_next_url'] == "referer" ) {
 				mbw_set_option("write_next_page",$args['write_next_url']);
 			}else{
 				mbw_set_option("write_next_page","url");
 				mbw_set_option("write_next_url",mbw_validate_redirect(trim($args['write_next_url'])));
 			}
 		}
-		if(mbw_get_param("mode")=="view" && mbw_get_param("board_pid")==""){
+		if ( mbw_get_param("mode") == "view" && mbw_get_param("board_pid") == "" ) {
 			$where_query		= "";
 			$where_data			= array();
 			$board_field			= $mb_fields["select_board"];
 			$category1			= mbw_get_param("category1");
 			$category2			= mbw_get_param("category2");
 			$category3			= mbw_get_param("category3");
-			if(!empty($category1)){
-				if(strpos($category1, ',') !== false){
+			if ( !empty($category1) ) {
+				if ( strpos($category1, ',') !== false ) {
 					$category1_array		= explode(',',$category1);
 					$filter_array1			= array();
 					foreach($category1_array as $item){
 						$filter_array1[]		= $mdb->prepare($board_field["fn_category1"]."=%s", $item );
 					}
 					$where_data[]		= " (".implode( ' OR ', $filter_array1).")";
-				}else{
+				} else {
 					$where_data[]		= $mdb->prepare($board_field["fn_category1"]."=%s",$category1);
 				}
 			}
-			if(!empty($category2)){
-				if(strpos($category2, ',') !== false){
+			if ( !empty($category2) ) {
+				if ( strpos($category2, ',') !== false ) {
 					$category2_array		= explode(',',$category2);
 					$filter_array2			= array();
 					foreach($category2_array as $item){
 						$filter_array2[]		= $mdb->prepare($board_field["fn_category2"]."=%s", $item);
 					}
 					$where_data[]		= " (".implode( ' OR ', $filter_array2).")";
-				}else{
+				} else {
 					$where_data[]		= $mdb->prepare($board_field["fn_category2"]."=%s",$category2);
 				}
 			}
-			if(!empty($category3)){
-				if(strpos($category3, ',') !== false){
+			if ( !empty($category3) ) {
+				if ( strpos($category3, ',') !== false ) {
 					$category3_array		= explode(',',$category3);
 					$filter_array3			= array();
 					foreach($category3_array as $item){
 						$filter_array3[]		= $mdb->prepare($board_field["fn_category3"]."=%s", $item);
 					}
 					$where_data[]		= " (".implode( ' OR ', $filter_array3).")";
-				}else{
+				} else {
 					$where_data[]		= $mdb->prepare($board_field["fn_category3"]."=%s",$category3);
 				}
 			}
 
-			if(mbw_get_param("search_text")!="" && mbw_get_param("search_field")!="" && !empty($board_field[mbw_get_param("search_field")])){
+			if ( mbw_get_param("search_text") != "" && mbw_get_param("search_field") !="" && !empty($board_field[mbw_get_param("search_field")]) ) {
 				$search_field			= mbw_value_filter($board_field[mbw_get_param("search_field")]);
 				$where_data[]		= $mdb->prepare($search_field." like %s",'%'.mbw_get_param("search_text").'%');
 			}
@@ -106,38 +125,47 @@ class MangBoard
 			if(!empty($board_pid)) mbw_set_param("board_pid",$board_pid);
 		}
 
-		$board_mode			= mbw_value_filter(mbw_get_param("mode"));
-		if(mbw_get_param($board_mode."_type")=="" && !empty($args[$board_mode.'_type'])) mbw_set_param($board_mode."_type", mbw_value_filter($args[$board_mode.'_type']));
+		$board_mode			= mbw_value_filter(mbw_get_param("mode"), "name");
+		if ( mbw_get_param($board_mode."_type") == "" && !empty($args[$board_mode.'_type']) ) {
+			mbw_set_param($board_mode."_type", mbw_value_filter($args[$board_mode.'_type'],"name"));
+		}
 
-		if($board_mode=="logout"){
+		if ( $board_mode == "logout" ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo mbw_get_move_script("logout");
-		}else{
+		} else {
 			mbw_init_board_panel();
-			if(empty($args['style'])) $board_style			= "";
-			else $board_style			= ' style="'.str_replace('"',"'",esc_attr($args['style'])).'"';
+			if ( empty($args['style']) ) {
+				$board_style			= "";
+			} else {
+				$board_style			= ' style="'.str_replace('"',"'",esc_attr($args['style'])).'"';
+			}
+			
+			//게시판 스킨에서는 4개의 타입만 허용			
+			$allow_mode			= array( 'list', 'view', 'write', 'comment' );
+			$board_mode		= in_array( $board_mode, $allow_mode) ? $board_mode : 'list';
 
 			$device_type			= mbw_get_vars("device_type");
 			$class_array			= array();
-			if(!empty($args[$device_type.'_'.$board_mode.'_class'])){
+			if ( !empty($args[$device_type.'_'.$board_mode.'_class']) ) {
 				$class_array[]		= mbw_value_filter(trim($args[$device_type.'_'.$board_mode.'_class']),"class");
 			}
-			if(!empty($args[$device_type.'_class'])){
+			if ( !empty($args[$device_type.'_class']) ) {
 				$class_array[]		= mbw_value_filter(trim($args[$device_type.'_class']),"class");
 			}
-			if(!empty($args[$board_mode.'_class'])){
+			if ( !empty($args[$board_mode.'_class']) ) {
 				$class_array[]		= mbw_value_filter(trim($args[$board_mode.'_class']),"class");
 			}
-			if(!empty($args['class'])){
+			if ( !empty($args['class']) ) {
 				$class_array[]		= mbw_value_filter(trim($args['class']),"class");
 			}
-			if(!empty($_REQUEST["template_class"])){
+			if ( !empty($_REQUEST["template_class"]) ) {
 				$t_class			= str_replace(","," ",$_REQUEST["template_class"]);
 				$class_array[]		= mbw_value_filter(trim($t_class),"class");
 			}
-			if(!empty($class_array)){
+			if ( !empty($class_array) ) {
 				$template_class		= implode(" ", $class_array);
-			}else{
+			} else {
 				$template_class		= "";
 			}
 			mbw_set_vars("template_class",$template_class);
@@ -147,45 +175,64 @@ class MangBoard
 			$file_path["prefix"]		= "";
 			$file_path["mode"]		= $board_mode;
 
-			if(has_filter("mf_board_skin_path")){
+			if ( has_filter("mf_board_skin_path") ) {
 				$file_path		= apply_filters("mf_board_skin_path",$file_path);
+			}
+			//파일 경로에서 한단계 올라가는 경로를 포함하고 있을 경우 제거
+			foreach ( $file_path as $key => $value ) {
+				if ( !empty($value) ) {
+					$file_path[$key]	= str_replace(array("..","//"), "", $value);
+				}
 			}
 
 			$board_class	= "";
-			if(function_exists('mbw_get_board_class')) $board_class	= mbw_get_board_class();
+			if ( function_exists('mbw_get_board_class') ) {
+				$board_class	= mbw_get_board_class();
+			}
 
 			echo '<div id="mb_top" class="mb-'.esc_attr($device_type).'">';
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '<div id="'.esc_attr($mb_board_name).'_board" class="mb-board"'.$board_style.'>';
 				echo '<div class="'.esc_attr($board_class).'">';
-					if(!empty($template_class)){
+					if ( !empty($template_class) ) {
 						echo '<div class="'.esc_attr($template_class).'">';
 					}
-					if(mbw_get_param("list_type")=="") mbw_set_param("list_type", $mstore->get_list_type());
-					if(is_file($file_path["base"]."_header.php")){
+					if ( mbw_get_param("list_type") == "" ) {
+						mbw_set_param("list_type", $mstore->get_list_type());
+					}
+					if ( is_file($file_path["base"]."_header.php") ) {
 						require($file_path["base"]."_header.php");
 					}
 					do_action('mbw_board_header');
 					$board_header		= mbw_get_board_option("fn_board_header");
-					if(defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML){
+					if ( defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML ) {
 						$board_header	= mbw_get_htmlpurify($board_header);
 					}
-					if(!empty($board_header)) echo do_shortcode($board_header);
-					if(mbw_get_param($board_mode."_type")!="" && is_file($file_path["base"].$file_path["prefix"].mbw_get_param($board_mode."_type").".php")){
-						require($file_path["base"].$file_path["prefix"].mbw_get_param($board_mode."_type").".php");
-					}else if(is_file($file_path["base"].$file_path["prefix"].$file_path["mode"].".php")){
-						require($file_path["base"].$file_path["prefix"].$file_path["mode"].".php");
+					if ( !empty($board_header) ) {
+						echo do_shortcode($board_header);
 					}
-					if(is_file($file_path["base"]."_footer.php")){
+					
+					$file_name	= mbw_value_filter(mbw_get_param($board_mode."_type"), "name");
+					$path1		= str_replace(array("..","//"), "", wp_normalize_path($file_path["base"].$file_path["prefix"].$file_name.".php"));
+					$path2		= str_replace(array("..","//"), "", wp_normalize_path($file_path["base"].$file_path["prefix"].$file_path["mode"].".php"));
+					
+					if ( $file_name != "" && is_file($path1) ) {
+						require($path1);
+					} else if ( is_file($path2) ) {
+						require($path2);
+					}
+					if ( is_file($file_path["base"]."_footer.php") ) {
 						require($file_path["base"]."_footer.php");
 					}
 					do_action('mbw_board_footer');
 					$board_footer		= mbw_get_board_option("fn_board_footer");
-					if(defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML){
+					if ( defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML ) {
 						$board_footer	= mbw_get_htmlpurify($board_footer);
 					}
-					if(!empty($board_footer)) echo do_shortcode($board_footer);
-					if(!empty($template_class)){
+					if ( !empty($board_footer) ) {
+						echo do_shortcode($board_footer);
+					}
+					if ( !empty($template_class) ) {
 						echo '</div>';
 					}
 				echo '</div>';

@@ -1,7 +1,7 @@
 <?php 
 if(!defined('_MB_')) exit();
 do_action('mbw_dashboard_init');
-$dashboard_data		= array();
+$dashboard_data	= array();
 $mb_version			= mbw_get_option("mb_version");
 
 function mbw_dashboard_plugin_update($version){
@@ -119,7 +119,7 @@ if(version_compare($mb_version2, '2.4.8', '>=')){
 </style>
 <script type="text/javascript">
 function mbw_update_confirm(){		
-	if(confirm("<?php echo __MM('MSG_UPDATE_CONFIRM'); // phpcs:ignore ?>")){
+	if(confirm("<?php echo __MM('MSG_UPDATE_CONFIRM2'); // phpcs:ignore ?>")){
 		document.forms['mb_dashboard_update'].submit();
 	}
 }
@@ -133,13 +133,6 @@ function mbw_send_language_form(){
 		document.forms['mb_dashboard_language'].submit();
 	}
 }
-<?php
-if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_version"])){
-	if($mb_locale=="ko_KR"){
-		echo 'jQuery( document ).ready(function() {   if(confirm("'.__MM('MSG_UPDATE_LATEST_VERSION',$latest_version).'.\n'.__MM('MSG_UPDATE_CONFIRM2').'")){ mbw_send_update_form(); } });'; // phpcs:ignore
-	}
-}
-?>
 </script>
 <?php do_action('mbw_dashboard_header'); ?>
 
@@ -153,8 +146,8 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 		<div>
 			<div class="mb-dash-title"><?php echo __MW('W_MANGBOARD')." ".__MW('W_DASHBOARD'); // phpcs:ignore ?></div>
 			<div style="float:left;">
-				<div class="button"><a href="https://www.mangboard.com/manual/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank"><?php echo __MW('W_MANUAL'); // phpcs:ignore ?></a></div>
-				<div class="button"><a href="https://www.mangboard.com/tech_support/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank"><?php echo __MW('W_TECH_SUPPORT'); // phpcs:ignore ?></a></div>				
+				<a href="https://mangboard.com/manual/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank" style="display:inline-block;"><div class="button" style="padding-top:1px;"><?php echo __MW('W_MANUAL'); // phpcs:ignore ?></div></a>
+				<a href="https://mangboard.com/tech_support/?lang=<?php echo esc_attr($mb_locale);?>" target="_blank" style="display:inline-block;"><div class="button" style="padding-top:1px;"><?php echo __MW('W_TECH_SUPPORT'); // phpcs:ignore ?></div></a>
 			</div>
 			<div class="clear"></div>
 		</div>		
@@ -212,7 +205,7 @@ if(version_compare($mb_version2, '2.4.8', '<') && empty($_REQUEST["update_versio
 					
 					$update_button		= "";
 					if(version_compare($mb_version, $latest_version, '<')){
-						$update_button		= '=&gt;<div class="button"><a href="javascript:;" onclick="mbw_update_confirm();return false;">'.$latest_version." ".__MW('W_UPDATE').'</a></div>';
+						$update_button		= '=&gt;<a href="javascript:;" onclick="mbw_update_confirm();return false;" style="display:inline-block;"><div class="button">'.$latest_version." ".__MW('W_UPDATE').'</div></a>';
 						echo '<form id="mb_dashboard_update" name="mb_dashboard_update" action="'.esc_url(admin_url('admin.php?page=mbw_dashboard')).'" method="post">';
 							echo '<input type="hidden" id="mb_latest_version" name="update_version" value="'.esc_attr($latest_version).'">';
 							echo wp_nonce_field('mbw-update-key', 'mbw-update-nonce'); // phpcs:ignore

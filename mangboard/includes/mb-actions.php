@@ -478,12 +478,12 @@ if(!function_exists('mbw_plugin_trigger_check')){
 			exit;
 		}else if($mb_ext == "seditor" && mbw_get_param("se_skin")!="") {
 			if(function_exists('show_admin_bar')) show_admin_bar(false);
-			$skin_name		= mbw_value_filter(mbw_get_param("se_skin"));
+			$skin_name		= mbw_value_filter(mbw_get_param("se_skin"),"name");
 			include(MBW_PLUGIN_PATH."plugins/editors/smart/".$skin_name.".php");
 			exit;
 		}else if($mb_ext == "heditor" && mbw_get_param("se_skin")!="") {
 			if(function_exists('show_admin_bar')) show_admin_bar(false);
-			$skin_name		= mbw_value_filter(mbw_get_param("se_skin"));
+			$skin_name		= mbw_value_filter(mbw_get_param("se_skin"),"name");
 			include(MBW_PLUGIN_PATH."plugins/editors/hometory_smart/".$skin_name.".php");
 			exit;
 		}else if($mb_ext == "seditor_uploader") {
@@ -539,7 +539,7 @@ if(!function_exists('mbw_api_callback')){
 		mbw_add_trace("mbw_api_callback");
 		global $mdb,$mstore,$mb_fields,$mb_request_mode,$mb_languages,$send_data;
 		global $mb_admin_tables,$mb_board_table_name,$mb_comment_table_name;
-		$action		= mbw_get_param("action");
+		$action		= mbw_value_filter(mbw_get_param("action"), "name");
 		$file_name	= str_replace( "_", "-", $action).".php";
 
 		if($action=="mb_uploader"){

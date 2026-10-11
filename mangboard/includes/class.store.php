@@ -121,13 +121,40 @@ Class MStore
 	}
 	public function check_post_param(){
 		if(is_array($this->params)){
-			$check_param	= array("board_name","board_pid","page","board_page","mode","board_action","order_by","order_type","user_pid","parent_pid","parent_user_pid","page_size","lang","mb_locale","list_type","view_type","write_type","comment_type","page_id","start_price","end_price","template","template_name","idx","step","search_field","se_field1","se_field2","se_field3","se_field4","se_field5","search_add_field1","search_add_field2","search_add_field3","date_field","billing_id","order_id","cart_id");
-
+			foreach($this->params as $key => $value){				
+				if ( !empty($value) ) {
+					$last_pos = strrpos( $key, '_' );
+					if ( $last_pos !== false ) {
+						$last_part = substr( $key, $last_pos + 1 );
+					} else {
+						$last_part = $key;
+					}
+					if ( $last_part == "type" ) {
+						if ( $key == "file_type" ) {
+							$this->params[$key]		= mbw_value_filter($value, "mime_type");						
+						} else if ( $key != "content_type" ) {		//content_type 변수에는 다양한 사용자 값이 들어갈 수 있어서 필터 검사에서 제외 필요
+							$this->params[$key]		= mbw_value_filter($value);
+						}						
+					} else if ( $last_part == "action" || $last_part == "pid" || $last_part == "gid" || strpos($last_part, 'field') === 0 ) {
+						$this->params[$key]			= mbw_value_filter($value);
+					} else if ( $last_part == "id" ) {
+						$this->params[$key]			= mbw_value_filter($value, "id");
+					}
+				}
+			}
+			
+			$check_param	= array("board_name","page","board_page","mode","order_by","page_size","lang","mb_locale","start_price","end_price","template","template_name","idx","step");
 			foreach($check_param as $key){
-				if(!empty($this->params[$key])){
+				if ( !empty($this->params[$key]) ) {
 					$this->params[$key]			= mbw_value_filter($this->params[$key]);
 				}
 			}
+			
+			//회원 이름에서 특수기호 제거: (, ), =
+			if ( !empty($this->params["user_name"]) ) {		
+				$this->params["user_name"]			= preg_replace('/[()=]/', '', $this->params["user_name"]);
+			}
+			
 			$text_param		= array("search_text","stag","search_add_text1","search_add_text2","search_add_text3","redirect_to","category1","category2","category3","stype1","stype2","stype3","se_text1","se_text2","se_text3","se_text4","se_text5","search_name");
 			foreach($text_param as $key){
 				if(!empty($this->params[$key])){
@@ -801,9 +828,14 @@ Class MStore
 			if(empty($skin_name)){
 				return;
 			}
+			$store_path		= mbw_get_option("store_path");
+			if ( !empty($store_path) ) {
+				$store_path		= str_replace("..","",$store_path);
+			}
+			$skin_name		= str_replace("..","",$skin_name);
 			$skin_path		= MBW_PLUGIN_PATH;
 			$skin_url			= MBW_PLUGIN_URL;
-			$store_path		= mbw_get_option("store_path");
+			
 			//테마에 망보드 스킨 폴더에 스킨이 존재하면 테마에 있는 스킨 적용			
 			if ( is_dir(get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/skins/".$skin_name."/") ) {
 				$skin_path		= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/";
@@ -848,6 +880,7 @@ Class MStore
 			}
 
 			if ( !empty($model_name) ) {
+				$model_name		= str_replace("..","",$model_name);
 				if( $store_path != "" && is_file(WP_CONTENT_DIR.$store_path."models/".$model_name.".php") ) {
 					$model_path		= WP_CONTENT_DIR.$store_path."models/".$model_name.".php";
 				} else {
@@ -913,10 +946,10 @@ Class MStore
 	}
 	public function set_board_languages($lang=""){
 		global $mb_languages,$mb_words;
-		$locale		= $this->get_option("locale");
+		$locale		= mbw_value_filter($this->get_option("locale"), "name");
 
 		if(!empty($lang) && $lang!=$locale){
-			$locale		= $lang;
+			$locale		= mbw_value_filter($lang, "name");
 			mbw_set_option("locale",$locale);
 			if(is_file(MBW_PLUGIN_PATH."includes/languages/mb-languages-".$locale.".php")){
 				require(MBW_PLUGIN_PATH."includes/languages/mb-languages-".$locale.".php");

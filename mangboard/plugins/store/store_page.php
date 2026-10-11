@@ -106,7 +106,7 @@ if(!empty($_GET["install_product"])){
 			mbw_install_store_product($product_pid,$response);			
 		}else if(!empty($response[0]['content'])){
 			echo $response[0]['content']; // phpcs:ignore
-			echo '<div style="padding:10px 0;text-align:center;"><div class="button"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" target="">'.__MM("MSG_STORE_MOVE").'</a></div></div>'; // phpcs:ignore
+			echo '<div style="padding:10px 0;text-align:center;"><a href="'.esc_url(admin_url('admin.php')).'?page=mbw_store" style="display:inline-block;"><div class="button">'.__MM("MSG_STORE_MOVE").'</div></a></div>'; // phpcs:ignore
 		}else{
 			echo '<div class="mb-board"><div class="message-panel"><div style="font-size:15px;font-weight:600;">MangBoard Store Install Error : 502</div></div></div>';	
 		}
@@ -295,6 +295,11 @@ function mbw_set_store_category(category){
 		}
 	}
 	update_option("mb_install_product",$install_product_count1.":".$install_product_count2, false);
+	
+	$store_path	= get_option('mb_store_path');	
+	if ( empty($store_path) && !is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
+		update_option('mb_store_path', "none", true);
+	}
 
 	$html	.= '</div></div>';
 	echo $html; // phpcs:ignore

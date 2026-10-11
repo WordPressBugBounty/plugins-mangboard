@@ -990,13 +990,16 @@ if(!function_exists('mbw_get_list_setup_data')){
 }
 if(!function_exists('mbw_get_template_path')){
 	function mbw_get_template_path($name,$type="plugin",$ext="php"){
-		$add_name		= mbw_get_param("tpl_name");
+		$name			= str_replace("..","",$name);
+		$add_name		= mbw_value_filter(mbw_get_param("tpl_name"), "name");
 		if($type=='theme'){
 			if(!empty($add_name)) {
 				$path2			= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/templates/".$name.$add_name.".".$ext;
+				$path2			= str_replace("..","",$path2);
 				if(is_file($path2)) return $path2;
 			}
 			$path1			= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/templates/".$name.".".$ext;
+			$path1			= str_replace("..","",$path1);
 			if(is_file($path1)) return $path1;
 		}		
 		if ( mbw_get_option("store_path") !="" ) {
@@ -1009,15 +1012,18 @@ if(!function_exists('mbw_get_template_path')){
 		}		
 		if(!empty($add_name)) {
 			$path2			= $template_path."templates/".$name.$add_name.".".$ext;
+			$path2			= str_replace("..","",$path2);
 			if(is_file($path2)) return $path2;
 		}
 		$path1			= $template_path."templates/".$name.".".$ext;
+		$path1			= str_replace("..","",$path1);
 		if(is_file($path1)) return $path1;
 		else return false;
 	}
 }
 if(!function_exists('mbw_get_template_url')){
 	function mbw_get_template_url($name,$type="plugin",$ext="php"){
+		$name			= str_replace("..","",$name);
 		if($type=='theme'){
 			$path					= "/".MBW_PLUGIN_DIR."/templates/".$name.".".$ext;
 			if(is_file(get_stylesheet_directory().$path)) return get_stylesheet_directory_uri().$path;

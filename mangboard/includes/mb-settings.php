@@ -5,14 +5,19 @@ if(!function_exists('mbw_get_require_path')){
 			$path		= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/".$dir_name;
 		} else {
 			$path		= MBW_PLUGIN_PATH.$dir_name;
-		}
-		if ( $dir_name == "includes/install/plugins/" && is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
+		}		
+		if ( get_option('mb_store_path') != "" ) {
+			$add_path		= get_option('mb_store_path');
+			if ( $add_path == "none" ) {
+				$add_path	= "";
+			}
+		}else if ( $dir_name == "includes/install/plugins/" && is_dir(WP_CONTENT_DIR.MBW_STORE_DIR) ) {
 			$add_path		= MBW_STORE_DIR;
 		}else{
 			$add_path		= mbw_get_option("store_path");
-		}
+		}		
 		
-		$path							= rtrim($path,'/\\');
+		$path							= rtrim(wp_normalize_path($path), '/\\');
 		$require_path				= array();
 		if(!is_dir($path)) return $require_path;
 		$dir							= dir($path);
@@ -33,7 +38,7 @@ if(!function_exists('mbw_get_require_path')){
 		
 			if ( !empty($add_path) ) {
 				$path							= WP_CONTENT_DIR.$add_path.$dir_name;
-				$path							= rtrim($path,'/\\');
+				$path							= rtrim(wp_normalize_path($path), '/\\');
 				if(!is_dir($path)) return $require_path;
 				$dir							= dir($path);
 				
@@ -49,10 +54,9 @@ if(!function_exists('mbw_get_require_path')){
 						}
 					}
 				}
-			}
+			}		
 			
-			
-		}else if ( $type=="file" || $type=="theme_file" ) {
+		} else if ( $type=="file" || $type=="theme_file" ) {
 			while (false !== ($entry = $dir->read())){
 				if(strpos($entry,'.')!==0 && is_file($path."/".$entry)){
 					$key			= str_replace(array(" ","-",".php","."), "_", $entry);
@@ -61,7 +65,7 @@ if(!function_exists('mbw_get_require_path')){
 			}
 			if ( !empty($add_path) ) {
 				$path							= WP_CONTENT_DIR.$add_path.$dir_name;
-				$path							= rtrim($path,'/\\');
+				$path							= rtrim(wp_normalize_path($path), '/\\');
 				if(!is_dir($path)) return $require_path;
 				$dir							= dir($path);
 				

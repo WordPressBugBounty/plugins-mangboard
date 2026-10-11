@@ -19,7 +19,7 @@ if(!function_exists('mbw_editor_wp_template')){
 			mbw_load_editor_w();
 		}
 		mbw_set_board_option("fn_editor_type","W");
-		if(empty($data["height"])) $data["height"]		= '360px';
+		if(empty($data["height"])) $data["height"]		= '360';
 
 		if(!empty($data["editor_id"])){
 			$editor_id			= $data["editor_id"];
@@ -27,8 +27,8 @@ if(!function_exists('mbw_editor_wp_template')){
 			$editor_id			= "we_content";
 		}
 
-		$settings		= array('textarea_name' => $data["item_name"],'editor_height' =>$data["height"] ,'media_buttons' => false,'tinymce' => true,'quicktags' => false);
-		wp_editor(mbw_htmlspecialchars_decode($data['value']), $editor_id, $settings);
+		$settings		= array('textarea_name' => mbw_value_filter($data["item_name"]), 'editor_height' =>mbw_value_filter($data["height"],"int"), 'media_buttons' => false, 'tinymce' => true, 'quicktags' => false);
+		wp_editor(mbw_htmlspecialchars_decode($data['value']), mbw_value_filter($editor_id), $settings);
 		echo '<input type="hidden" name="data_type" id="data_type" value="html" />';
 	}
 }

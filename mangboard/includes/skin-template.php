@@ -92,13 +92,13 @@ if(!function_exists('mbw_get_list_template')){
 				$template_start	.= '<span class="faq-q">&nbsp;Q</span>';				
 			}else if($data["type"]=='title_faq_icon'){
 				if(!empty($data["onclick"])){
-					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.mbw_get_board_item('fn_pid').'"';
+					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.esc_attr(mbw_get_board_item('fn_pid')).'"';
 				}else{
 					$args	= mbw_get_vars("shortcode_args");
 					if(!empty($args) && !empty($args["post_id"])){
 						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
 					}else if(!empty($data["link"]) && !empty($link_url)){
-						$title_url		= ' href="'.$link_url.'"';
+						$title_url		= ' href="'.esc_url($link_url).'"';
 					}else{
 						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
 					}
@@ -125,13 +125,13 @@ if(!function_exists('mbw_get_list_template')){
 					$add_comment		= "<span class='cmt-count'> [<span class='cmt-count-num'>".mbw_get_board_item("fn_comment_count")."</span>]</span>";
 				}
 				if(!empty($data["onclick"])){
-					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.mbw_get_board_item('fn_pid').'"';
+					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.esc_attr(mbw_get_board_item('fn_pid')).'"';
 				}else{
 					$args	= mbw_get_vars("shortcode_args");
 					if(!empty($args) && !empty($args["post_id"])){
 						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
 					}else if(!empty($data["link"]) && !empty($link_url)){
-						$title_url		= ' href="'.$link_url.'"';
+						$title_url		= ' href="'.esc_url($link_url).'"';
 					}else{
 						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
 					}
@@ -169,13 +169,13 @@ if(!function_exists('mbw_get_list_template')){
 					$add_start_icon		= $add_start_icon.' <img class="list-i-secret" alt="secret" src="'.MBW_SKIN_URL.'images/icon_secret.gif" /> ';					
 								
 				if(!empty($data["onclick"])){
-					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.mbw_get_board_item('fn_pid').'"';
+					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.esc_attr(mbw_get_board_item('fn_pid')).'"';
 				}else{
 					$args	= mbw_get_vars("shortcode_args");
 					if(!empty($args) && !empty($args["post_id"])){
 						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
 					}else if(!empty($data["link"]) && !empty($link_url)){
-						$title_url		= ' href="'.$link_url.'"';
+						$title_url		= ' href="'.esc_url($link_url).'"';
 					}else{
 						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
 					}
@@ -318,7 +318,7 @@ if(!function_exists('mbw_get_list_template')){
 				}
 
 				if(!empty($data["onclick"])){
-					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.mbw_get_board_item('fn_pid').'"';
+					$title_url		= ' href="javascript:;" onclick="'.$data["onclick"].';return false;" class="list_'.esc_attr(mbw_get_board_item('fn_pid')).'"';
 				}else{
 					$add_url		= "";
 					if(mbw_get_param("list_type")=="calendar"){
@@ -332,7 +332,7 @@ if(!function_exists('mbw_get_list_template')){
 						if(!empty($args) && !empty($args["post_id"])){
 							$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
 						}else if(!empty($data["link"]) && !empty($link_url)){
-							$title_url		= ' href="'.$link_url.'"';
+							$title_url		= ' href="'.esc_url($link_url).'"';
 						}else{
 							$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
 						}
@@ -349,8 +349,8 @@ if(!function_exists('mbw_get_list_template')){
 				if($data["type"]=="title_img" && $file_name!="" && intval(mbw_get_board_item("fn_is_secret"))!=1){
 					$index1			= strpos($file_name,"_")+1;
 					$file_name		= substr($file_name,$index1,strlen($file_name)-$index1);
-					if(empty($data["alt"])) $file_attr			= $file_attr.' alt="'.$file_name.'"';
-					if(empty($data["title"])) $file_attr			= $file_attr.' title="'.$file_name.'"';
+					if(empty($data["alt"])) $file_attr			= $file_attr.' alt="'.esc_attr($file_name).'"';
+					if(empty($data["title"])) $file_attr			= $file_attr.' title="'.esc_attr($file_name).'"';
 					if(empty($data["background-size"])) $data["background-size"] = "cover";
 					if(empty($data["background-position"])) $data["background-position"] = "center center";
 

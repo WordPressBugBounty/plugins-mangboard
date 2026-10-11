@@ -183,6 +183,9 @@ if(!function_exists('mbw_get_input_template')){
 					if($item_type=='img'){						
 						$template_start	= '<img'.$data["ext"].__STYLE("width:".$data["width"].";height:".$data["height"].";".$data["style"]).' src="'.esc_url($img_url).'"'.$file_attr.' />';
 					}else if($item_type=='img_link'){
+						if(has_filter('mf_tpl_img_link')){
+							$img_link			= apply_filters("mf_tpl_img_link", $img_link, mbw_get_board_item('fn_pid'));
+						}
 						$add_attr		= "";
 						if(mbw_get_board_item('fn_title',false)!="") $add_attr	= 'title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'"';
 						$template_start	= '<a href="'.esc_url($img_link).'" target="_blank"'.$add_attr.'><img'.$data["ext"].__STYLE("width:".$data["width"].";height:".$data["height"].";".$data["style"]).' src="'.esc_url($img_url).'"'.$file_attr.' /></a>';
@@ -191,9 +194,8 @@ if(!function_exists('mbw_get_input_template')){
 					}else if($item_type=='img_masonry'){
 						$template_start	= '<img'.$data["ext"].__STYLE("width:".$data["width"].";min-height:".$data["height"].";".$data["style"]).' src="'.esc_url($img_url).'"'.$file_attr.'/>';
 					}else if($item_type=='img_ratio_link'){
-						//이미지 에디터가 설치되어 있으면 링크 주소 변경 2025-11-17
-						if(mbw_is_admin_page() && mbw_get_param("page")=="mbw_files" && defined('MBW_IMAGE_EDITOR')){
-							$img_link		= admin_url('admin.php')."?page=mbw_".MBW_IMAGE_EDITOR."&mode=write&board_action=write&file_pid=".mbw_get_board_item('fn_pid');
+						if(has_filter('mf_tpl_img_ratio_link')){
+							$img_link			= apply_filters("mf_tpl_img_ratio_link", $img_link, mbw_get_board_item('fn_pid'));
 						}
 						$add_attr		= "";
 						if(mbw_get_board_item('fn_title',false)!="") $add_attr	= 'title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'"';
@@ -318,7 +320,7 @@ if(!function_exists('mbw_get_input_template')){
 			$i_name				= mbw_set_form_name($data["item_name"]);
 			$t_name				= $i_name;
 			if($count>1) $t_name	= $t_name."[]";
-			$template_start	.= '<input name="'.$i_name.'" value="0" type="hidden" />';
+			$template_start	.= '<input name="'.esc_attr($i_name).'" value="0" type="hidden" />';
 			for($i;$i<$count;$i++){
 				if(!isset($t_label[$i])) $t_label[$i]		= "";
 
@@ -381,12 +383,12 @@ if(!function_exists('mbw_get_input_template')){
 		}else if(strpos($item_type,'scheme_link')===0){
 			$scheme_link		= $data["value"];
 			if($item_type=="scheme_link_tel"){
-				$template_start	.= '<a href="tel:'.esc_attr($scheme_link).'"><span>'.($scheme_link).'</span></a>';
+				$template_start	.= '<a href="tel:'.esc_attr($scheme_link).'"><span>'.esc_html($scheme_link).'</span></a>';
 			}else if($item_type=="scheme_link_mail"){
-				$template_start	.= '<a href="mailto:'.esc_attr($scheme_link).'"><span>'.($scheme_link).'</span></a>';
+				$template_start	.= '<a href="mailto:'.esc_attr($scheme_link).'"><span>'.esc_html($scheme_link).'</span></a>';
 			}else{
 				$scheme		= str_replace("scheme_link_", "", $item_type);
-				$template_start	.= '<a href="'.esc_attr($scheme).':'.esc_attr($scheme_link).'"><span>'.($scheme_link).'</span></a>';
+				$template_start	.= '<a href="'.esc_attr($scheme).':'.esc_attr($scheme_link).'"><span>'.esc_html($scheme_link).'</span></a>';
 			}
 		}else if($item_type=='url_link'){
 			$link_url	= $data["value"];

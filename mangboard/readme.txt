@@ -1,11 +1,11 @@
 ﻿=== Mang Board===
 Contributors: kitae-park
-Donate link: https://www.mangboard.com/donate/
+Donate link: https://mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 5.5.0
 Tested up to: 7.1
 Requires PHP: 5.5.1
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,25 +48,23 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 **Mang Board Support**
 
-* Homepage: [https://www.mangboard.com](https://www.mangboard.com)
-* Store: [https://www.mangboard.com/store/](https://www.mangboard.com/store/)
+* Homepage: [https://mangboard.com](https://mangboard.com)
+* Store: [https://mangboard.com/store/](https://mangboard.com/store/)
 * Demo1: [https://demo.mangboard.com](https://demo.mangboard.com)
 * Demo2: [https://demo2.mangboard.com](https://demo2.mangboard.com)
-* Manual: [https://www.mangboard.com/manual/](https://www.mangboard.com/manual/)
+* Manual: [https://mangboard.com/manual/](https://mangboard.com/manual/)
 
 == Installation ==
 
 **Mang Board Installation (English)**
 
-* Upload the entire "mangboard" folder to the "/wp-content/plugins/" directory.
-* Activate the plugin through the 'Plugins' menu in WordPress.
+* Go to WordPress Admin > Plugins > Add New, and search for "mangboard".
+* In the search results, click "Install Now" on the MangBoard plugin, and then click "Activate" to enable the plugin.
 
 **Mang Board Installation (Korean)**
 
-* 플러그인 압축파일을 다운로드 받아 워드프레스 “/wp-content/plugins” 폴더에 업로드 합니다
-* “/wp-content/plugins/mangboard” 폴더가 보이시면 워드프레스 설치된 플러그인 목록에 나타납니다
-* 워드프레스 관리자 화면에서 “플러그인>설치된 플러그인” 목록에서 “Mang Board WP” 플러그인을 찾아 활성화 버튼을 클릭합니다
-* 왼쪽에 있는 워드프레스 관리자 메뉴에서 “Mang Board” 메뉴가 보이시면 설치가 정상적으로 완료 되었습니다
+* 워드프레스 관리자 > 플러그인 > 플러그인 추가 메뉴에서 mangboard 를 검색합니다.
+* 검색결과에서 MangBoard 플러그인 "설치하기" 버튼을 클릭하여 플러그인을 설치한 후 "활성화" 버튼을 클릭하여 플러그인을 활성화합니다.
 
 
 == Frequently Asked Questions ==
@@ -79,7 +77,7 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 
 * PHP version 5.4.0 or greater (PHP 8.3 or greater is recommended)
 * MySQL version 5.0 or greater / MariaDB version 10.0 or greater (UTF-8)
-* WordPress 4.0 or greater
+* WordPress 5.5 or greater
 
 = How to Add a MangBoard Bulletin Board (English) =
 
@@ -121,6 +119,11 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.5.5 (2.4.4) =
+* 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 취약점 수정]
+* 일부 환경(윈도우 서버)에서 스토어 연결기능을 통해 설치한 상품을 불러오지 못하는 문제 수정
+* 데이터 보안 필터 기능 수정
 
 = 2.5.4 (2.4.3) =
 * 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 취약점 수정]

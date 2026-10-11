@@ -37,8 +37,8 @@ if(!function_exists('loadStyle')){
 				$temp		= substr( $src, strrpos($src, '/mangboard') + 11 );
 				$temp		= str_replace( array(".min.",".","_"), "/", $temp);
 				$parts		= explode( '/', $temp );
-				if ( count( $parts ) > 6 ) {
-					$parts			= array_slice( $parts, -6 );
+				if ( count( $parts ) > 7 ) {
+					$parts			= array_slice( $parts, -7 );
 				} 
 				$handle	= implode( '-', $parts );
 			}else{
@@ -592,7 +592,7 @@ if(!function_exists('mbw_get_resize_responsive')){
 if(!function_exists('mbw_get_dir_entry')){
 	function mbw_get_dir_entry($dir_name,$add_except=array(),$order="desc"){
 		$path					= MBW_PLUGIN_PATH.$dir_name;
-		$path					= rtrim($path,'/\\');
+		$path					= rtrim(wp_normalize_path($path),'/\\');
 		$items					= array();
 		if ( is_dir($path) ) {
 			$dir					= dir($path);
@@ -607,10 +607,10 @@ if(!function_exists('mbw_get_dir_entry')){
 			}
 		}
 		
-		$store_path					= mbw_get_option("store_path");
+		$store_path				= mbw_get_option("store_path");
 		if ( !empty($store_path) ) {
 			$path					= WP_CONTENT_DIR.$store_path.$dir_name;
-			$path					= rtrim($path,'/\\');
+			$path					= rtrim(wp_normalize_path($path),'/\\');
 			if ( is_dir($path) ) {
 				$dir					= dir($path);
 				$except				= array_merge(array(".",".."),$add_except);
@@ -635,7 +635,7 @@ if(!function_exists('mbw_get_dir_entry')){
 if(!function_exists('mbw_get_file_entry')){
 	function mbw_get_file_entry($dir_name,$add_except=array(),$order="desc"){
 		$path					= MBW_PLUGIN_PATH.$dir_name;
-		$path					= rtrim($path,'/\\');
+		$path					= rtrim(wp_normalize_path($path),'/\\');
 		$items					= array();
 		if ( is_dir($path) ) {
 			$dir					= dir($path);
@@ -653,7 +653,7 @@ if(!function_exists('mbw_get_file_entry')){
 		$store_path					= mbw_get_option("store_path");
 		if ( !empty($store_path) ) {
 			$path					= WP_CONTENT_DIR.$store_path.$dir_name;
-			$path					= rtrim($path,'/\\');
+			$path					= rtrim(wp_normalize_path($path),'/\\');
 			if ( is_dir($path) ) {			
 				$dir					= dir($path);
 				$except				= array_merge(array(".",".."),$add_except);
@@ -722,36 +722,25 @@ if(!function_exists('mbw_set_format')){
 	}
 }
 if(!function_exists('mbw_array_sort')){
-	function mbw_array_sort($array, $order_by, $order_type='desc'){
-		$result_array		= array();
-		$sortable_array	= array();
-
-		if (is_array($array) && count($array) > 0) {
-			foreach ($array as $key => $value) {
-				if (is_array($value)) {
-					foreach ($value as $key2 => $value2) {
-						if ($key2 == $order_by) {
-							$sortable_array[$key] = $value2;
-						}
-					}
-				} else {
-					$sortable_array[$key] = $value;
-				}
-			}
-			switch (strtolower($order_type)) {
-				case 'asc':
-					asort($sortable_array);
-				break;
-				case 'desc':
-					arsort($sortable_array);
-				break;
-			}
-			foreach ($sortable_array as $key => $value) {
-				$result_array[$key] = $array[$key];
-			}
-		} else return $array;
-		return $result_array;
-	}
+	function mbw_array_sort($array, $order_by, $order_type = 'desc') {
+        if (!is_array($array) || empty($array)) {
+            return array();
+        }
+        $order_type = strtolower($order_type);
+        usort($array, function($a, $b) use ($order_by, $order_type) {
+            $valA = isset($a[$order_by]) ? $a[$order_by] : null;
+            $valB = isset($b[$order_by]) ? $b[$order_by] : null;
+            if ($valA === $valB) {
+                return 0;
+            }
+            if ($order_type === 'asc') {
+                return ($valA < $valB) ? -1 : 1;
+            } else {
+                return ($valA > $valB) ? -1 : 1;
+            }
+        });
+        return $array;
+    }
 }
 if(!function_exists('mbw_convert_to_bytes')){
 	function mbw_convert_to_bytes($value,$output='b'){
@@ -864,6 +853,8 @@ if(!function_exists('mbw_value_filter')){
 			$pattern		= "/[^0-9a-zA-Z\/\.\_\-\+\&]/";		//영문,숫자,/,.,-,_,+,&
 		}else if($type=='name'){
 			$pattern		= "/[^0-9a-zA-Z\_\-]/";		//영문,숫자,-,_
+		}else if($type=='id'){
+			$pattern		= "/[^0-9a-zA-Z\_\-\,\.\+\@]/";		//영문,숫자,-,_,.,+,@
 		}else if($type=='class'){
 			$pattern		= "/[^0-9a-zA-Z\s\_\-]/";		//영문,숫자,공백,-,_
 		}else if($type=='attr'){
