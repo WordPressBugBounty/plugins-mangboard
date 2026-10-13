@@ -73,7 +73,20 @@ if(!function_exists('mbw_filter_board_item')){
 			if( !empty($mb_fields["select_board"]["fn_data_type"]) && !empty($data[$mb_fields["select_board"]["fn_data_type"]]) && $data[$mb_fields["select_board"]["fn_data_type"]] == "html" ){
 				//html 에디터로 작성된 글만 디코드
 				$item["value"]			= mbw_htmlspecialchars_decode($item["value"]);
-				if((mbw_get_param("mode")=="list" || mbw_get_param("mode")=="view") && function_exists('mbw_replace_image_url')) $item["value"]			= mbw_replace_image_url($item["value"]);
+				
+				//관리자가 작성한 게시물이 아닐 경우 htmlpurify 함수를 이용하여 보안처리
+				$item_level				= intval(mbw_get_board_item("fn_level", false));
+				if($item_level<10){					
+					if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
+						$item["value"]		= mbw_get_htmlpurify($item["value"]);
+					} else {
+						$item["value"]		= wp_kses_post($item["value"]);
+					}
+				}
+				
+				if((mbw_get_param("mode")=="list" || mbw_get_param("mode")=="view") && function_exists('mbw_replace_image_url')){
+					$item["value"]			= mbw_replace_image_url($item["value"]);
+				}
 			}else if( $item["type"] != "comment" && mbw_get_param("mode") != "write" ){
 				$item["value"]			= nl2br($item["value"]);
 			}

@@ -40,7 +40,7 @@ if(!function_exists('mbw_get_prev_next_html')){
 				$check_field1		= "fn_gid";
 				$check_field2		= "fn_reply";
 			}else{
-				$check_field1		= mbw_get_param("order_by");
+				$check_field1		= mbw_value_filter(mbw_get_param("order_by"),"name");				
 				if(empty($check_field1)){
 					$check_field1		= "fn_gid";
 				}else if(strpos($check_field1, "fn_")!==0){
@@ -65,12 +65,14 @@ if(!function_exists('mbw_get_prev_next_html')){
 			}
 
 			if(isset($mb_fields["select_board"][$check_field1])){
+				$value1			= mbw_get_board_item($check_field1,false);
+				$value2			= mbw_get_board_item($check_field2,false);
 				if($check_field1==$check_field2){ //1차 단순 정렬일 경우
-					$prev_add_query	= "((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign1."'".mbw_get_board_item($check_field1,false)."'))";
-					$next_add_query	= "((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign2."'".mbw_get_board_item($check_field1,false)."'))";
+					$prev_add_query	= $mdb->prepare("((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign1."%s))", $value1);
+					$next_add_query	= $mdb->prepare("((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign2."%s))", $value1);
 				}else { //2차 정렬일 경우
-					$prev_add_query	= "((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign1."'".mbw_get_board_item($check_field1,false)."') or (".$join_query.$mb_fields["select_board"][$check_field1]."='".mbw_get_board_item($check_field1,false)."' AND ".$join_query.$mb_fields["select_board"][$check_field2].$check_sign3.mbw_get_board_item($check_field2,false)."))";
-					$next_add_query	= "((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign2."'".mbw_get_board_item($check_field1,false)."') or (".$join_query.$mb_fields["select_board"][$check_field1]."='".mbw_get_board_item($check_field1,false)."' AND ".$join_query.$mb_fields["select_board"][$check_field2].$check_sign4.mbw_get_board_item($check_field2,false)."))";
+					$prev_add_query	= $mdb->prepare("((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign1."%s) or (".$join_query.$mb_fields["select_board"][$check_field1]."=%s AND ".$join_query.$mb_fields["select_board"][$check_field2].$check_sign3."%s))", $value1, $value1, $value2);
+					$next_add_query	= $mdb->prepare("((".$join_query.$mb_fields["select_board"][$check_field1].$check_sign2."%s) or (".$join_query.$mb_fields["select_board"][$check_field1]."=%s AND ".$join_query.$mb_fields["select_board"][$check_field2].$check_sign4."%s))", $value1, $value1, $value2);
 				}
 			}else{
 				$prev_add_query	= "1=1";
@@ -150,12 +152,12 @@ if(!function_exists('mbw_get_prev_next_template')){
 		else if($mode=="next") $name		= $mb_languages["W_NEXT"];
 		else $name		= "-";
 
-		$template_start	.= '<th scope="row"><span>'.$name.'</span></th>';
+		$template_start	.= '<th scope="row"><span>'.esc_html($name).'</span></th>';
 		for($i=0;$i<$pn_count;$i++){
 			$item_name	= str_replace('fn_',"",$pn_fields[$i]);
 			$template_start	.= '<td class="pn_'.esc_attr($item_name).'">';
 			
-			$item_value	= $data[$mb_fields["select_board"][$pn_fields[$i]]];
+			$item_value	= mbw_htmlspecialchars_decode($data[$mb_fields["select_board"][$pn_fields[$i]]]);			
 			if(has_filter('mf_board_sitem')){
 				$filter_item	= apply_filters("mf_board_sitem", array("value"=>$item_value,"field"=>$pn_fields[$i],"type"=>"prev_next"), $data);
 				$item_value	= $filter_item["value"];
@@ -164,18 +166,18 @@ if(!function_exists('mbw_get_prev_next_template')){
 				$filter_item	= apply_filters("mf_board_item", array("value"=>$item_value,"field"=>$pn_fields[$i],"type"=>"prev_next"), $data);
 				$item_value	= $filter_item["value"];
 			}
-
+			$item_value		= strip_tags($item_value);
 			if($pn_fields[$i]=="fn_title"){
 				$add_start_icon	= "";
 				$add_end_icon	= "";
-				if(!empty($mb_fields["select_board"]["fn_is_secret"]) && intval($data[$mb_fields["select_board"]["fn_is_secret"]])==1)
+				if(!empty($mb_fields["select_board"]["fn_is_secret"]) && intval($data[$mb_fields["select_board"]["fn_is_secret"]])==1){
 					$add_start_icon		= $secret_icon;
-
-				$template_start	.= '<a href="'.mbw_get_url(array('vid'=>$data[$mb_fields["select_board"]["fn_pid"]])).'" title="'.esc_attr(strip_tags($data[$mb_fields["select_board"]["fn_title"]])).'"><span>'.$add_start_icon.$item_value.$add_end_icon.'</span></a>';
+				}
+				$template_start	.= '<a href="'.mbw_get_url(array('vid'=>$data[$mb_fields["select_board"]["fn_pid"]])).'" title="'.esc_attr($item_value).'"><span>'.$add_start_icon.esc_html($item_value).$add_end_icon.'</span></a>';
 			}else if($pn_fields[$i]=="fn_reg_date"){
-				$template_start	.= '<span>'.substr($item_value,0,10).'</span>';
+				$template_start	.= '<span>'.esc_html(substr($item_value,0,10)).'</span>';
 			}else{
-				$template_start	.= '<span>'.$item_value.'</span>';
+				$template_start	.= '<span>'.esc_html($item_value).'</span>';
 			}
 			$template_start	.= '</td>';
 		}

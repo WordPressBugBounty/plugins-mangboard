@@ -510,7 +510,15 @@ Class MStore
 						$field		= mbw_value_filter($field,"name");						
 						if( !empty($field) ){
 							if($data["sign"]=="in"){
-								$where_query		= $data["prefix"].$join_query.$field." ".$data["sign"]." ".$data["value"]." ".$data["suffix"];		//여기는 prepare 처리하면 안됨, 여러 문자열 데이터가 쉼표로 구분되서 넘어옴
+								$value_array		= explode(',', trim($data["value"], "() "));
+								$value_array = array_map(function($item){
+									return trim($item, " '\"");
+								}, $value_array);
+								$format			= array();
+								foreach($value_array as $key){
+									$format[]	= "%s";
+								}
+								$where_query		= $this->db->prepare($data["prefix"].$join_query.$field." in (".implode(",",$format).") ".$data["suffix"], $value_array);
 							}else{
 								if((strpos($field, 'category') === 0) && strlen($field)==9){
 									$data["multi"]		= '1';
