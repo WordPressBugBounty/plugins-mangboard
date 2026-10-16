@@ -40,30 +40,6 @@ if($mode=="html5"){
 			echo "NOTALLOW_".esc_html($file_name);
 		}
 	}
-}else if($mode=="flash"){
-	if(!empty($_FILES["Filedata"]) && mbw_check_api_file("editor")) {
-		$upload_data	= mbw_file_upload(array("board_name"=>"N","table_name"=>"N","board_pid"=>"0","type"=>"editor"));
-		$file_name		= $upload_data["name"];
-
-		if(mbw_get_result_data("state")=="error"){
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo mbw_data_encode(mbw_get_result_array());
-		}else if(!empty($upload_data["path"])){
-			$file_data					= array();
-			$file_data["name"]		= $file_name;
-			$file_data["url"]			= mbw_get_image_url("url",$upload_data["path"]);
-
-			mbw_set_result_data(array("data"=>$file_data));
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));	
-		}else{
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo mbw_data_encode(mbw_get_result_array());
-		}
-	}else if(mbw_get_result_data("state")=="error"){
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo mbw_data_encode(mbw_get_result_array());
-	}
 }else if($mode=="plugin"){
 	do_action('mbw_uploader_plugin');
 }else{

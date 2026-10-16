@@ -544,12 +544,12 @@ if(!function_exists('mbw_get_prevent_content_copy')){
 		if(mbw_get_trace("mbw_get_prevent_content_copy")==""){
 			mbw_add_trace("mbw_get_prevent_content_copy");
 			$prevent_script	= 'function disable_ctrlkey(e){var k;	if(window.event){k=window.event.keyCode;if(window.event.ctrlKey){if(window.event.srcElement.nodeName=="INPUT"||window.event.srcElement.nodeName=="SELECT"||window.event.srcElement.nodeName=="TEXTAREA") return true;else if((k==65||k==67||k== 83||k==88)) return false;}}else{k=e.which;if(e.ctrlKey){if((e.target.nodeName=="INPUT"||e.target.nodeName=="SELECT"||e.target.nodeName=="TEXTAREA")) return true;else if((k==65||k==67||k== 83||k==88)) return false;}}return true;}';
-			$prevent_script	= $prevent_script.'function disable_select(e){if(e.target.nodeName!="INPUT"&&e.target.nodeName!="SELECT"&&e.target.nodeName!="TEXTAREA"&&e.target.nodeName!="HTML") return false;}';
-			$prevent_script	= $prevent_script.'function disable_select_ie(){if(window.event.srcElement.nodeName !="INPUT" && window.event.srcElement.nodeName!="SELECT" && window.event.srcElement.nodeName!="TEXTAREA") return false;}';
-			$prevent_script	= $prevent_script.'function disable_context(e){alert("Context Menu disabled");return false;}';
-			$prevent_script	= $prevent_script.'document.onkeydown			= disable_ctrlkey;';
-			$prevent_script	= $prevent_script.'document.oncontextmenu		= disable_context;';
-			$prevent_script	= $prevent_script.'if(navigator.userAgent.indexOf("MSIE")==-1){document.onmousedown	= disable_select;}else{document.onselectstart=disable_select_ie;}';			
+			$prevent_script	.= 'function disable_select(e){if(e.target.nodeName!="INPUT"&&e.target.nodeName!="SELECT"&&e.target.nodeName!="TEXTAREA"&&e.target.nodeName!="HTML") return false;}';
+			$prevent_script	.= 'function disable_select_ie(){if(window.event.srcElement.nodeName !="INPUT" && window.event.srcElement.nodeName!="SELECT" && window.event.srcElement.nodeName!="TEXTAREA") return false;}';
+			$prevent_script	.= 'function disable_context(e){alert("Context Menu disabled");return false;}';
+			$prevent_script	.= 'document.onkeydown			= disable_ctrlkey;';
+			$prevent_script	.= 'document.oncontextmenu		= disable_context;';
+			$prevent_script	.= 'if(navigator.userAgent.indexOf("MSIE")==-1){document.onmousedown	= disable_select;}else{document.onselectstart=disable_select_ie;}';			
 			return $prevent_script;
 		}
 	}
@@ -713,9 +713,9 @@ if(!function_exists('mbw_set_format')){
 			}
 		}else{
 			if(strpos($value, '.')!==false){
-				$value				= '<span class="mb-number">'.number_format($value,2).'</span><span>'.$type.'</span>';
+				$value				= '<span class="mb-number">'.number_format($value,2).'</span><span>'.esc_html($type).'</span>';
 			}else{
-				$value				= '<span class="mb-number">'.number_format($value).'</span><span>'.$type.'</span>';
+				$value				= '<span class="mb-number">'.number_format($value).'</span><span>'.esc_html($type).'</span>';
 			}			
 		}	
 		return $value;

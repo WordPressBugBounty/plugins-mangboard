@@ -43,18 +43,32 @@ if(!function_exists('mbw_create_board_item_panel')){
 					if(isset($item[$field])){
 						$content		= $item[$field];
 						if($field=='content'){
+							$item_level		= intval($item[$fields["fn_level"]]);
 							if($item[$fields["fn_data_type"]]=="html"){
 								$content			= mbw_htmlspecialchars_decode($content);
+								
+								if ( $item_level == 0 ) {	//비회원이 작성한 게시물은 추가 보안 검증
+									if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
+										$content		= mbw_get_htmlpurify($content);
+									} else {
+										$content		= wp_kses_post($content);
+									}
+								}
+								
 								if(function_exists('mbw_replace_image_url')) $content			= mbw_replace_image_url($content);
+							}else{
+								$content			= esc_html(mbw_htmlspecialchars_decode($content));
 							}
 							if($is_link=="true" && (!empty($item[$fields["fn_editor_type"]]) && $item[$fields["fn_editor_type"]]=="N")){
 								$content		= make_clickable($content);
 							}
-							if($is_shortcode=="true" && !empty($item[$fields["fn_level"]]) && (intval($item[$fields["fn_level"]])>7) ){
+							if($is_shortcode=="true" && !empty($item_level) && $item_level>7 ){
 								$content		= do_shortcode($content);
 							}
 						}else if($field=='image_path'){
 							$content	= mbw_get_image_url("url",$content);
+						}else{
+							$content	= esc_html($content);
 						}
 						$html		.= '<div class="mb-'.esc_attr(mbw_get_vars("device_type")).'"><div class="mb-board"><div class="mb-content-item'.esc_attr($class).'" style="'.esc_attr($style).'">'.$content.'</div></div></div>';
 					}else{

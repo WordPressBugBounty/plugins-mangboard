@@ -16,9 +16,7 @@ $query_data				= array();
 do_action('mbw_template_api_header');
 
 if(mbw_get_result_data("state")=="error"){
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo mbw_data_encode(mbw_get_result_array());
-	exit;
+	wp_send_json(mbw_get_result_array());
 }
 $mb_user_level			= intval(mbw_get_user("fn_user_level"));
 
@@ -64,7 +62,7 @@ if(mbw_get_param("mode")=="user"){
 			if(has_filter('mf_user_popup_menu')) $menu_body			= apply_filters("mf_user_popup_menu",$menu_body);
 		}
 		$menu_data["head"]	= "";
-		$menu_data["user"]		= array("name"=>$user_name,"point"=>$user_point,"level"=>$user_level);
+		$menu_data["user"]		= array("name"=>esc_html($user_name),"point"=>$user_point,"level"=>$user_level);
 		$menu_data["body"]	= $menu_body;
 		$menu_data["foot"]		= "";		
 		mbw_set_result_data(array("data"=>$menu_data));
@@ -108,14 +106,10 @@ if(mbw_get_param("mode")=="user"){
 	global $mb_board_table_name;
 	if((mbw_is_admin_table($mb_board_table_name) || $board_type=="user" || ($board_type=="commerce" && $mb_board_table_name!="mb_commerce_product")) && !mbw_is_admin_page()){
 		if(mbw_get_param("board_action")=="board_hit") {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo mbw_data_encode(mbw_get_result_array());
-			exit;
+			wp_send_json(mbw_get_result_array());
 		}	
 		mbw_error_message("MSG_NONCE_MATCH_ERROR", "","1401");
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo mbw_data_encode(mbw_get_result_array());
-		exit;
+		wp_send_json(mbw_get_result_array());
 	}
 	
 	if(mbw_get_param("board_action")=="content" && intval(mbw_get_board_option("fn_view_level")) <= $mb_user_level){
@@ -144,16 +138,25 @@ if(mbw_get_param("mode")=="user"){
 			if($reply_count>1){
 				$select_query		= mbw_get_add_query(array("column"=>"*","join"=>"none"), array(array("field"=>$mb_fields["select_board"]["fn_gid"],"value"=>mbw_get_param("board_pid"))));
 				$select_query		.= ' order by '.$mb_fields["select_board"]["fn_reply"].' asc';
-				$content_items	= $mdb->get_results($select_query,ARRAY_A);
-				$content_html			= "";
+				$content_items		= $mdb->get_results($select_query,ARRAY_A);
+				$content_html		= "";
 				foreach($content_items as $item){
 					$content		= ($item[$mb_fields["select_board"]["fn_content"]]);
 					if(!empty($mb_fields["select_board"]["fn_data_type"]) && !empty($item[$mb_fields["select_board"]["fn_data_type"]]) && ($item[$mb_fields["select_board"]["fn_data_type"]]=="html")){
-						$content			= mbw_htmlspecialchars_decode($content);
+						$content			= mbw_htmlspecialchars_decode($content);					
+						$item_level		= intval($item[$mb_fields["select_board"]["fn_level"]]);
+						if ( $item_level == 0 ) {	//비회원이 작성한 게시물은 추가 보안 검증
+							if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
+								$content		= mbw_get_htmlpurify($content);
+							} else {
+								$content		= wp_kses_post($content);
+							}
+						}						
 						if(function_exists('mbw_replace_image_url')){
 							$content			= mbw_replace_image_url($content);
 						}
 					}else{
+						$content			= esc_html(mbw_htmlspecialchars_decode($content));
 						$content			= nl2br($content);
 						if(function_exists('make_clickable')){		// URL주소에 <a> 태그 링크 설정
 							$content			= make_clickable($content);
@@ -253,13 +256,9 @@ if(mbw_get_param("mode")=="user"){
 }
 
 if(mbw_get_result_data("state")=="error"){
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo mbw_data_encode(mbw_get_result_array());
-	exit;
+	wp_send_json(mbw_get_result_array());
 }
 
 do_action('mbw_template_api_footer');
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-echo mbw_data_encode(mbw_get_result_array(array("state"=>"success")));
-exit;
+wp_send_json(mbw_get_result_array(array("state"=>"success")));
 ?>

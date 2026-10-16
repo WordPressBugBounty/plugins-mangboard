@@ -108,7 +108,7 @@ if(!function_exists('mbw_set_user_point2')){
 							}
 						}
 						if($check_point){
-							$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_point"]."=".$mb_fields["users"]["fn_user_point"].$sign.$point." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
+							$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_point"]."=".$mb_fields["users"]["fn_user_point"].$sign."%d where ".$mb_fields["users"]["fn_pid"]."=%d",$point,$user_pid));
 							do_action('mbw_user_point');
 							//포인트 로그 남기기
 							if(mbw_get_option("point_log")){
@@ -172,7 +172,7 @@ if(!function_exists('mbw_set_user_money2')){
 					$options		= array("mode"=>$target,"board_action"=>$action,"board_name"=>$board_name,"user_pid"=>$user_pid,"user_name"=>$user_name);
 					
 					if(!empty($user_pid)) {
-						$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_money"]."=".$mb_fields["users"]["fn_user_money"].$sign.$money." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
+						$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_money"]."=".$mb_fields["users"]["fn_user_money"].$sign."%d where ".$mb_fields["users"]["fn_pid"]."=%d",$money,$user_pid));
 						do_action('mbw_user_money');
 						//포인트 로그 남기기
 						if(mbw_get_option("point_log")){
@@ -320,7 +320,7 @@ if(!function_exists('mbw_set_user_point')){
 							}
 						}
 						if($check_point){
-							$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_point"]."=".$mb_fields["users"]["fn_user_point"].$sign.$point." where ".$mb_fields["users"]["fn_pid"]."=%d",$user_pid));
+							$mdb->query($mdb->prepare("update ".$mb_admin_tables["users"]." set ".$mb_fields["users"]["fn_user_point"]."=".$mb_fields["users"]["fn_user_point"].$sign."%d where ".$mb_fields["users"]["fn_pid"]."=%d",$point,$user_pid));
 							do_action('mbw_user_point');
 							//포인트 로그 남기기
 							if(mbw_get_option("point_log")){

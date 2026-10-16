@@ -5,6 +5,10 @@ if(!function_exists('mbw_get_tag_template')){
 		$template_tag	= "";
 		if(empty($data["tag_id"])) $data["tag_id"]		= "";
 		else $data["tag_id"]		= 'id="'.esc_attr($data["tag_id"]).'"';
+		
+		if(!empty($data["tag_name"])){
+			$data["tag_name"]	= mbw_value_filter($data["tag_name"], "name");
+		}
 
 		$template_html		= "";
 		if($data["tag_name"]=="table"){
@@ -35,7 +39,7 @@ if(!function_exists('mbw_get_tag_template')){
 			if(empty($data["mode_type"]) && !empty($data["type"])){			
 				$template_html		= mbw_get_item_template("tag",$data);
 			}
-			if(!empty($template_html))  $template_start	= '<'.$data["tag_name"].$data["td_class"].__STYLE($data["td_style"]).' '.$data["tag_id"].'>';
+			if(!empty($template_html))  $template_start	= '<'.esc_attr($data["tag_name"]).$data["td_class"].__STYLE($data["td_style"]).' '.$data["tag_id"].'>';
 			else $template_start	= '<'.esc_attr($data["tag_name"]).$data["ext"].__STYLE($data["style"]).' '.$data["tag_id"].'>';			
 			if(!empty($data["text"])) $template_start	.= $data["text"];
 			$template_end	= '</'.esc_attr($data["tag_name"]).'>';

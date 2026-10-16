@@ -2,13 +2,16 @@
 if(!function_exists('mbw_get_list_template')){
 	function mbw_get_list_template($data,$tag=null,$echo=true){
 		global $mstore,$mb_tags;
-		
+		if( isset($data["type"]) && ($data["type"]=="none" || $data["type"]=="search") ) {
+			return;
+		}else if( isset($data["display"]) && ($data["display"]=="none") ) {
+			return;
+		}
+
 		if($tag==null){
 			$tag					= array("t_tr"=>"tr","t_th"=>"th","t_td"=>"td");
-		}
-		
-		$data					= mbw_init_item_data("list",$data,$tag);
-		
+		}		
+		$data					= mbw_init_item_data("list",$data,$tag);		
 		$template_start		= "";
 		$template_end		= "";
 		
@@ -36,7 +39,7 @@ if(!function_exists('mbw_get_list_template')){
 			}else if($data["link"]=="lightbox"){
 				$link_url		= mbw_get_image_url("url",mbw_get_board_item('fn_image_path'));
 				$field_name	= str_replace('_','-',$data["field"]);
-				$link_attr		= ' rel="lightbox" data-rel="mb-lightbox-'.$field_name.'"';
+				$link_attr		= ' rel="lightbox" data-rel="mb-lightbox-'.esc_attr($field_name).'"';
 			}else if($data["link"]=="post_id" && !empty($data["link_id"])){
 				$link_url		= mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($data["link_id"]));
 			}else if(mbw_get_option($data["link"])!=""){
@@ -46,9 +49,9 @@ if(!function_exists('mbw_get_list_template')){
 			}
 			if(strpos($link_url, '//') === false && strpos($link_url, '?') === false && strpos($link_url, 'http') !== 0) $link_url	= "http://".$link_url;
 			if(!empty($data["link_target"])){
-				$template_start	.= '<a href="'.$link_url.'"'.$link_attr.' target="'.$data["link_target"].'" title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'">';
+				$template_start	.= '<a href="'.esc_url($link_url).'"'.$link_attr.' target="'.esc_attr($data["link_target"]).'" title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'">';
 			}else{
-				$template_start	.= '<a href="'.$link_url.'"'.$link_attr.' title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'">';
+				$template_start	.= '<a href="'.esc_url($link_url).'"'.$link_attr.' title="'.esc_attr(strip_tags(mbw_get_board_item('fn_title',false))).'">';
 			}
 			
 			$template_end	= '</a>'.$template_end;
@@ -81,13 +84,15 @@ if(!function_exists('mbw_get_list_template')){
 					$template_start	.= '<span>'.substr($data["value"],0,10).'</span> | <span>'.mbw_get_board_item("fn_hit").'</span>';
 				}
 			}else if($data["type"]=='pid'){
-				if(intval(mbw_get_board_item("fn_is_notice"))==1) $data["value"]		= "<span class='mb-notice mb-notice-pid'>".__MW("W_NOTICE")."</span>";
-				$template_start	.= '<span>'.$data["value"].'</span>';
+				if(intval(mbw_get_board_item("fn_is_notice"))==1){
+					$template_start	.= "<span><span class='mb-notice mb-notice-pid'>".__MW("W_NOTICE")."</span></span>";
+				}else{
+					$template_start	.= '<span>'.esc_html($data["value"]).'</span>';
+				}
 			}else if($data["type"]=='list_check'){
-				$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.mbw_set_form_name("check_array[]").'" value="'.mbw_get_board_item('fn_pid').'"/>';
-
+				$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.mbw_set_form_name("check_array[]").'" value="'.esc_attr(mbw_get_board_item('fn_pid')).'"/>';
 			}else if($data["type"]=='hidden_pid'){
-				$template_start	.= '<span>'.$data["value"].'</span><input type="hidden" name="'.mbw_set_form_name($data["item_name"]).'_array[]" value="'.$data["value"].'" />';				
+				$template_start	.= '<span>'.esc_html($data["value"]).'</span><input type="hidden" name="'.esc_attr(mbw_set_form_name($data["item_name"])).'_array[]" value="'.esc_attr($data["value"]).'" />';
 			}else if($data["type"]=='title_q_icon'){
 				$template_start	.= '<span class="faq-q">&nbsp;Q</span>';				
 			}else if($data["type"]=='title_faq_icon'){
@@ -96,11 +101,11 @@ if(!function_exists('mbw_get_list_template')){
 				}else{
 					$args	= mbw_get_vars("shortcode_args");
 					if(!empty($args) && !empty($args["post_id"])){
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"]))).'"';
 					}else if(!empty($data["link"]) && !empty($link_url)){
 						$title_url		= ' href="'.esc_url($link_url).'"';
 					}else{
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')))).'"';
 					}
 				}
 				$template_start	.= '<a'.$title_url.'><div class="mb-icon-box"></div></a>';
@@ -117,7 +122,7 @@ if(!function_exists('mbw_get_list_template')){
 					if(!empty($shortcode_args["use_list_category"])) $use_list_category	= $shortcode_args["use_list_category"];
 					if($use_list_category!="false" && mbw_get_board_item("fn_category1")!=""){
 						$category_item_class		= mbw_get_category_item_class(mbw_get_board_item("fn_category1"));
-						$data["value"]		= '<span class="category1-text '.$category_item_class.'">['.mbw_get_board_item("fn_category1").']</span> '.$data["value"];
+						$data["value"]		= '<span class="category1-text '.esc_attr($category_item_class).'">['.mbw_get_board_item("fn_category1").']</span> '.$data["value"];
 					}
 				}
 				//댓글 개수 표시하기
@@ -129,15 +134,15 @@ if(!function_exists('mbw_get_list_template')){
 				}else{
 					$args	= mbw_get_vars("shortcode_args");
 					if(!empty($args) && !empty($args["post_id"])){
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"]))).'"';
 					}else if(!empty($data["link"]) && !empty($link_url)){
 						$title_url		= ' href="'.esc_url($link_url).'"';
 					}else{
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')))).'"';
 					}
 				}
 
-				$template_start	.= '<a'.$title_url.' title="'.strip_tags($data["value"]).'"><span>'.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
+				$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><span>'.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
 
 			}else if($data["type"]=='title_webzine'){
 				$add_comment		= "";
@@ -152,7 +157,7 @@ if(!function_exists('mbw_get_list_template')){
 					if(!empty($shortcode_args["use_list_category"])) $use_list_category	= $shortcode_args["use_list_category"];
 					if($use_list_category!="false" && mbw_get_board_item("fn_category1")!=""){
 						$category_item_class		= mbw_get_category_item_class(mbw_get_board_item("fn_category1"));
-						$data["value"]		= '<span class="category1-text '.$category_item_class.'">['.mbw_get_board_item("fn_category1").']</span> '.$data["value"];
+						$data["value"]		= '<span class="category1-text '.esc_attr($category_item_class).'">['.mbw_get_board_item("fn_category1").']</span> '.$data["value"];
 					}
 				}
 				//댓글 개수 표시하기
@@ -173,11 +178,11 @@ if(!function_exists('mbw_get_list_template')){
 				}else{
 					$args	= mbw_get_vars("shortcode_args");
 					if(!empty($args) && !empty($args["post_id"])){
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"]))).'"';
 					}else if(!empty($data["link"]) && !empty($link_url)){
 						$title_url		= ' href="'.esc_url($link_url).'"';
 					}else{
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')))).'"';
 					}
 				}
 
@@ -189,7 +194,7 @@ if(!function_exists('mbw_get_list_template')){
 					$reg_date	= substr($reg_date,0,10);
 				}
 
-				$template_start	.= '<a'.$title_url.' title="'.strip_tags($data["value"]).'"><div class="webzine-item-title"><span>'.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></div><div class="webzine-item-content">';
+				$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><div class="webzine-item-title"><span>'.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></div><div class="webzine-item-content">';
 
 				$user_pid			= mbw_get_user('fn_pid');
 				$user_level			= intval(mbw_get_user("fn_user_level"));
@@ -235,9 +240,9 @@ if(!function_exists('mbw_get_list_template')){
 					$format_array				= explode('_',$title_format);
 					if(!empty($format_array)){
 						$mobile_template				= array();
-						$mobile_template['name']		= '<span class="info-name">'.mbw_get_board_item("fn_user_name",false).'</span>';
-						$mobile_template['date']		= '<span class="info-date">'.$reg_date.'</span>';
-						$mobile_template['hit']			= '<span class="info_hit">'.mbw_get_board_item("fn_hit").'</span>';
+						$mobile_template['name']		= '<span class="info-name">'.esc_html(mbw_get_board_item("fn_user_name",false)).'</span>';
+						$mobile_template['date']		= '<span class="info-date">'.esc_html($reg_date).'</span>';
+						$mobile_template['hit']			= '<span class="info_hit">'.esc_html(mbw_get_board_item("fn_hit")).'</span>';
 						foreach($format_array as $name){
 							if(!empty($name) && isset($mobile_template[$name])) $template_start	.= $mobile_template[$name];
 						}
@@ -257,11 +262,11 @@ if(!function_exists('mbw_get_list_template')){
 					if(!empty($shortcode_args["use_list_category"])) $use_list_category	= $shortcode_args["use_list_category"];
 					if($use_list_category!="false" && mbw_get_board_item("fn_category1")!=""){
 						$category_item_class		= mbw_get_category_item_class(mbw_get_board_item("fn_category1"));
-						$data["value"]		= '<span class="category1-text '.$category_item_class.'">['.mbw_get_board_item("fn_category1").']</span> '.$data["value"];
+						$data["value"]		= '<span class="category1-text '.esc_attr($category_item_class).'">['.mbw_get_board_item("fn_category1").']</span> '.$data["value"];
 					}
 				}
 				if($data["type"]=="title_checkbox" && intval(mbw_get_board_option("fn_delete_level")) <= mbw_get_user("fn_user_level")){
-					$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.mbw_set_form_name("check_array[]").'" value="'.mbw_get_board_item('fn_pid').'"/> ';
+					$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.mbw_set_form_name("check_array[]").'" value="'.esc_attr(mbw_get_board_item('fn_pid')).'"/> ';
 				}
 
 				$reply_space		= mbw_get_icon("reply",intval(mbw_get_board_item("fn_reply_depth")));
@@ -326,15 +331,15 @@ if(!function_exists('mbw_get_list_template')){
 						if(!empty($calendar_date_ymd)){
 							$add_url		= '&calendar_date='.$calendar_date_ymd;
 						}						
-						$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'),"calendar_date"=>"")).$add_url.'"';
+						$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'),"calendar_date"=>"")).$add_url).'"';
 					}else{
 						$args	= mbw_get_vars("shortcode_args");
 						if(!empty($args) && !empty($args["post_id"])){
-							$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"])).'"';
+							$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')),get_permalink($args["post_id"]))).'"';
 						}else if(!empty($data["link"]) && !empty($link_url)){
 							$title_url		= ' href="'.esc_url($link_url).'"';
 						}else{
-							$title_url		= ' href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'"';
+							$title_url		= ' href="'.esc_url(mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid')))).'"';
 						}
 					}
 				}
@@ -354,22 +359,19 @@ if(!function_exists('mbw_get_list_template')){
 					if(empty($data["background-size"])) $data["background-size"] = "cover";
 					if(empty($data["background-position"])) $data["background-position"] = "center center";
 
-					$template_start	.= '<a'.$title_url.' title="'.strip_tags($data["value"]).'">';
+					$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'">';
 					$template_start	.= '<div class="pull-left" style="margin-right:7px !important;"><div class="border-eee-1"><div'.$data["ext"].__STYLE("width:".$data["img_width"].";height:".$data["img_height"].";background-image:url(".mbw_get_image_url("url_small",mbw_get_board_item('fn_image_path')).");background-position:".$data["background-position"].";background-size:".$data["background-size"].";".$data["style"]).' ></div></div></div>';
 					$template_start	.= '</a>';
 				}
 
 				if(mbw_get_vars("device_type")=="mobile" && $data["type"]!='title2'){
-
 					if(mbw_get_param("list_type")=="list"){
-						$reg_date		= mbw_get_board_item("fn_reg_date");
-					
-						if( strpos($reg_date, date("Y-m-d", mbw_get_timestamp())) !== false){
+						$reg_date		= mbw_get_board_item("fn_reg_date");					
+						if(strpos($reg_date, date("Y-m-d", mbw_get_timestamp())) !== false){
 							$reg_date	= substr($reg_date,11,5);
 						}else{
 							$reg_date	= substr($reg_date,0,10);
-						}						
-			
+						}			
 						$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><div><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span><br>';
 						$template_start	.= '<span class="info-group">';
 							$title_format	= 'name_date_hit';
@@ -382,24 +384,22 @@ if(!function_exists('mbw_get_list_template')){
 							$format_array				= explode('_',$title_format);
 							if(!empty($format_array)){
 								$mobile_template				= array();
-								$mobile_template['name']		= '<span class="info-name">'.mbw_get_board_item("fn_user_name",false).'</span>';
-								$mobile_template['date']		= '<span class="info-date">'.$reg_date.'</span>';
-								$mobile_template['hit']			= '<span class="info_hit">'.mbw_get_board_item("fn_hit").'</span>';
+								$mobile_template['name']		= '<span class="info-name">'.esc_html(mbw_get_board_item("fn_user_name",false)).'</span>';
+								$mobile_template['date']		= '<span class="info-date">'.esc_html($reg_date).'</span>';
+								$mobile_template['hit']			= '<span class="info_hit">'.esc_html(mbw_get_board_item("fn_hit")).'</span>';
 								foreach($format_array as $name){
 									if(!empty($name) && isset($mobile_template[$name])) $template_start	.= $mobile_template[$name];
 								}
 							}
 						$template_start	.= '</span>';
 						$template_start	.= '</div></a>';
-
-						//$template_start	.= '<div class="cmt-box"><a href="'.mbw_get_url(array('vid'=>mbw_get_board_item('fn_pid'))).'" title="comment">'.$add_comment.'</a></div>';
-					}else 
-						$template_start	.= '<a'.$title_url.' title="'.strip_tags($data["value"]).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
-						
+					}else{
+						$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
+					}						
 				}else if(mbw_get_vars("device_type")=="tablet"){
-					$template_start	.= '<a'.$title_url.' title="'.strip_tags($data["value"]).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
+					$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';
 				}else{
-					$template_start	.= '<a'.$title_url.' title="'.strip_tags($data["value"]).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';				
+					$template_start	.= '<a'.$title_url.' title="'.esc_attr(strip_tags($data["value"])).'"><span>'.$reply_space.$add_start_icon.$data["value"].$add_comment.$add_end_icon.'</span></a>';				
 				}
 			}else{
 				$template_start	.= mbw_get_item_template("list",$data);
@@ -411,8 +411,8 @@ if(!function_exists('mbw_get_list_template')){
 		if(!empty($data["tooltip"])) $template_start	.= mbw_get_tooltip_template($data["tooltip"]);
 		if(!empty($data['add_middle_html'])) $template_start	.= $data['add_middle_html'];		
 		if(!empty($data["description"])) $template_start	.= '<span class="mb-description">'.$data["description"].'</span>';
-		if(!empty($data['add_end_html'])) $template_end		= $data['add_end_html'].$template_end;
-		
+		if(!empty($data['add_end_html'])) $template_end		= $data['add_end_html'].$template_end;		
+
 		$template_start	.= $template_end;
 		 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		if($echo) echo $template_start;
@@ -440,12 +440,12 @@ if(!function_exists('mbw_get_view_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					if(!empty($tag["t_th"]))  $template_start	= '<'.$tag["t_th"].' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><span>'.$data["name"].'</span></'.$tag["t_th"].'>';		
+					if(!empty($tag["t_th"]))  $template_start	= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><span>'.wp_kses_post($data["name"]).'</span></'.esc_attr($tag["t_th"]).'>';		
 					if(!empty($tag["t_td"])){
 						if(empty($data["colspan"]))
 							$template_start	.= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).'>';
 						else
-							$template_start	= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).' colspan="'.$data["colspan"].'">';		
+							$template_start	= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).' colspan="'.esc_attr($data["colspan"]).'">';		
 
 						$template_end	= '</'.$tag["t_td"].'>';
 					}
@@ -474,9 +474,9 @@ if(!function_exists('mbw_get_view_template')){
 				}
 				if(strpos($link_url, '//') === false && strpos($link_url, '?') === false && strpos($link_url, 'http') !== 0) $link_url	= "http://".$link_url;
 				if(!empty($data["link_target"])){
-					$template_start	.= '<a href="'.$link_url.'" target="'.$data["link_target"].'" title="'.$data["name"].'">';
+					$template_start	.= '<a href="'.esc_url($link_url).'" target="'.esc_attr($data["link_target"]).'" title="'.esc_attr($data["name"]).'">';
 				}else{
-					$template_start	.= '<a href="'.$link_url.'" title="'.$data["name"].'">';
+					$template_start	.= '<a href="'.esc_url($link_url).'" title="'.esc_attr($data["name"]).'">';
 				}
 				$template_end	= '</a>'.$template_end;
 			}
@@ -505,14 +505,29 @@ if(!function_exists('mbw_get_view_template')){
 					$category_data		= mbw_get_board_option("fn_category_data");
 					if(empty($category_data)) return;
 
-					if(mbw_get_board_item("fn_category1")!=""){
-						$template_start	.= '<span>'.mbw_get_board_item("fn_category1").'</span>';
+					$category1		= mbw_get_board_item("fn_category1");
+					$category2		= mbw_get_board_item("fn_category2");
+					$category3		= mbw_get_board_item("fn_category3");
+
+					if($category1!=""){
+						if(strpos($category_data, "=>")!==false){
+							$t_array		= explode(",",$category_data);
+							foreach($t_array as $value){
+								if(strpos($value, "=>")!==false){
+									$value_array		= explode("=>",$value);
+									if($category1==$value_array[0]){
+										$category1 = $value_array[1];
+									}
+								}
+							}
+						}
+						$template_start	.= '<span>'.$category1.'</span>';
 					}
-					if(mbw_get_board_item("fn_category2")!=""){
-						$template_start	.= '<span> &gt; '.mbw_get_board_item("fn_category2").'</span>';
+					if($category2!=""){
+						$template_start	.= '<span> &gt; '.$category2.'</span>';
 					}
-					if(mbw_get_board_item("fn_category3")!=""){
-						$template_start	.= '<span> &gt; '.mbw_get_board_item("fn_category3").'</span>';
+					if($category3!=""){
+						$template_start	.= '<span> &gt; '.$category3.'</span>';
 					}
 				}else if($data["type"]=='date'){
 					$template_start	.= '<span>'.$data["value"].'</span>';
@@ -532,7 +547,7 @@ if(!function_exists('mbw_get_view_template')){
 			
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					$template_start		= '<'.$tag['t_tr'].' id="'.mbw_get_id_prefix().'tr_'.$data["item_name"].'"'.$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start.$template_end.'</'.$tag['t_tr'].'>';
+					$template_start		= '<'.esc_attr($tag['t_tr']).' id="'.mbw_get_id_prefix().'tr_'.esc_attr($data["item_name"]).'"'.$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start.$template_end.'</'.esc_attr($tag['t_tr']).'>';
 				}
 			}
 		}
@@ -582,14 +597,14 @@ if(!function_exists('mbw_get_write_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					if(!empty($tag["t_th"]))  $template_start		= '<'.$tag["t_th"].' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.$data["item_id"].'">'.$data["name"].$required_text.'</label></'.$tag["t_th"].'>';
+					if(!empty($tag["t_th"]))  $template_start		= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.esc_attr($data["item_id"]).'">'.wp_kses_post($data["name"].$required_text).'</label></'.esc_attr($tag["t_th"]).'>';
 					if(!empty($tag["t_td"])){
 						if(empty($data["colspan"]))
-							$template_start	.= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).'>';
+							$template_start	.= '<'.esc_attr($tag["t_td"]).$data["td_class"].__STYLE($data["td_style"]).'>';
 						else
-							$template_start	= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).' colspan="'.$data["colspan"].'">';
+							$template_start	= '<'.esc_attr($tag["t_td"]).$data["td_class"].__STYLE($data["td_style"]).' colspan="'.esc_attr($data["colspan"]).'">';
 
-						$template_end		= '</'.$tag["t_td"].'>';
+						$template_end		= '</'.esc_attr($tag["t_td"]).'>';
 					}
 				}
 			}
@@ -616,10 +631,10 @@ if(!function_exists('mbw_get_write_template')){
 				}
 				if(strpos($link_url, '//') === false && strpos($link_url, '?') === false && strpos($link_url, 'http') !== 0) $link_url	= "http://".$link_url;
 				if(!empty($data["link_target"])){
-					$template_start	.= '<a href="'.$link_url.'" target="'.$data["link_target"].'" title="'.$data["name"].'">';
+					$template_start	.= '<a href="'.esc_url($link_url).'" target="'.esc_attr($data["link_target"]).'" title="'.esc_attr($data["name"]).'">';
 				}else{
-					$template_start	.= '<a href="'.$link_url.'" title="'.$data["name"].'">';
-				}				
+					$template_start	.= '<a href="'.esc_url($link_url).'" title="'.esc_attr($data["name"]).'">';
+				}
 				$template_end	= '</a>'.$template_end;
 			}
 
@@ -650,34 +665,33 @@ if(!function_exists('mbw_get_write_template')){
 			}
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					$template_start		= '<'.$tag['t_tr'].' id="'.mbw_get_id_prefix().'tr_'.$data["item_name"].'"'.$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start;		
+					$template_start		= '<'.esc_attr($tag['t_tr']).' id="'.mbw_get_id_prefix().'tr_'.esc_attr($data["item_name"]).'"'.$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start;		
 					 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					if($echo) echo $template_start;
 				}
-			}
-			
+			}			
 
 			if(!empty($editor_type)){
 				if($editor_type == "N"){
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo mbw_get_default_editor($data);
 				}else{
 					if (has_action( 'mbw_editor_'.$editor_type) ){
 						do_action('mbw_editor_'.$editor_type, mbw_get_param("board_action"), $data);
 					}else{
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo mbw_get_default_editor($data);
-					}						
+					}
 				}
 			}
 
 			if(!empty($data["tooltip"])){
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				if($echo) echo mbw_get_tooltip_template($data["tooltip"]);
 				else $template_start	.= mbw_get_tooltip_template($data["tooltip"]);
 			}
 			if(!empty($data["add_middle_html"])){
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				if($echo) echo $data['add_middle_html'];
 				else $template_start	.= $data['add_middle_html'];
 			}
@@ -686,7 +700,7 @@ if(!function_exists('mbw_get_write_template')){
 					$data['description']			= str_replace("<br>(", "(", $data['description']);
 				}
 				$desc		= '<span class="mb-description">'.$data['description'].'</span>';
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				if($echo) echo $desc;
 				else $template_start	.= $desc;
 			}
@@ -694,8 +708,8 @@ if(!function_exists('mbw_get_write_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					$template_end		= $template_end.'</'.$tag['t_tr'].'>';
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$template_end		= $template_end.'</'.esc_attr($tag['t_tr']).'>';
+					 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					if($echo) echo $template_end;
 				}
 			}
@@ -707,8 +721,8 @@ if(!function_exists('mbw_get_write_template')){
 
 if(!function_exists('mbw_get_comment_template')){
 	function mbw_get_comment_template($data,$tag=null,$echo=true,$action="list"){
-		global $mstore,$mb_fields,$mb_tags;	
-		$board_name	= $mstore->get_board_name();
+		global $mb_fields,$mb_tags;	
+		$board_name	= mbw_get_board_name();
 
 		if(!empty($action)) mbw_set_param("board_action",$action);
 
@@ -743,15 +757,15 @@ if(!function_exists('mbw_get_comment_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					if(!empty($tag["t_th"]))  $template_start		= '<'.$tag["t_th"].' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.$data["item_id"].'">'.$data["name"].$required_text.'</label></'.$tag["t_th"].'>';
+					if(!empty($tag["t_th"]))  $template_start		= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.esc_attr($data["item_id"]).'">'.wp_kses_post($data["name"].$required_text).'</label></'.esc_attr($tag["t_th"]).'>';
 					
 					if(!empty($tag["t_td"])){
-						if(empty($data["colspan"]))
-							$template_start	.= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).'>';
-						else
-							$template_start	= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).' colspan="'.$data["colspan"].'">';
-
-						$template_end		= '</'.$tag["t_td"].'>';
+						if(empty($data["colspan"])){
+							$template_start	.= '<'.esc_attr($tag["t_td"]).$data["td_class"].__STYLE($data["td_style"]).'>';
+						}else{
+							$template_start	= '<'.esc_attr($tag["t_td"]).$data["td_class"].__STYLE($data["td_style"]).' colspan="'.esc_attr($data["colspan"]).'">';
+						}
+						$template_end		= '</'.esc_attr($tag["t_td"]).'>';
 					}
 				}
 			}
@@ -779,10 +793,10 @@ if(!function_exists('mbw_get_comment_template')){
 				}
 				if(strpos($link_url, '//') === false && strpos($link_url, '?') === false && strpos($link_url, 'http') !== 0) $link_url	= "http://".$link_url;
 				if(!empty($data["link_target"])){
-					$template_start	.= '<a href="'.$link_url.'" target="'.$data["link_target"].'" title="'.$data["name"].'">';
+					$template_start	.= '<a href="'.esc_url($link_url).'" target="'.esc_attr($data["link_target"]).'" title="'.esc_attr($data["name"]).'">';
 				}else{
-					$template_start	.= '<a href="'.$link_url.'" title="'.$data["name"].'">';
-				}				
+					$template_start	.= '<a href="'.esc_url($link_url).'" title="'.esc_attr($data["name"]).'">';
+				}
 				$template_end	= '</a>'.$template_end;
 			}
 
@@ -791,11 +805,11 @@ if(!function_exists('mbw_get_comment_template')){
 
 				if($action=="list"){
 					if($data["type"]=='cl_name_date'){
-						$template_start	.= "<div><span".$data["ext"].__STYLE($data["style"]).">'+reply_sign+value['".$mb_fields["select_comment"][$data["field"]]."']+'</span><span class=\"cmt-date\">'+value['".$mb_fields["select_comment"]["fn_reg_date"]."']+'</span></div>";
+						$template_start	.= "<div><span".$data["ext"].__STYLE($data["style"]).">'+reply_sign+value['".esc_js($mb_fields["select_comment"][$data["field"]])."']+'</span><span class=\"cmt-date\">'+value['".$mb_fields["select_comment"]["fn_reg_date"]."']+'</span></div>";
 					}else if($data["type"]=='cl_content'){
-						$template_start	.= "<div".$data["ext"].__STYLE($data["style"]).">'+value['".$mb_fields["select_comment"][$data["field"]]."']+'</div>";
+						$template_start	.= "<div".$data["ext"].__STYLE($data["style"]).">'+value['".esc_js($mb_fields["select_comment"][$data["field"]])."']+'</div>";
 					}else{
-						$template_start	.= "<div".$data["ext"].__STYLE($data["style"]).">'+value['".$mb_fields["select_comment"][$data["field"]]."']+'</div>";
+						$template_start	.= "<div".$data["ext"].__STYLE($data["style"]).">'+value['".esc_js($mb_fields["select_comment"][$data["field"]])."']+'</div>";
 					}
 				}else{
 					if($data["type"]=='cw_name'){
@@ -803,7 +817,7 @@ if(!function_exists('mbw_get_comment_template')){
 						if(mbw_get_param("board_action")=="modify" && mbw_get_comment_item("fn_is_secret")=="1") $secret_checked		= " checked ";
 						$template_start	.= '<span  style="float:left";>'.mbw_get_user("fn_user_name").'</span><span style="float:right;"><label><input title="'.__MW("W_SECRET").'" type="checkbox" name="'.mbw_set_form_name("is_secret").'" value="1" '.$secret_checked.'/>'.__MW("W_SECRET").'</label></span>';
 					}else if($data["type"]=='cw_content'){
-						$template_start	.= '<textarea'.$data["ext"].__STYLE($data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'" id="'.$data["item_id"].'">'.$data["value"].'</textarea>';
+						$template_start	.= '<textarea'.$data["ext"].__STYLE($data["style"]).' name="'.mbw_set_form_name($data["item_name"]).'" id="'.esc_attr($data["item_id"]).'">'.$data["value"].'</textarea>';
 						$send_action				= "'".$action."'";
 						if($action=="reply") $send_action		= "\'".$action."\'";
 					}else{
@@ -813,7 +827,7 @@ if(!function_exists('mbw_get_comment_template')){
 					}
 				}				
 			}else{
-				$template_start	.= "<div".$data["ext"].__STYLE($data["style"]).">'+value['".$mb_fields["select_comment"][$data["field"]]."']+'</div>";
+				$template_start	.= "<div".$data["ext"].__STYLE($data["style"]).">'+value['".esc_js($mb_fields["select_comment"][$data["field"]])."']+'</div>";
 			}
 
 			if(!empty($data["tooltip"])) $template_start	.= mbw_get_tooltip_template($data["tooltip"]);
@@ -823,12 +837,12 @@ if(!function_exists('mbw_get_comment_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					$template_start		= '<'.$tag['t_tr'].$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start;
-					$template_start	.= $template_end.'</'.$tag['t_tr'].'>';
+					$template_start		= '<'.esc_attr($tag['t_tr']).$data['tr_class'].__STYLE($data['tr_style']).'>'.$template_start;
+					$template_start	.= $template_end.'</'.esc_attr($tag['t_tr']).'>';
 				}
 			}
 		}
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		if($echo) echo $template_start;
 		else return $template_start;
 	}

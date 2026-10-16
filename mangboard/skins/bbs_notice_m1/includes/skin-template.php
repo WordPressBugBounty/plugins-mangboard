@@ -83,13 +83,15 @@ if(!function_exists('mbw_get_list_template')){
 					$template_start	.= '<span>'.substr($data["value"],0,10).'</span> | <span>'.mbw_get_board_item("fn_hit").'</span>';
 				}
 			}else if($data["type"]=='pid'){
-				if(intval(mbw_get_board_item("fn_is_notice"))==1) $data["value"]		= "<span class='mb-notice mb-notice-pid'>".__MW("W_NOTICE")."</span>";
-				$template_start	.= '<span>'.$data["value"].'</span>';
+				if(intval(mbw_get_board_item("fn_is_notice"))==1){
+					$template_start	.= "<span><span class='mb-notice mb-notice-pid'>".__MW("W_NOTICE")."</span></span>";
+				}else{
+					$template_start	.= '<span>'.esc_html($data["value"]).'</span>';
+				}
 			}else if($data["type"]=='list_check'){
 				$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.mbw_set_form_name("check_array[]").'" value="'.esc_attr(mbw_get_board_item('fn_pid')).'"/>';
-
 			}else if($data["type"]=='hidden_pid'){
-				$template_start	.= '<span>'.$data["value"].'</span><input type="hidden" name="'.mbw_set_form_name($data["item_name"]).'_array[]" value="'.$data["value"].'" />';				
+				$template_start	.= '<span>'.esc_html($data["value"]).'</span><input type="hidden" name="'.esc_attr(mbw_set_form_name($data["item_name"])).'_array[]" value="'.esc_attr($data["value"]).'" />';
 			}else if($data["type"]=='title_q_icon'){
 				$template_start	.= '<span class="faq-q">&nbsp;Q</span>';				
 			}else if($data["type"]=='title_faq_icon'){

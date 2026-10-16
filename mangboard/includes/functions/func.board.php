@@ -89,7 +89,7 @@ if(!function_exists('mbw_check_request_size')){
 				if(mbw_get_param('mode')=='basic' && mbw_get_param('action')=='mb_uploader'){
 					echo mbw_get_result_data("message"); // phpcs:ignore
 				}else{
-					echo mbw_data_encode(mbw_get_result_array()); // phpcs:ignore
+					wp_send_json(mbw_get_result_array());
 				}	
 				exit;			
 			}			
@@ -1510,7 +1510,7 @@ if(!function_exists('mbw_get_move_script')){
 			if(mbw_is_login() && has_filter('mf_user_login_redirect_to')){
 				 $site_url		= apply_filters("mf_user_login_redirect_to",$site_url);
 			}
-			$move_script	= 'movePage("'.$site_url.'")';
+			$move_script	= 'movePage("'.esc_url($site_url).'")';
 		}else if($type=="permission_login"){			
 			$login_url		= mbw_get_url(array('redirect_to'=>rawurlencode(mbw_get_current_url())),mbw_get_user_url("login"),"");
 			if(mbw_is_login()){

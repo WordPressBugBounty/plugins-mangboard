@@ -84,12 +84,15 @@ if(!function_exists('mbw_get_list_template')){
 					$template_start	.= '<span>'.substr($data["value"],0,10).'</span> | <span>'.mbw_get_board_item("fn_hit").'</span>';
 				}
 			}else if($data["type"]=='pid'){
-				if(intval(mbw_get_board_item("fn_is_notice"))==1) $data["value"]		= "<span class='mb-notice mb-notice-pid'>".__MW("W_NOTICE")."</span>";
-				$template_start	.= '<span>'.$data["value"].'</span>';
+				if(intval(mbw_get_board_item("fn_is_notice"))==1){
+					$template_start	.= "<span><span class='mb-notice mb-notice-pid'>".__MW("W_NOTICE")."</span></span>";
+				}else{
+					$template_start	.= '<span>'.esc_html($data["value"]).'</span>';
+				}
 			}else if($data["type"]=='list_check'){
-				$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.esc_attr(mbw_set_form_name("check_array[]")).'" value="'.esc_attr(mbw_get_board_item('fn_pid')).'"/>';
+				$template_start	.= '<input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.mbw_set_form_name("check_array[]").'" value="'.esc_attr(mbw_get_board_item('fn_pid')).'"/>';
 			}else if($data["type"]=='hidden_pid'){
-				$template_start	.= '<span>'.$data["value"].'</span><input type="hidden" name="'.esc_attr(mbw_set_form_name($data["item_name"])).'_array[]" value="'.esc_attr($data["value"]).'" />';				
+				$template_start	.= '<span>'.esc_html($data["value"]).'</span><input type="hidden" name="'.esc_attr(mbw_set_form_name($data["item_name"])).'_array[]" value="'.esc_attr($data["value"]).'" />';
 			}else if($data["type"]=='title_q_icon'){
 				$template_start	.= '<span class="faq-q">&nbsp;Q</span>';				
 			}else if($data["type"]=='title_faq_icon'){
@@ -437,12 +440,12 @@ if(!function_exists('mbw_get_view_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					if(!empty($tag["t_th"]))  $template_start	= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><span>'.$data["name"].'</span></'.esc_attr($tag["t_th"]).'>';		
+					if(!empty($tag["t_th"]))  $template_start	= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><span>'.wp_kses_post($data["name"]).'</span></'.esc_attr($tag["t_th"]).'>';		
 					if(!empty($tag["t_td"])){
 						if(empty($data["colspan"]))
 							$template_start	.= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).'>';
 						else
-							$template_start	= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).' colspan="'.$data["colspan"].'">';		
+							$template_start	= '<'.$tag["t_td"].$data["td_class"].__STYLE($data["td_style"]).' colspan="'.esc_attr($data["colspan"]).'">';		
 
 						$template_end	= '</'.$tag["t_td"].'>';
 					}
@@ -594,7 +597,7 @@ if(!function_exists('mbw_get_write_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					if(!empty($tag["t_th"]))  $template_start		= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.esc_attr($data["item_id"]).'">'.$data["name"].$required_text.'</label></'.esc_attr($tag["t_th"]).'>';
+					if(!empty($tag["t_th"]))  $template_start		= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.esc_attr($data["item_id"]).'">'.wp_kses_post($data["name"].$required_text).'</label></'.esc_attr($tag["t_th"]).'>';
 					if(!empty($tag["t_td"])){
 						if(empty($data["colspan"]))
 							$template_start	.= '<'.esc_attr($tag["t_td"]).$data["td_class"].__STYLE($data["td_style"]).'>';
@@ -718,8 +721,8 @@ if(!function_exists('mbw_get_write_template')){
 
 if(!function_exists('mbw_get_comment_template')){
 	function mbw_get_comment_template($data,$tag=null,$echo=true,$action="list"){
-		global $mstore,$mb_fields,$mb_tags;	
-		$board_name	= $mstore->get_board_name();
+		global $mb_fields,$mb_tags;	
+		$board_name	= mbw_get_board_name();
 
 		if(!empty($action)) mbw_set_param("board_action",$action);
 
@@ -754,7 +757,7 @@ if(!function_exists('mbw_get_comment_template')){
 
 			if(!empty($mb_tags)){
 				if($mb_tags[count($mb_tags)-1]=="table"){
-					if(!empty($tag["t_th"]))  $template_start		= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.esc_attr($data["item_id"]).'">'.$data["name"].$required_text.'</label></'.esc_attr($tag["t_th"]).'>';
+					if(!empty($tag["t_th"]))  $template_start		= '<'.esc_attr($tag["t_th"]).' scope="row"'.$data["th_class"].__STYLE($data["th_style"]).'><label for="'.esc_attr($data["item_id"]).'">'.wp_kses_post($data["name"].$required_text).'</label></'.esc_attr($tag["t_th"]).'>';
 					
 					if(!empty($tag["t_td"])){
 						if(empty($data["colspan"])){

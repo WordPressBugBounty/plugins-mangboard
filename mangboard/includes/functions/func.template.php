@@ -42,19 +42,28 @@ if(!function_exists('mbw_init_item_data')){
 		$data								= mbw_init_item_property($mode,$data);
 
 		$data["mode"]					= mbw_get_param("mode");
-		$data["board_action"]		= mbw_get_param("board_action");
+		$data["board_action"]			= mbw_get_param("board_action");
 
 		if($mode=="write" || $mode=="comment"){
-			if(!empty($data[mbw_get_param("board_action")]))
+			if(!empty($data[mbw_get_param("board_action")])){
 				$data["type"]		= $data[mbw_get_param("board_action")];
+			}
 		}
-		if(mbw_is_login() && !empty($data["login"])) $data["type"]	= $data["login"];
+		if(mbw_is_login() && !empty($data["login"])){
+			$data["type"]			= $data["login"];
+		}
+		if(!empty($data["name"])){
+			$data["name"]		= __MW($data["name"]);
+		}
+		if(!empty($data["add_name"])){
+			$data["name"]		.= __MW($data["add_name"]);
+		}
 
-		if(!empty($data["name"]))	$data["name"]		= __MW($data["name"]);
-		if(!empty($data["add_name"])) $data["name"]		.= __MW($data["add_name"]);
-
-		if(!empty($data["description_".mbw_get_param("board_action")])) $data["description"]		= __MM($data["description_".mbw_get_param("board_action")]);
-		else if(!empty($data["description"]))	$data["description"]		= __MM($data["description"]);
+		if(!empty($data["description_".mbw_get_param("board_action")])){
+			$data["description"]		= __MM($data["description_".mbw_get_param("board_action")]);
+		}else if(!empty($data["description"])){
+			$data["description"]		= __MM($data["description"]);
+		}
 		
 		if(!empty($data["field"])){
 
@@ -92,7 +101,9 @@ if(!function_exists('mbw_init_item_data')){
 				$count				= count($t_data);
 				for($i=0;$i<$count;$i++){
 					if($data["value"]==$t_data[$i]){
-						if(isset($t_label[$i])) $data["value"]		= $t_label[$i];
+						if(isset($t_label[$i])){
+							$data["value"]		= $t_label[$i];
+						}
 					}
 				}
 			}
@@ -111,7 +122,7 @@ if(!function_exists('mbw_init_item_data')){
 					if(function_exists('mb_substr')) $data["value"]				= mbw_htmlspecialchars(mb_substr($value, 0, $data["maxlength"], mbw_get_option("encoding")).$data["maxtext"]);
 					else $data["value"]				= mbw_htmlspecialchars(substr($value, 0, $data["maxlength"]).$data["maxtext"]);
 				}else{
-					$data["attribute"]			= $data["attribute"]." maxlength='".$data["maxlength"]."'";
+					$data["attribute"]			= $data["attribute"]." maxlength='".esc_attr($data["maxlength"])."'";
 				}
 			}else if(isset($data["substr"]) && !empty($data["value"])){
 				$value				= mbw_htmlspecialchars_decode($data["value"]);
@@ -162,10 +173,12 @@ if(!function_exists('mbw_init_item_data')){
 					else if(!empty($data["td_class"])) $data["responsive_content_class"] = " ".$data["td_o_class"];
 					else $data["responsive_content_class"] = "";
 
-					$responsive_html	= '<div class="mb-responsive-box'.$data["responsive_box_class"].'"><div class="mb-responsive-box-item">';
-					if(empty($data["colspan"])) $responsive_html	.= '<div class="mb-responsive-box-label'.$data["responsive_label_class"].'"><label for="'.$data["item_id"].'">'.$data["name"].$required_text.'</label></div>'.$data["add_label_html"];
-					$responsive_html	.= '<div class="mb-responsive-box-content'.$data["responsive_content_class"].'">';
-					$data["add_start_html"]		= $responsive_html.$data["add_start_html"];
+					$responsive_html	= '<div class="mb-responsive-box'.esc_attr($data["responsive_box_class"]).'"><div class="mb-responsive-box-item">';
+					if(empty($data["colspan"])){
+						$responsive_html	.= '<div class="mb-responsive-box-label'.esc_attr($data["responsive_label_class"]).'"><label for="'.esc_attr($data["item_id"]).'">'.wp_kses_post($data["name"].$required_text).'</label></div>'.wp_kses_post($data["add_label_html"]);
+					}
+					$responsive_html	.= '<div class="mb-responsive-box-content'.esc_attr($data["responsive_content_class"]).'">';
+					$data["add_start_html"]		= $responsive_html.($data["add_start_html"]);
 					$data["add_end_html"]		= $data["add_end_html"].'</div></div></div>';
 					$data["colspan"]				= '2';
 				}
@@ -211,20 +224,29 @@ if(!function_exists('mbw_init_subitem_data')){
 	}
 }
 if(!function_exists('mbw_init_item_property')){
-	function mbw_init_item_property($mode,$data){		
+	function mbw_init_item_property($mode,$data){
 		$key_data		= array("field","type","name","width","height","data","style","parent");
 		foreach($key_data as $key){
-			if(!isset($data[$key])) $data[$key]		= "";
+			if(!isset($data[$key])){
+				$data[$key]		= "";
+			}
 		}
 		$key_data		= array("attribute","event");
 		foreach($key_data as $key){
-			if(!empty($data[$key])) $data[$key]		= " ".$data[$key];
-			else $data[$key]		= "";
+			if(!empty($data[$key])){
+				$data[$key]		= " ".strip_tags($data[$key]);
+			}else{
+				$data[$key]		= "";
+			}
 		}
-		$key_data		= array("placeholder","title","id");
+		
+		$key_data		= array("title","placeholder","id");
 		foreach($key_data as $key){
-			if(!empty($data[$key])) $data[$key]		= " ".$key.'="'.$data[$key].'"';
-			else $data[$key]		= "";
+			if(!empty($data[$key])){
+				$data[$key]		= " ".$key.'="'.esc_attr($data[$key]).'"';
+			}else{
+				$data[$key]		= "";
+			}
 		}
 		
 		//"device_속성"이 지정되어 있을 경우 해당 device에서 실행시 해당하는 속성으로 설정
@@ -238,10 +260,15 @@ if(!function_exists('mbw_init_item_property')){
 			}
 		}
 		if(empty($data["item_name"])){
-			if(!empty($data["field"])) $data["item_name"]	= str_replace('fn_',"",$data["field"]);
-			else if(!empty($data["type"])) $data["item_name"]	= $data["type"];
-			else $data["item_name"]	= "";
+			if(!empty($data["field"])){
+				$data["item_name"]	= str_replace('fn_',"",mbw_value_filter($data["field"], "name"));
+			}else if(!empty($data["type"])){
+				$data["item_name"]	= mbw_value_filter($data["type"], "name");
+			}else{
+				$data["item_name"]	= "";
+			}
 		}
+		$mode		= mbw_value_filter($mode, "name");
 		if(empty($data["item_id"])){
 			if(!empty($data["item_name"])){
 				$id_suffix				= "";
@@ -264,12 +291,16 @@ if(!function_exists('mbw_init_item_property')){
 				$data["type"]				= "text";
 				$data["mode_type"]		= "write_text";
 			}
+		}		
+		$class	= "";		
+		if(!empty($data["o_class"])){
+			$class				= ' class="'.esc_attr(trim($data["o_class"])).'"';
 		}
-		if(empty($data["class"])) $data["class"]		= "";
-		$data["ext"]			= $data["class"].$data["attribute"].$data["title"].$data["placeholder"].$data["id"].$data["event"];
+		$data["ext"]			= $class.$data["title"].$data["placeholder"].$data["id"].$data["attribute"].$data["event"];		
 		return $data;
 	}
 }
+	
 if(!function_exists('mbw_get_item_template')){
 	function mbw_get_item_template($mode, $data){
 		$template_start		= "";
@@ -299,7 +330,7 @@ if(!function_exists('mbw_get_item_template')){
 
 						if(!empty($item["class"])){
 							$item["o_class"]	= trim($item["class"]);
-							$item["class"]		= ' class="'.$item["o_class"].'"';							
+							$item["class"]		= ' class="'.esc_attr($item["o_class"]).'"';							
 						}else{
 							$item["o_class"]	= "";
 							$item["class"]		= "";							
@@ -488,7 +519,7 @@ if(!function_exists('mbw_get_item_template')){
 					foreach($data["join"] as $item){					
 						if(!empty($item["class"])){
 							$item["o_class"]	= trim($item["class"]);
-							$item["class"]		= ' class="'.$item["o_class"].'"';							
+							$item["class"]		= ' class="'.esc_attr($item["o_class"]).'"';
 						}else {
 							$item["o_class"]	= "";
 							$item["class"]		= "";							
@@ -903,9 +934,15 @@ if(!function_exists('mbw_get_list_setup_data')){
 						$order_type		= "desc";
 					}
 
-					if(!empty($data["col_class"])) $data["col_class"]		= ' class="'.esc_attr(trim($data["col_class"])).'"';
-					if($data["field"]==mbw_get_param("order_by") && !empty($data["th_class"])) $data["th_class"]		= $data["th_class"].' order-'.$order_type;
-					if(!empty($data["th_class"])) $data["th_class"]		= ' class="'.esc_attr(trim($data["th_class"])).'"';
+					if(!empty($data["col_class"])){
+						$data["col_class"]	= ' class="'.esc_attr(trim($data["col_class"])).'"';
+					}
+					if($data["field"]==mbw_get_param("order_by") && !empty($data["th_class"])){
+						$data["th_class"]		= $data["th_class"].' order-'.$order_type;
+					}
+					if(!empty($data["th_class"])){
+						$data["th_class"]		= ' class="'.esc_attr(trim($data["th_class"])).'"';
+					}
 
 					if($data["width"]!="" && $data["width"]!="*"){
 						$template_list_width	.= '<col style="width:'.esc_attr($data["width"]).'"'.$data["col_class"].' />';

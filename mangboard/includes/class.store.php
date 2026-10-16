@@ -129,7 +129,7 @@ Class MStore
 					} else {
 						$last_part = $key;
 					}
-					if ( $last_part == "type" ) {
+					if ( $last_part == "type" && substr_count($key, '_') < 2 ) {
 						if ( $key == "file_type" ) {
 							$this->params[$key]		= mbw_value_filter($value, "mime_type");						
 						} else if ( $key != "content_type" ) {		//content_type 변수에는 다양한 사용자 값이 들어갈 수 있어서 필터 검사에서 제외 필요
@@ -151,8 +151,25 @@ Class MStore
 			}
 			
 			//회원 이름에서 특수기호 제거: (, ), =
-			if ( !empty($this->params["user_name"]) ) {		
+			if ( !empty($this->params["user_name"]) ) {
 				$this->params["user_name"]			= preg_replace('/[()=]/', '', $this->params["user_name"]);
+			}
+			
+			//image_path 에서 파일 이름 및 확장자 체크 
+			if ( !empty($this->params["image_path"]) ) {		
+				$image_path	= $this->params["image_path"];
+				if(strpos($image_path, '.php')!==false || strpos($image_path, '.phar')!==false || strpos($image_path, '.phtm')!==false){
+					$this->params["image_path"]			= "";
+				}else{
+					$file_name		= basename($image_path);
+					$name_array		= explode('.',$file_name);
+					$file_ext			= strtolower(array_pop($name_array));
+					$file_path			= str_replace($file_name, "", $image_path);
+					global $mb_image_upload_files;
+					if ( strpos($file_path, '..')!==false || !in_array($file_ext, $mb_image_upload_files) ) {
+						$this->params["image_path"]			= "";
+					}			
+				}
 			}
 			
 			$text_param		= array("search_text","stag","search_add_text1","search_add_text2","search_add_text3","redirect_to","category1","category2","category3","stype1","stype2","stype3","se_text1","se_text2","se_text3","se_text4","se_text5","search_name");

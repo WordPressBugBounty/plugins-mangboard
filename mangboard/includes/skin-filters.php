@@ -63,7 +63,7 @@ if(!function_exists('mbw_filter_board_item')){
 
 				if(!empty($img_path)){
 					if(mbw_get_param("mode")!="list" || mbw_get_param("list_type")!="gallery"){		//갤러리 리스트가 아닐경우에만 회원 썸네일 표시
-						$add_icon1			= '<img class="mb-user-small-picture radius-3" alt="user icon" style="vertical-align:middle;max-width:20px;max-height:20px;" src="'.$img_path.'" /> ';
+						$add_icon1			= '<img class="mb-user-small-picture radius-3" alt="user icon" style="vertical-align:middle;max-width:20px;max-height:20px;" src="'.esc_url($img_path).'" /> ';
 						if(!empty($data["user_pid"])) $add_icon1	= '<a href="javascript:;" onclick="getUserMenu(\''.esc_attr($data["user_pid"]).'\',\''.esc_attr($data[$mb_fields["board"]["fn_pid"]]).'\');return false;" class="btn-user-picture" role="button">'.$add_icon1.'</a>';
 						$item["value"]				= $add_icon1.$item["value"];
 					}
@@ -74,21 +74,22 @@ if(!function_exists('mbw_filter_board_item')){
 				//html 에디터로 작성된 글만 디코드
 				$item["value"]			= mbw_htmlspecialchars_decode($item["value"]);
 				
-				//관리자가 작성한 게시물이 아닐 경우 htmlpurify 함수를 이용하여 보안처리
 				$item_level				= intval(mbw_get_board_item("fn_level", false));
-				if($item_level<10){					
+				if ( $item_level == 0 ) {	//비회원이 작성한 게시물은 추가 보안 검증
 					if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
 						$item["value"]		= mbw_get_htmlpurify($item["value"]);
 					} else {
 						$item["value"]		= wp_kses_post($item["value"]);
 					}
 				}
-				
 				if((mbw_get_param("mode")=="list" || mbw_get_param("mode")=="view") && function_exists('mbw_replace_image_url')){
 					$item["value"]			= mbw_replace_image_url($item["value"]);
 				}
-			}else if( $item["type"] != "comment" && mbw_get_param("mode") != "write" ){
-				$item["value"]			= nl2br($item["value"]);
+			} else {				
+				$item["value"]			= esc_html(mbw_htmlspecialchars_decode($item["value"]));
+				if ( $item["type"] != "comment" && mbw_get_param("mode") != "write" ) {
+					$item["value"]		= nl2br($item["value"]);
+				}
 			}
 
 			if( !empty($mb_fields["select_board"]["fn_editor_type"]) && !empty($data[$mb_fields["select_board"]["fn_editor_type"]]) && $data[$mb_fields["select_board"]["fn_editor_type"]] == "W" ){

@@ -90,7 +90,7 @@ if(!function_exists('mbw_set_api_params')){
 					if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
 						mbw_set_param("content",mbw_get_htmlpurify($tmp_content));
 					} else {
-						mbw_set_param("content",mbw_htmlspecialchars2($tmp_content,ENT_NOQUOTES));
+						mbw_set_param("content",wp_kses_post($tmp_content));
 					}						
 				}			
 			}
@@ -404,7 +404,7 @@ if(!function_exists('mbw_check_api_required')){
 							$filter		= mbw_check_filter($data["filter"], $send_data[$api_fields[$data["field"]]]);
 							if(!empty($filter)){
 								if(isset($data["filter_error"])){
-									$error_message		= '<div>"'.$filter.'"</div>'.mbw_get_message($data["filter_error"]);
+									$error_message		= '<div>"'.esc_html($filter).'"</div>'.mbw_get_message($data["filter_error"]);
 								}else{
 									$error_message		= "MSG_FILTER_ERROR";
 								}
@@ -627,7 +627,7 @@ if(!function_exists('mbw_file_upload')){
 		$limit_size				= floatval(mbw_get_option("upload_file_size"))*1024*1024;
 
 		if(mbw_get_param("add_upload_path")!=""){
-			$add_upload_path	= mbw_value_filter(mbw_get_param("add_upload_path"));
+			$add_upload_path	= mbw_value_filter(mbw_get_param("add_upload_path"), "name");
 			$datePath				= $add_upload_path.'/'.$datePath;
 		}
 
@@ -827,7 +827,7 @@ if(!function_exists('mbw_file_upload')){
 				$mime_type				= $file_info->buffer($file_data);
 			}else{
 				mbw_error_message("Upload error<br>Finfo class not found in PHP","","1500");
-				return false;
+				return array("name"=>"");
 			}
 
 			$upload_data["name"]		= rawurldecode($html5_file['file_name']);
@@ -835,7 +835,7 @@ if(!function_exists('mbw_file_upload')){
 			$file_size						= $html5_file["file_size"];			
 			
 			$name_array		= explode('.',$upload_data["name"]);
-			if(count($name_array)==1) return false;
+			if(count($name_array)==1) return array("name"=>"");
 			$file_ext				= array_pop($name_array);
 			$file_ext				= strtolower($file_ext);
 
@@ -881,141 +881,145 @@ if(!function_exists('mbw_file_upload')){
 				}
 			}			
 		}else if(!empty($_POST["img64"])){			
-			$file_prefix			= "HE";			
-			$file_ext				= "jpg";
-			$file_type			= "image/jpeg";			
+			if ( !defined('MBW_IMAGE_EDITOR') && !function_exists('mbw_init_editor_img_upload')){
+				mbw_error_message("MSG_ERROR", "Upload","1500");
+			} else {
+				$file_prefix			= "HE";			
+				$file_ext				= "jpg";
+				$file_type			= "image/jpeg";			
 
-			if(mbw_get_param("file_name")!=""){
-				$upload_data["name"]			= mbw_get_param("file_name");
-			}else{				
-				$upload_data["name"]			= $file_prefix.$args["board_pid"].".".$file_ext;
-			}
-			$upload_data["name"]		= mbw_check_upload_filename($upload_data["name"]);
-			
-			$name_array	= explode('.',$upload_data["name"]);
-			if(count($name_array)==1) return $upload_data;
-			$file_ext			= strtolower(array_pop($name_array));
-			if(mbw_get_param("file_type")!=""){
-				$file_type	= mbw_get_param("file_type");
-			}else{
-				if($file_ext=="png") $file_type	= "image/png";
-			}
-			$file_name			= mbw_get_file_name($file_pid,$upload_data["name"]);
-			$file_path			= "";
-			if(strpos($_POST["img64"], ',')!==false){
-				$img_data				= explode(",",$_POST["img64"]);
-				$_POST["img64"]		= str_replace(' ', '+', $img_data[1]);
-			}
-			$fd					= base64_decode($_POST["img64"]);
-			$file_size			= strlen($fd);
-			if(!in_array($file_ext, $mb_image_upload_files)){
-				mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
-			}else if($file_size>$limit_size){
-				mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_get_option("upload_file_size"),"1503");
-			}else if(mbw_get_result_data("state")!="error"){
-				$file_item					= array();
-				$upload_data["path"]	= $datePath.$file_name;
-				if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify" && mbw_get_param("image_path")!=""){		//게시물 수정시 대표이미지가 존재할 경우 해당 경로에 덮어쓰기로 저장
-					$file_item				= $mdb->get_row($mdb->prepare("select * from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_file_path"]."=%s limit 1;", mbw_get_param("image_path")),ARRAY_A);
-					if(empty($file_item)){		//수정할 이미지가 삭제되었을 경우 대표 이미지 경로에 다시 저장
-						$image_path				= mbw_get_param("image_path");
-						$file_name				= basename($image_path);
-						$datePath					= preg_replace('/[^0-9a-zA-Z\/]/', '', str_replace($file_name, "", $image_path));
-						
-						$file_name				= mbw_check_upload_filename($file_name);
-						$name_array				= explode('.',$file_name);
-						$file_ext					= strtolower(array_pop($name_array));
-						
-						if(!in_array($file_ext, $mb_image_upload_files)){
-							mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
-							return false;
-						}else{						
-							if(strpos($file_name, 'F')===0 && strpos($file_name, '_')!==false){
-								$upload_data["name"]		= substr($file_name,strpos($file_name, '_')+1);
-							}else{
-								$upload_data["name"]		= $file_name;
-							}
-							$upload_data["path"]	= $image_path;
-							$board_pid				= mbw_get_param("board_pid");
-							if(!empty($board_pid)){
-								if(isset($api_fields["fn_board_pid"])){
-									$send_data[$api_fields["fn_board_pid"]]						= intval($board_pid);
-								}
-								$board_name		= mbw_get_param("board_name");
-								if(!empty($board_name)){								
-									if(isset($api_fields["fn_board_name"])){
-										$send_data[$api_fields["fn_board_name"]]						= mbw_htmlspecialchars2($board_name);
-									}
-									$table_name			= mbw_get_board_table_name($board_name);
-									if(isset($api_fields["fn_table_name"]) && !empty($table_name)){
-										$send_data[$api_fields["fn_table_name"]]						= mbw_htmlspecialchars2($table_name);
-									}							
-								}
-							}
-						}
-					}
-				}				
-				if(mbw_get_result_data("state")=="error"){
-					return false;
-				}				
-				if(!empty($file_item)){
-					$user_pid				= intval(mbw_get_user("fn_pid"));
-					$user_level			= intval(mbw_get_user("fn_user_level"));
-					if(($user_pid==intval($file_item[$mb_fields["files"]["fn_user_pid"]])) || ($user_level>=intval(mbw_get_board_option("fn_manage_level")))){
-						$file_pid					= $file_item[$mb_fields["files"]["fn_pid"]];
-						$upload_data["pid"]		= $file_pid;
-						$upload_data["path"]	= $file_item[$mb_fields["files"]["fn_file_path"]];
-						$datePath					= substr($upload_data["path"],0,11);
-						$file_name				= substr($upload_data["path"],11);
-						$upload_data["name"]	= $file_item[$mb_fields["files"]["fn_file_name"]];
-						if($file_item[$mb_fields["files"]["fn_file_description"]]!="img64"){
-							return $upload_data;
-						}else{
-							$send_data2				= array();
-							if(isset($api_fields["fn_file_size"]))				$send_data2[$api_fields["fn_file_size"]]			= mbw_htmlspecialchars2($file_size);
-							$where_data[$mb_fields["files"]["fn_pid"]]			= $file_pid;
-							$mdb->db_query("UPDATE",$mb_admin_tables["files"], $send_data2, $where_data);
-						}
-					}
-				}else{
-					if(isset($api_fields["fn_pid"]))					$send_data[$api_fields["fn_pid"]]						= mbw_htmlspecialchars2($file_pid);
-					if(isset($api_fields["fn_file_name"]))			$send_data[$api_fields["fn_file_name"]]				= mbw_htmlspecialchars2($upload_data["name"]);
-					if(isset($api_fields["fn_file_sequence"]))			$send_data[$api_fields["fn_file_sequence"]]		= mbw_htmlspecialchars2($file_sequence);
-					if(isset($api_fields["fn_file_description"]))		$send_data[$api_fields["fn_file_description"]]		= "img64";
-					if(isset($api_fields["fn_file_size"]))				$send_data[$api_fields["fn_file_size"]]					= mbw_htmlspecialchars2($file_size);
-					if(isset($api_fields["fn_file_type"]))				$send_data[$api_fields["fn_file_type"]]				= mbw_htmlspecialchars2($file_type);
-					if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]				= mbw_htmlspecialchars2($upload_data["path"]);
-					if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
-					$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
+				if(mbw_get_param("file_name")!=""){
+					$upload_data["name"]			= mbw_get_param("file_name");
+				}else{				
+					$upload_data["name"]			= $file_prefix.$args["board_pid"].".".$file_ext;
 				}
+				$upload_data["name"]		= mbw_check_upload_filename($upload_data["name"]);
 				
-				$mime_type		= "";
-				if ( class_exists( 'finfo', false ) && defined('FILEINFO_MIME_TYPE') ){
-					$file_info						= new finfo(FILEINFO_MIME_TYPE);
-					$mime_type					= $file_info->buffer($fd);
+				$name_array	= explode('.',$upload_data["name"]);
+				if(count($name_array)==1) return $upload_data;
+				$file_ext			= strtolower(array_pop($name_array));
+				if(mbw_get_param("file_type")!=""){
+					$file_type	= mbw_get_param("file_type");
 				}else{
-					mbw_error_message("Upload error Finfo class not found in PHP","","1500");
-					return false;
-				}				
-				
-				if(strpos($mime_type,"image/")!==0){
-					mbw_error_message("MSG_ERROR", "Upload","1500");
-				}else if(strpos(wp_normalize_path(realpath($uploadPath.$datePath)), MBW_UPLOAD_PATH)!==0){
-					mbw_error_message("MSG_ERROR", "Upload","1500");
-				}else{					
-					$fp_path		= $uploadPath.$datePath.$file_name;
-					$fp		= fopen($fp_path,"w");
-					fwrite($fp,$fd);
-					fclose($fp);
-					@chmod($fp_path, 0644);
-					mbw_check_image_orientation($fp_path);
-					do_action('mbw_file_api_image_upload',$fp_path,$file_pid);
-					$img_small_size		= mbw_get_option("make_img_small_size");
-					$img_middle_size		= mbw_get_option("make_img_middle_size");
-					if(!empty($img_small_size)) mbw_create_image($uploadPath.$upload_data["path"],"small");
-					if(!empty($img_middle_size)) mbw_create_image($uploadPath.$upload_data["path"],"middle");
-					mbw_analytics("today_upload");
-					do_action('mbw_file_api_upload',$fp_path,$file_pid);
+					if($file_ext=="png") $file_type	= "image/png";
+				}
+				$file_name			= mbw_get_file_name($file_pid,$upload_data["name"]);
+				$file_path			= "";
+				if(strpos($_POST["img64"], ',')!==false){
+					$img_data				= explode(",",$_POST["img64"]);
+					$_POST["img64"]		= str_replace(' ', '+', $img_data[1]);
+				}
+				$fd					= base64_decode($_POST["img64"]);
+				$file_size			= strlen($fd);
+				if(!in_array($file_ext, $mb_image_upload_files)){
+					mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
+				}else if($file_size>$limit_size){
+					mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_get_option("upload_file_size"),"1503");
+				}else if(mbw_get_result_data("state")!="error"){
+					$file_item					= array();
+					$upload_data["path"]	= $datePath.$file_name;
+					if(defined('MBW_IMAGE_EDITOR') && mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify" && mbw_get_param("image_path")!=""){		//게시물 수정시 대표이미지가 존재할 경우 해당 경로에 덮어쓰기로 저장
+						$image_path				= mbw_get_param("image_path");
+						$file_item					= $mdb->get_row($mdb->prepare("select * from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_file_path"]."=%s limit 1;", $image_path),ARRAY_A);
+						if(empty($file_item)){		//수정할 이미지가 삭제되었을 경우 대표 이미지 경로에 다시 저장							
+							$file_name				= basename($image_path);
+							$datePath					= preg_replace('/[^0-9a-zA-Z\/]/', '', str_replace($file_name, "", $image_path));
+							
+							$file_name				= mbw_check_upload_filename($file_name);
+							$name_array				= explode('.',$file_name);
+							$file_ext					= strtolower(array_pop($name_array));
+							
+							if(!in_array($file_ext, $mb_image_upload_files)){
+								mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
+								return array("name"=>"");
+							}else{						
+								if(strpos($file_name, 'F')===0 && strpos($file_name, '_')!==false){
+									$upload_data["name"]		= substr($file_name,strpos($file_name, '_')+1);
+								}else{
+									$upload_data["name"]		= $file_name;
+								}
+								$upload_data["path"]	= $datePath.$file_name;
+								$board_pid				= mbw_get_param("board_pid");
+								if(!empty($board_pid)){
+									if(isset($api_fields["fn_board_pid"])){
+										$send_data[$api_fields["fn_board_pid"]]						= intval($board_pid);
+									}
+									$board_name		= mbw_get_param("board_name");
+									if(!empty($board_name)){								
+										if(isset($api_fields["fn_board_name"])){
+											$send_data[$api_fields["fn_board_name"]]						= mbw_htmlspecialchars2($board_name);
+										}
+										$table_name			= mbw_get_board_table_name($board_name);
+										if(isset($api_fields["fn_table_name"]) && !empty($table_name)){
+											$send_data[$api_fields["fn_table_name"]]						= mbw_htmlspecialchars2($table_name);
+										}							
+									}
+								}
+							}
+						}
+					}				
+					if(mbw_get_result_data("state")=="error"){
+						return array("name"=>"");
+					}				
+					if(!empty($file_item)){
+						$user_pid				= intval(mbw_get_user("fn_pid"));
+						$user_level			= intval(mbw_get_user("fn_user_level"));
+						if(($user_pid==intval($file_item[$mb_fields["files"]["fn_user_pid"]])) || ($user_level>=intval(mbw_get_board_option("fn_manage_level")))){
+							$file_pid					= $file_item[$mb_fields["files"]["fn_pid"]];
+							$upload_data["pid"]		= $file_pid;
+							$upload_data["path"]	= $file_item[$mb_fields["files"]["fn_file_path"]];
+							$datePath					= substr($upload_data["path"],0,11);
+							$file_name				= substr($upload_data["path"],11);
+							$upload_data["name"]	= $file_item[$mb_fields["files"]["fn_file_name"]];
+							if($file_item[$mb_fields["files"]["fn_file_description"]]!="img64"){
+								return $upload_data;
+							}else{
+								$send_data2				= array();
+								if(isset($api_fields["fn_file_size"]))				$send_data2[$api_fields["fn_file_size"]]			= mbw_htmlspecialchars2($file_size);
+								$where_data[$mb_fields["files"]["fn_pid"]]			= $file_pid;
+								$mdb->db_query("UPDATE",$mb_admin_tables["files"], $send_data2, $where_data);
+							}
+						}
+					}else{
+						if(isset($api_fields["fn_pid"]))					$send_data[$api_fields["fn_pid"]]						= mbw_htmlspecialchars2($file_pid);
+						if(isset($api_fields["fn_file_name"]))			$send_data[$api_fields["fn_file_name"]]				= mbw_htmlspecialchars2($upload_data["name"]);
+						if(isset($api_fields["fn_file_sequence"]))			$send_data[$api_fields["fn_file_sequence"]]		= mbw_htmlspecialchars2($file_sequence);
+						if(isset($api_fields["fn_file_description"]))		$send_data[$api_fields["fn_file_description"]]		= "img64";
+						if(isset($api_fields["fn_file_size"]))				$send_data[$api_fields["fn_file_size"]]					= mbw_htmlspecialchars2($file_size);
+						if(isset($api_fields["fn_file_type"]))				$send_data[$api_fields["fn_file_type"]]				= mbw_htmlspecialchars2($file_type);
+						if(isset($api_fields["fn_file_path"]))				$send_data[$api_fields["fn_file_path"]]				= mbw_htmlspecialchars2($upload_data["path"]);
+						if(has_filter('mf_file_send_data')) $send_data		= apply_filters("mf_file_send_data",$send_data);
+						$mdb->db_query("INSERT",$mb_admin_tables["files"], $send_data, $where_data);
+					}
+					
+					$mime_type		= "";
+					if ( class_exists( 'finfo', false ) && defined('FILEINFO_MIME_TYPE') ){
+						$file_info						= new finfo(FILEINFO_MIME_TYPE);
+						$mime_type					= $file_info->buffer($fd);
+					}else{
+						mbw_error_message("Upload error Finfo class not found in PHP","","1500");
+						return false;
+					}				
+					
+					if(strpos($mime_type,"image/")!==0){
+						mbw_error_message("MSG_ERROR", "Upload","1500");
+					}else if(strpos(wp_normalize_path(realpath($uploadPath.$datePath)), MBW_UPLOAD_PATH)!==0){
+						mbw_error_message("MSG_ERROR", "Upload","1500");
+					}else{					
+						$fp_path		= $uploadPath.$datePath.$file_name;
+						$fp				= fopen($fp_path,"w");
+						fwrite($fp,$fd);
+						fclose($fp);
+						@chmod($fp_path, 0644);
+						mbw_check_image_orientation($fp_path);
+						do_action('mbw_file_api_image_upload',$fp_path,$file_pid);
+						$img_small_size		= mbw_get_option("make_img_small_size");
+						$img_middle_size		= mbw_get_option("make_img_middle_size");
+						if(!empty($img_small_size)) mbw_create_image($uploadPath.$upload_data["path"],"small");
+						if(!empty($img_middle_size)) mbw_create_image($uploadPath.$upload_data["path"],"middle");
+						mbw_analytics("today_upload");
+						do_action('mbw_file_api_upload',$fp_path,$file_pid);
+					}
 				}
 			}
 		}

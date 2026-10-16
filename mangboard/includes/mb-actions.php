@@ -410,7 +410,7 @@ if(!function_exists('mbw_plugin_trigger_check')){
 			}
 			exit;
 		}else if($mb_trigger == "file") {
-			if ( !mbw_verify_nonce() && mbw_is_login() && mbw_get_param("file_content") != "" ) {
+			if ( mbw_is_login() && mbw_get_param("file_content") != "" ) {
 				$file_type			= "application/octet-stream";
 				if( mbw_get_param("file_type") != "" ){
 					$type		= mbw_value_filter(mbw_get_param("file_type"),"mime_type");
@@ -627,23 +627,6 @@ add_action('mbw_board_api_body', 'mbw_latest_api_body',5);
 add_action('mbw_comment_api_body', 'mbw_latest_api_body',5); 
 //Shortcode Action 등록
 
-add_shortcode("mb_image", 'mbw_create_image_panel');
-if(!function_exists('mbw_create_image_panel')){
-	function mbw_create_image_panel($args, $content=""){
-		if(!empty($content)) $args["content"]		= $content;
-		$data					= mbw_init_item_data("image",$args);	
-		$image_html		= "";
-	
-		if(!empty($data["align"]))
-			$image_html	= $image_html.'<div style="text-align:'.$data["align"].';">';
-		else 
-			$image_html	= $image_html.'<div>';
-		$image_html	= $image_html.mbw_get_input_template("image",$data);
-		$image_html	= $image_html.'</div>';
-		return $image_html;		
-	}
-}
-
 add_action('mbw_board_skin_header', 'mbw_add_board_setup_button');		//게시판 설정 버튼 추가
 if(!function_exists('mbw_add_board_setup_button')){
 	function mbw_add_board_setup_button(){
@@ -670,10 +653,10 @@ if(!function_exists('mbw_add_board_setup_button')){
 				if(!mbw_is_admin_page()){
 					if(mbw_get_board_name()!="" && mbw_get_board_option("fn_pid")!=""){
 						$button_name		= __MW("W_SETTING");
-						$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name=board_options&mode=write&board_action=modify&board_pid='.mbw_get_board_option("fn_pid").'\');return false;" class="btn btn-default btn-setup" title="'.$button_name.'" type="button"><span>'.$button_name.'</span></button>';
+						$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name=board_options&mode=write&board_action=modify&board_pid='.esc_attr(mbw_get_board_option("fn_pid")).'\');return false;" class="btn btn-default btn-setup" title="'.esc_attr($button_name).'" type="button"><span>'.esc_attr($button_name).'</span></button>';
 						if(mbw_get_vars("device_type")=="desktop"){
 							$button_name		= __MW("W_MENU_BOARD");
-							$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name='.mbw_get_board_option("fn_board_name2").'\');return false;" class="btn btn-default btn-manage" title="'.$button_name.'" type="button"><span>'.$button_name.'</span></button>';
+							$button_html		.= '<button onclick="movePage(\''.admin_url('admin.php').'?page=mbw_board_options&board_name='.esc_attr(mbw_get_board_option("fn_board_name2")).'\');return false;" class="btn btn-default btn-manage" title="'.esc_attr($button_name).'" type="button"><span>'.esc_html($button_name).'</span></button>';
 						}						
 					}
 				}
@@ -885,7 +868,7 @@ if(!function_exists('mbw_filter_widget_latest_items')){
 						}else{
 							$order_type		= "asc";
 						}
-						$latest_items		= $mdb->get_results($mdb->prepare("SELECT * FROM " . mbw_get_table_name($item) . $w_query." order by %1s %1s limit %d,%d;",$order_by,$order_type,$list_page,$list_size), ARRAY_A);
+						$latest_items		= $mdb->get_results($mdb->prepare("SELECT * FROM " . mbw_get_board_table_name($item) . $w_query." order by %1s %1s limit %d,%d;",$order_by,$order_type,$list_page,$list_size), ARRAY_A);
 
 						foreach($latest_items as $key=>$value){
 							$latest_items[$key]['board_name']		= $item;

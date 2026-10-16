@@ -298,7 +298,7 @@ if(!function_exists('mbw_get_input_template')){
 			$i_name				= mbw_set_form_name($data["item_name"]);
 			$t_name				= $i_name;
 			if($count>1) $t_name	= $t_name."[]";
-			$template_start	.= '<input name="'.$i_name.'" value="" type="hidden" />';
+			$template_start	.= '<input name="'.esc_attr($i_name).'" value="" type="hidden" />';
 			for($i;$i<$count;$i++){
 				if(!isset($t_label[$i])) $t_label[$i]		= "";
 				if(!isset($t_data[$i])) $t_data[$i]		= "";
@@ -307,7 +307,7 @@ if(!function_exists('mbw_get_input_template')){
 					$checked		= ' checked ';
 				}else $checked		= "";
 
-				$template_start	.= '<label for="'.esc_attr($data["item_id"].($i+1)).'"><input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.esc_attr($t_name).'" id="'.esc_attr($data["item_id"].($i+1)).'" value="'.esc_attr($t_data[$i]).'" '.esc_attr($checked).' /><span>'.($t_label[$i]).'</span></label>';
+				$template_start	.= '<label for="'.esc_attr($data["item_id"].($i+1)).'"><input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.esc_attr($t_name).'" id="'.esc_attr($data["item_id"].($i+1)).'" value="'.esc_attr($t_data[$i]).'" '.esc_attr($checked).' /><span>'.wp_kses_post($t_label[$i]).'</span></label>';
 			}
 		}else if(strpos($item_type,'checkbox')===0){
 			$delimiter			= ",";
@@ -329,7 +329,7 @@ if(!function_exists('mbw_get_input_template')){
 					$checked		= ' checked ';
 				}else $checked		= "";
 
-				$template_start	.= '<label for="'.esc_attr($data["item_id"].($i+1)).'"><input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.esc_attr($t_name).'" id="'.esc_attr($data["item_id"].($i+1)).'" value="'.esc_attr($i+1).'" '.esc_attr($checked).' /><span>'.($t_label[$i]).'</span></label>';
+				$template_start	.= '<label for="'.esc_attr($data["item_id"].($i+1)).'"><input'.$data["ext"].__STYLE($data["style"]).' type="checkbox" name="'.esc_attr($t_name).'" id="'.esc_attr($data["item_id"].($i+1)).'" value="'.esc_attr($i+1).'" '.esc_attr($checked).' /><span>'.wp_kses_post($t_label[$i]).'</span></label>';
 			}
 		}else if(strpos($item_type,'radio')===0){
 			$delimiter			= ",";
@@ -346,7 +346,7 @@ if(!function_exists('mbw_get_input_template')){
 					$checked		= ' checked ';					
 				}else $checked		= "";
 
-				$template_start	.= '<label for="'.esc_attr($data["item_id"].($i+1)).'"><input'.$data["ext"].__STYLE($data["style"]).' type="radio" name="'.mbw_set_form_name($data["item_name"]).'" id="'.esc_attr($data["item_id"].($i+1)).'" value="'.esc_attr($t_data[$i]).'" '.esc_attr($checked).' /><span>'.($t_label[$i]).'</span></label>';
+				$template_start	.= '<label for="'.esc_attr($data["item_id"].($i+1)).'"><input'.$data["ext"].__STYLE($data["style"]).' type="radio" name="'.mbw_set_form_name($data["item_name"]).'" id="'.esc_attr($data["item_id"].($i+1)).'" value="'.esc_attr($t_data[$i]).'" '.esc_attr($checked).' /><span>'.wp_kses_post($t_label[$i]).'</span></label>';
 			}
 		}else if(strpos($item_type,'select')===0){
 			if(!empty($data["width"])) $data["style"]		= "width:".$data["width"]." !important;".$data["style"];
@@ -376,7 +376,7 @@ if(!function_exists('mbw_get_input_template')){
 				$template_start	.= '<option'.$o_data.'>'.strip_tags($t_label[$i]).'</option>';
 			}
 			if($data["value"]!="" && !$item_check){
-				$template_start	.= '<option value="'.esc_attr($data["value"]).'" selected>'.(($data["value"])).'</option>';
+				$template_start	.= '<option value="'.esc_attr($data["value"]).'" selected>'.strip_tags($data["value"]).'</option>';
 			}
 			$template_start	.= '</select>';
 
