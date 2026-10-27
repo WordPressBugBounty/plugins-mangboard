@@ -61,6 +61,10 @@ class MangBoard
 				mbw_set_search_field($args);
 			}
 		}
+		
+		if ( mbw_get_param("write_next_page") == "" && !empty($args['write_next_page']) ) {
+			mbw_set_param("write_next_page", mbw_value_filter($args['write_next_page'],"name"));			
+		}		
 		if ( !empty($args['write_next_url']) ) {
 			if ( $args['write_next_url'] == "write" || $args['write_next_url'] == "referer" ) {
 				mbw_set_option("write_next_page",$args['write_next_url']);

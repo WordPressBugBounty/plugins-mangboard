@@ -234,7 +234,9 @@ $mb_languages["W_END_DATE"]						= "종료일";
 $mb_languages["W_BOARD_LINK_NONE"]			= "연결안함";
 $mb_languages["W_BOARD_LINK_INPUT"]			= "직접입력";
 
-
+$mb_languages["W_CHANGE_PASSWORD"]			= "비밀번호 변경";
+$mb_languages["W_NEW_PASSWORD"]				= "새 비밀번호";
+$mb_languages["W_SAVE"]							= "저장하기";
 
 $mb_languages["W_LOGIN"]						= "로그인";
 $mb_languages["W_LOGOUT"]					= "로그아웃";

@@ -221,6 +221,10 @@ $mb_languages["W_END_DATE"]	= "结束日";
 		
 $mb_languages["W_BOARD_LINK_NONE"]	= "不链接";	
 $mb_languages["W_BOARD_LINK_INPUT"]	= "直接输入";	
+
+$mb_languages["W_CHANGE_PASSWORD"]			= "更改密码";
+$mb_languages["W_NEW_PASSWORD"]				= "新建密码";
+$mb_languages["W_SAVE"]							= "保存";
 		
 		
 		

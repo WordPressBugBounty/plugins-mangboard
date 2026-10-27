@@ -91,9 +91,9 @@ if(function_exists('get_plugin_data')){
 
 if(!empty($_GET["install_product"])){	
 	if(!current_user_can('administrator')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
+		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php').'?page=mbw_store&category='.$category1).'");</script>'; // phpcs:ignore
 	}else if(version_compare($mb_version2, $check_version, '<')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
+		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php').'?page=mbw_store&category='.$category1).'");</script>'; // phpcs:ignore
 	}else{
 		echo '<div id="wpbody" role="main" class="mb-dash mb-'.esc_attr(mbw_get_vars("device_type")).'">';
 		echo '<div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">';
@@ -115,9 +115,9 @@ if(!empty($_GET["install_product"])){
 	}
 }else if(!empty($_GET["delete_product"])){
 	if(!current_user_can('administrator')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
+		echo '<script>alert("'.__MM('MSG_INSTALL_PERMISSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php').'?page=mbw_store&category='.$category1).'");</script>'; // phpcs:ignore
 	}else if(version_compare($mb_version2, $check_version, '<')){
-		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store&category="'.esc_js($category1).');</script>'; // phpcs:ignore
+		echo '<script>alert("'.__MM('MSG_INSTALL_VERSION_ERROR').'");moveURL("'.esc_url(admin_url('admin.php').'?page=mbw_store&category='.$category1).'");</script>'; // phpcs:ignore
 	}else{
 		echo '<div id="wpbody" role="main" class="mb-dash mb-'.esc_attr(mbw_get_vars("device_type")).'">';
 		echo '<div id="wpbody-content" aria-label="Main Contents" tabindex="0" style="overflow: hidden;" class="mb-board">';

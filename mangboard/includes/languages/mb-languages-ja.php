@@ -225,6 +225,10 @@ $mb_languages["W_END_DATE"]	= "終了日";
 		
 $mb_languages["W_BOARD_LINK_NONE"]	= "連結しない";	
 $mb_languages["W_BOARD_LINK_INPUT"]	= "直接入力";	
+
+$mb_languages["W_CHANGE_PASSWORD"]			= "パスワードを変更";
+$mb_languages["W_NEW_PASSWORD"]				= "新しいパスワード";
+$mb_languages["W_SAVE"]							= "保存";
 		
 		
 		

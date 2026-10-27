@@ -54,7 +54,7 @@ $desktop_model['write']		= '
 {"field":"fn_tag","name":"W_TAG","width":"99%","class":"tag","description":"<br>(MSG_TAG_INPUT)"},
 {"field":"fn_file1","name":"W_FILE1","width":"300px","type":"file","class":"mb-file-upload"},
 {"field":"fn_file2","name":"W_FILE2","width":"300px","type":"file","class":"mb-file-upload"},
-{"type":"kcaptcha_img","name":"W_KCAPTCHA","width":"70px","height":"30px","class":"kcaptcha","level":{"sign":"<","grade":"1"},"modify":"none","description":"<br>(MSG_CAPTCHA_INPUT)"},
+{"type":"kcaptcha_img","name":"W_KCAPTCHA","width":"70px","height":"30px","class":"kcaptcha","level":{"sign":"<","grade":"1"},"description":"<br>(MSG_CAPTCHA_INPUT)"},
 {"tpl":"tag","tag_name":"table","type":"end"}
 ';
 

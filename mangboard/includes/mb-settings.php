@@ -1,6 +1,7 @@
 <?php
 if(!function_exists('mbw_get_require_path')){
 	function mbw_get_require_path($dir_name, $type="dir"){
+		$dir_name	= mbw_value_filter($dir_name, "path");
 		if ( strpos($type, 'theme_') === 0 ) {
 			$path		= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/".$dir_name;
 		} else {
@@ -15,7 +16,10 @@ if(!function_exists('mbw_get_require_path')){
 			$add_path		= MBW_STORE_DIR;
 		}else{
 			$add_path		= mbw_get_option("store_path");
-		}		
+		}
+		if ( !empty($add_path) ) {
+			$add_path	= mbw_value_filter($add_path, "path");
+		}
 		
 		$path							= rtrim(wp_normalize_path($path), '/\\');
 		$require_path				= array();

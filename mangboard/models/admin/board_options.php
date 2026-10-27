@@ -243,10 +243,9 @@ if(mbw_is_admin_page()){		//어드민 페이지에서만 실행
 		$category		= $mdb->get_distinct_values($mb_admin_tables["board_options"],$mb_fields["board_options"]["fn_board_type"],array(array("field"=>$mb_fields["board_options"]["fn_is_show"],"value"=>"1")));		//board_type 필드에서 고유한 값을 배열로 가져옴
 
 		if(!empty($category)) mbw_set_board_option("fn_category_data", implode(",",$category));
-
-		if(mbw_get_param('mode')=="view" && mbw_get_param('board_pid')!=""){
-			$board_pid				= mbw_get_param('board_pid');
-			$post_id					= $mdb->get_var("SELECT ".$mb_fields["board_options"]["fn_post_id"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_pid"]."='".$board_pid."' limit 1");
+		
+		if(mbw_get_param('mode')=="view" && mbw_get_param('board_pid')!=""){				
+			$post_id					= $mdb->get_var($mdb->prepare("SELECT ".$mb_fields["board_options"]["fn_post_id"]." FROM ".$mb_admin_tables["board_options"]." where ".$mb_fields["board_options"]["fn_pid"]."=%d limit 1", mbw_get_param("board_pid") ));
 			if(!empty($post_id)){
 				$add_button			= mbw_get_btn_template(array("name"=>__MW('W_BOARD'),"href"=>get_permalink($post_id),"class"=>"btn btn-default"));
 				mbw_add_left_button("view",$add_button);

@@ -42,8 +42,10 @@ if(!function_exists('mbw_manage_page')){
 			$page				= str_replace( "mbw_", "", mbw_get_param("page"));
 			$page				= mbw_value_filter($page,"name");
 			
-			if ( mbw_get_option("store_path") !="" ) {
-				$template_path	= WP_CONTENT_DIR.mbw_get_option("store_path");
+			$store_path		= mbw_get_option("store_path");
+			if ( !empty($store_path) ) {
+				$store_path		= mbw_value_filter($store_path, "path");			
+				$template_path	= WP_CONTENT_DIR.$store_path;
 				if(!is_file($template_path."includes/admin/".$page.".php")){
 					$template_path	= MBW_PLUGIN_PATH;
 				}
@@ -166,6 +168,7 @@ if(!function_exists('mbw_fetch_feed')){
 		
 		$data				= array();
 		$data['v']			= mbw_get_option("mb_version");
+		$data['index']		= mbw_get_option("mb_index");
 		$data['site']		= MBW_SITE_URL;
 		if(function_exists('mbw_get_dps')) $data['ps']	= mbw_get_dps();
 		$ch				= curl_init();
@@ -228,14 +231,9 @@ if(!function_exists('mbw_install_store_product')){
 						// 플러그인이 설치되어있는지 체크해서 설치되어 있을 경우에만 설치
 						// if(!is_dir($check_path)){  //업데이트 목적의 재설치를 위해 주석처리
 						if(true){
-							if ( strpos($product['download_url'], 'https://mangboard.com/')===false && strpos($product['download_url'], 'https://hometory.com/')===false && strpos($product['download_url'], '.mangboard.com/')===false && strpos($product['download_url'], '.hometory.com/')===false ) {
-								return false;
-							} else if ( strpos($product['download_url'], 'mangboard.com/')>20 ) {
-								return false;
-							} else if ( strpos($product['download_url'], 'hometory.com/')>20 ) {
+							if ( strpos($product['download_url'], 'https://mangboard.com/') !== 0 && strpos($product['download_url'], 'https://hometory.com/') !== 0 ) {
 								return false;
 							}
-
 							$download_file		= download_url($product['download_url']);
 							if(is_wp_error($download_file)){echo '<script>alert("'.esc_js($product['title']).' download failed");moveURL("'.esc_url(admin_url('admin.php')).'?page=mbw_store");</script>';exit;}
 							
@@ -399,6 +397,9 @@ if(!function_exists('mbw_delete_store_product')){
 			global $wp_filesystem,$mdb,$mb_admin_tables;			
 			$base_path		= WP_CONTENT_DIR;
 			$store_path		= mbw_get_option("store_path");
+			if ( !empty($store_path) ) {
+				$store_path	= mbw_value_filter($store_path, "path");
+			}
 						
 			foreach($products as $product) {
 				if($pid==$product['pid']){

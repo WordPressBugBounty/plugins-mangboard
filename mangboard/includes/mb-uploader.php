@@ -62,8 +62,8 @@ if($mode=="html5"){
 					$url .= "&sFileName=".rawurlencode($file_name);
 					$url .= "&sFileURL=".rawurlencode(mbw_get_image_url("path",$upload_data["path"]));
 					$url .= "&bNewLine=true";
-					header('Location: '. esc_url_raw($url));					
-				}				
+					header('Location: '. esc_url_raw($url));
+				}
 			}
 		}else{
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

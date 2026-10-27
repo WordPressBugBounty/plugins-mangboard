@@ -227,6 +227,10 @@ $mb_languages["W_END_DATE"]	= "End Date";
 		
 $mb_languages["W_BOARD_LINK_NONE"]	= "Not Link";	
 $mb_languages["W_BOARD_LINK_INPUT"]	= "Directly Input";	
+
+$mb_languages["W_CHANGE_PASSWORD"]			= "Change your password";
+$mb_languages["W_NEW_PASSWORD"]				= "New password";
+$mb_languages["W_SAVE"]							= "Save";
 		
 		
 		

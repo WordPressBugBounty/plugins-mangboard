@@ -1038,9 +1038,11 @@ if(!function_exists('mbw_get_template_path')){
 			$path1			= get_stylesheet_directory()."/".MBW_PLUGIN_DIR."/templates/".$name.".".$ext;
 			$path1			= str_replace("..","",$path1);
 			if(is_file($path1)) return $path1;
-		}		
-		if ( mbw_get_option("store_path") !="" ) {
-			$template_path	= WP_CONTENT_DIR.mbw_get_option("store_path");			
+		}	
+		$store_path		= mbw_get_option("store_path");
+		if ( !empty($store_path) ) {
+			$store_path		= mbw_value_filter($store_path, "path");
+			$template_path	= WP_CONTENT_DIR.$store_path;
 			if ( !is_file($template_path."templates/".$name.".".$ext) ) {
 				$template_path	= MBW_PLUGIN_PATH;
 			}
@@ -1066,9 +1068,11 @@ if(!function_exists('mbw_get_template_url')){
 			if(is_file(get_stylesheet_directory().$path)) return get_stylesheet_directory_uri().$path;
 		}
 		$path					= "templates/".$name.".".$ext;
-		if ( mbw_get_option("store_path") !="" ) {
-			$template_path	= WP_CONTENT_DIR.mbw_get_option("store_path");
-			$template_url	= MBW_CONTENT_URL.mbw_get_option("store_path");
+		$store_path		= mbw_get_option("store_path");
+		if ( !empty($store_path) ) {
+			$store_path		= mbw_value_filter($store_path, "path");
+			$template_path	= WP_CONTENT_DIR.$store_path;
+			$template_url	= MBW_CONTENT_URL.$store_path;
 			if ( !is_file($template_path.$path) ) {
 				$template_path	= MBW_PLUGIN_PATH;
 				$template_url	= MBW_PLUGIN_URL;	

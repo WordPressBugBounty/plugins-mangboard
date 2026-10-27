@@ -97,15 +97,17 @@ if(!function_exists('mbw_check_request_size')){
 	}
 }
 if(!function_exists('mbw_is_same_origin_request')){
-	function mbw_is_same_origin_request(){
-		$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+	function mbw_is_same_origin_request($type="strict"){
 		// 1. Sec-Fetch-Site 헤더 확인
-		if( !empty($host) && isset($_SERVER['HTTP_SEC_FETCH_SITE']) && $_SERVER['HTTP_SEC_FETCH_SITE'] == "same-origin" ){	
+		if( isset($_SERVER['HTTP_SEC_FETCH_SITE']) && $_SERVER['HTTP_SEC_FETCH_SITE'] == "same-origin" ){	
+			if( $type == "basic" ){
+				return true;
+			}
 			// 2. Origin 헤더 및 Referer 헤더 검증 (AJAX / POST 요청 시)
-			if( isset($_SERVER['HTTP_ORIGIN']) && isset($_SERVER['HTTP_REFERER']) ){
+			if( isset($_SERVER['HTTP_HOST']) &&  isset($_SERVER['HTTP_ORIGIN']) && isset($_SERVER['HTTP_REFERER']) ){
 				$originHost		= parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST);
 				$refererHost		= parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);					
-				$currentHost		= explode(':', $host)[0];
+				$currentHost		= explode(':', $_SERVER['HTTP_HOST'])[0];
 				if( $originHost === $currentHost && $refererHost === $currentHost ){
 					return true;
 				}
@@ -1189,6 +1191,9 @@ if(!function_exists('mbw_echo_error_message')){
 		if(!empty($args) && !empty($args['login_page'])) $login_page		= $args['login_page'];
 		if(!empty($login_page) && !empty($script) && $user_mode=="MB" && !mbw_is_login()){
 			$store_path		= mbw_get_option("store_path");
+			if ( !empty($store_path) ) {
+				$store_path	= mbw_value_filter($store_path, "path");
+			}
 			if ( $store_path != "" && is_file(WP_CONTENT_DIR.$store_path."plugins/user/css/login.css") ) {
 				loadStyle(MBW_CONTENT_URL.$store_path."plugins/user/css/login.css");
 			}else{
@@ -1880,15 +1885,14 @@ if(!function_exists('mbw_analytics')){
 		}		
 		if($mode=="today_visit"){
 			if(mbw_get_cookie("mb_".$mode)==""){
-				if(!empty($_SERVER['HTTP_REFERER'])){
-					$ip					= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
+				if(!empty($_SERVER['HTTP_REFERER'])){					
 					$parse_url		= parse_url($_SERVER['HTTP_REFERER']);
 					if(!empty($parse_url['host'])){
-						$referer_host		= preg_replace( '/[^a-z0-9\-\._~\[\]%]/', '', strtolower($parse_url['host']) );
-						$referer_url		= $_SERVER['HTTP_REFERER'];
-						$referer_url		= str_replace(array('"', "'", '<', '>'), "", $referer_url);
+						$referer_host		= preg_replace( '/[^a-z0-9\-\._~\[\]%]/', '', strtolower($parse_url['host']) );						
 						$referer_log		= mbw_get_option("referer_log");
 						if($referer_log!=0 && stripos(MBW_HOME_URL, $referer_host) === false){
+							$referer_url		= str_replace(array('"', "'", '<', '>'), "", $_SERVER['HTTP_REFERER']);
+							$ip					= mbw_value_filter($_SERVER["REMOTE_ADDR"],"ip");
 							$referer_field		= $mstore->get_board_select_fields(array("fn_date","fn_reg_date","fn_referer_host","fn_referer_url","fn_ip","fn_agent"),"referers");
 							$mdb->query($mdb->prepare("INSERT INTO ".$mb_admin_tables["referers"]." (".implode( ",", $referer_field).") VALUES (%s,%s,%s,%s,%s,%s)",$today,mbw_get_current_time(),mbw_htmlspecialchars2($referer_host),mbw_htmlspecialchars2($referer_url),mbw_htmlspecialchars2($ip),mbw_htmlspecialchars2(mbw_get_vars("user_agent"))));
 						}

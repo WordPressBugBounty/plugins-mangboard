@@ -139,15 +139,15 @@ if(!function_exists('mbw_get_admin_template')){
 			$template_start	.= mbw_get_input_template("admin",$data);
 
 		}else if($item_type=='admin_option_modify'){
-			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify','category1':'".mbw_get_param("category1")."','board_pid':'".mbw_get_board_item("fn_pid")."'})","class"=>"btn btn-default"));
-			$template_start	.= '<input type="hidden" name="pid_array[]" value="'.mbw_get_board_item("fn_pid").'" />';
+			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"onclick"=>"sendBoardListData({'mode':'list','board_action':'multi_modify','category1':'".esc_js(mbw_get_param("category1"))."','board_pid':'".esc_js(mbw_get_board_item("fn_pid"))."'})","class"=>"btn btn-default"));
+			$template_start	.= '<input type="hidden" name="pid_array[]" value="'.esc_attr(mbw_get_board_item("fn_pid")).'" />';
 		}else if($item_type=='admin_board_modify'){
 			$board_name		= mbw_value_filter(mbw_get_board_item("fn_board_name2"),"name");
-			if(mbw_get_board_item("fn_use_comment")=="1") $template_start	.= mbw_get_btn_template(array("name"=>__MW("W_COMMENT"),"href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".$board_name."&mode=comment","class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
-			$template_start	.= mbw_get_btn_template(array("name"=>"Copy","href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=write&board_pid=".mbw_get_board_item("fn_pid"),"class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
-			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"href"=>admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=modify&board_pid=".mbw_get_board_item("fn_pid"),"class"=>"btn btn-default","style"=>"width:96%;"));
+			if(mbw_get_board_item("fn_use_comment")=="1") $template_start	.= mbw_get_btn_template(array("name"=>__MW("W_COMMENT"),"href"=>esc_url(admin_url('admin.php')."?page=mbw_board_options&board_name=".$board_name."&mode=comment"),"class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
+			$template_start	.= mbw_get_btn_template(array("name"=>"Copy","href"=>esc_url(admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=write&board_pid=".mbw_get_board_item("fn_pid")),"class"=>"btn btn-default margin-bottom-5","style"=>"width:96%;"));
+			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"href"=>esc_url(admin_url('admin.php')."?page=mbw_board_options&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=modify&board_pid=".mbw_get_board_item("fn_pid")),"class"=>"btn btn-default","style"=>"width:96%;"));
 		}else if($item_type=='admin_user_modify'){
-			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"href"=>admin_url('admin.php')."?page=mbw_users&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=modify&board_pid=".mbw_get_board_item("fn_pid"),"class"=>"btn btn-default"));
+			$template_start	.= mbw_get_btn_template(array("name"=>$data["name_btn"],"href"=>esc_url(admin_url('admin.php')."?page=mbw_users&board_name=".mbw_get_param("board_name")."&category1=".mbw_get_param("category1")."&mode=write&board_action=modify&board_pid=".mbw_get_board_item("fn_pid")),"class"=>"btn btn-default"));
 		}else if($item_type=='admin_board_analytics'){
 			$template_start				= '<span style="font-size:11px;">';
 			$board_name				= mbw_value_filter(mbw_get_board_item("fn_board_name2"),"name");
@@ -194,13 +194,13 @@ if(!function_exists('mbw_get_admin_template')){
 			}
 		}else if(strpos($item_type,'admin_user_name_password')===0){
 			$template_start	.= '<input type="text" class="margin-right-5" value="**************" style="width:100px;height:30px;" readonly>';
-			$template_start	.= mbw_get_btn_template(array("name"=>"비밀번호 변경","onclick"=>"checkCSSDisplayID('mb_admin_user_password_wrap')","class"=>"btn btn-default margin-mtop-5","style"=>"height:30px !important;"));
+			$template_start	.= mbw_get_btn_template(array("name"=>__MW("W_CHANGE_PASSWORD"),"onclick"=>"checkCSSDisplayID('mb_admin_user_password_wrap')","class"=>"btn btn-default margin-mtop-5","style"=>"height:30px !important;"));
 
 			$template_start	.= '<div style="display:none;border:1px solid #DDD;padding:15px 0;max-width:300px;text-align:center;" class="margin-top-5" id="mb_admin_user_password_wrap">';	
-				$template_start	.= '<input type="password" name="admin_modify_passwd" placeholder="새 비밀번호" value="" style="width:120px;">';
-				$template_start	.= mbw_get_btn_template(array("name"=>"저장하기","onclick"=>"checkAdminModifyPassword()","class"=>"btn btn-default margin-left-5","style"=>"height:30px !important;"));
-				$template_start	.= '<script type="text/javascript"> function checkAdminModifyPassword(){ if(jQuery(".mb-board form input[name=admin_modify_passwd]").val()==""){alert("비밀번호를 입력해주세요");return;} jQuery(".mb-board form input[name=board_action]").val("admin_modify_password"); checkWriteData();}</script>';
-			$template_start	.= '</div>';
+				$template_start	.= '<input type="password" name="admin_modify_passwd" placeholder="'.__MW("W_NEW_PASSWORD").'" value="" style="width:120px;">';
+				$template_start	.= mbw_get_btn_template(array("name"=>__MW("W_SAVE"),"onclick"=>"checkAdminModifyPassword()","class"=>"btn btn-default margin-left-5","style"=>"height:30px !important;"));
+				$template_start	.= '<script type="text/javascript"> function checkAdminModifyPassword(){ if(jQuery(".mb-board form input[name=admin_modify_passwd]").val()==""){alert("'.__MM('MSG_PASSWD_INPUT').'");return;} jQuery(".mb-board form input[name=board_action]").val("admin_modify_password"); checkWriteData();}</script>';
+			$template_start	.= '</div>';			
 
 		}else if($item_type=='admin_skin_model'){
 			$template_start	.= '<div>'.esc_html($data["value"]).'</div>';

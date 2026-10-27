@@ -1,11 +1,10 @@
 ﻿=== Mang Board===
 Contributors: kitae-park
-Donate link: https://mangboard.com/donate/
 Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 5.5.0
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 5.5.1
-Stable tag: 2.4.6
+Stable tag: 2.4.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,6 +118,13 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.5.8 (2.4.7) =
+* 보안 취약점 수정 [Patchstack에서 보안점검을 통해 알려주신 취약점 수정]
+  => 카테고리 파라미터에 보안함수 추가 및 큰따옴표 제거 함수 적용
+* 관리자가 수동으로 발송하는 카카오 알림톡 기능이 발송되지 않는 문제 수정
+  => 카카오 알림톡 플러그인이 설치된 홈페이지만 해당
+* 비회원이 전송하는 요청에 대한 보안 필터 기능 강화
 
 = 2.5.7 (2.4.6) =
 * 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 취약점 수정]

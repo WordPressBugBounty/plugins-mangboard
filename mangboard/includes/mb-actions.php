@@ -541,25 +541,53 @@ if(!function_exists('mbw_api_callback')){
 		global $mb_admin_tables,$mb_board_table_name,$mb_comment_table_name;
 		$action		= mbw_value_filter(mbw_get_param("action"), "name");
 		$file_name	= str_replace( "_", "-", $action).".php";
-
-		if($action=="mb_uploader"){
-			if(is_file(MBW_PLUGIN_PATH."includes/".$file_name)){
-				require(MBW_PLUGIN_PATH."includes/".$file_name);
+		$store_path	= mbw_get_option("store_path");
+		if ( !empty($store_path) ) {
+			$store_path	= mbw_value_filter($store_path, "path");
+		}
+		/*
+		//구형 브라우저에서 오류가 발생하는 문제 때문에 보류 2026-10-27
+		if ( !mbw_is_login() ) {
+			$check_same_origin			= false;
+			if ( strpos($action, 'mb_board') !== false ) {
+				$check_same_origin			= true;
+				$board_action		= mbw_value_filter(mbw_get_param("board_action"), "name");
+				if ( $board_action == "board_hit" || $board_action == "file_download" ) {					
+					$check_same_origin			= false;
+				}
 			}
-		}else if(strpos($action, 'skin')===0){
-			$file_name		= str_replace( "skin-", "", $file_name);
-			if(defined('MBW_SKIN_PATH') && is_file(MBW_SKIN_PATH."api/".$file_name)){
-				require(MBW_SKIN_PATH."api/".$file_name);
-			}else if ( mbw_get_option("store_path") !="" && is_file(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name) ) {
-				require(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name);
-			}else if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
-				require(MBW_PLUGIN_PATH."api/".$file_name);
+			if ( $check_same_origin ) {
+				// 사이트 내부에서 전송된 요청이 아닐 경우 에러 처리
+				// node.js를 이용한 요청은 헤더 조작으로 우회가 가능하지만 브라우저를 이용한 공격은 차단 가능
+				if( !mbw_is_same_origin_request("basic") ){
+					mbw_error_message("MSG_ERROR", "[SAME ORIGIN] API Request","1500");
+				}				
 			}
-		}else{
-			if ( mbw_get_option("store_path") !="" && is_file(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name) ) {
-				require(WP_CONTENT_DIR.mbw_get_option("store_path")."api/".$file_name);
-			}else if(is_file(MBW_PLUGIN_PATH."api/".$file_name)){
-				require(MBW_PLUGIN_PATH."api/".$file_name);
+		}
+		*/
+		
+		if ( mbw_get_result_data("state") == "error" ) {
+			wp_send_json(mbw_get_result_array());
+		} else {
+			if ( $action == "mb_uploader" ) {
+				if(is_file(MBW_PLUGIN_PATH."includes/".$file_name)){
+					require(MBW_PLUGIN_PATH."includes/".$file_name);
+				}
+			}else if ( strpos($action, 'skin') === 0 ) {
+				$file_name		= str_replace( "skin-", "", $file_name);
+				if ( defined('MBW_SKIN_PATH') && is_file(MBW_SKIN_PATH."api/".$file_name) ) {
+					require(MBW_SKIN_PATH."api/".$file_name);
+				} else if ( $store_path !="" && is_file(WP_CONTENT_DIR.$store_path."api/".$file_name) ) {
+					require(WP_CONTENT_DIR.$store_path."api/".$file_name);
+				} else if(is_file(MBW_PLUGIN_PATH."api/".$file_name) ) {
+					require(MBW_PLUGIN_PATH."api/".$file_name);
+				}
+			}else{
+				if ( $store_path !="" && is_file(WP_CONTENT_DIR.$store_path."api/".$file_name) ) {
+					require(WP_CONTENT_DIR.$store_path."api/".$file_name);
+				} else if ( is_file(MBW_PLUGIN_PATH."api/".$file_name) ) {
+					require(MBW_PLUGIN_PATH."api/".$file_name);
+				}
 			}
 		}
 	}
@@ -678,6 +706,9 @@ if(!function_exists('mbw_load_page_style')){
 			$path				= substr($content,$index1,strpos($content,"\"",$index1)-$index1);
 			$path_array		= explode(",",$path);
 			$store_path		= mbw_get_option("store_path");
+			if ( !empty($store_path) ) {
+				$store_path	= mbw_value_filter($store_path, "path");
+			}
 			foreach($path_array as $value){
 				if(!empty($value)){
 					if ( $store_path != "" && is_file(WP_CONTENT_DIR.$store_path.$value) ) {
@@ -730,6 +761,7 @@ if(!function_exists('mbw_filter_board_model')){
 		}else if(mbw_get_param("link_post_id")!=""){
 			$post_id		= mbw_get_param("link_post_id");
 		}
+		$post_id		= mbw_value_filter($post_id, "name");
 		if(!empty($post_id)){
 			$link_attr		= ',"link":"post_id","link_id":"'.$post_id.'"';
 			$model			= str_replace(',"link":"view"',$link_attr,$model);

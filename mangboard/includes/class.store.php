@@ -113,8 +113,6 @@ Class MStore
 			foreach($this->params  as $key => $value){
 				if(in_array($key, $preg_exception)===false){
 					$this->params[$key]			= mbw_value_filter($value);
-				}else{
-					//$this->params[$key]			= strip_tags($value);
 				}
 			}
 		}
@@ -129,7 +127,7 @@ Class MStore
 					} else {
 						$last_part = $key;
 					}
-					if ( $last_part == "type" && substr_count($key, '_') < 2 ) {
+					if ( $last_part == "type" && substr_count($key, '_') == 1 ) {
 						if ( $key == "file_type" ) {
 							$this->params[$key]		= mbw_value_filter($value, "mime_type");						
 						} else if ( $key != "content_type" ) {		//content_type 변수에는 다양한 사용자 값이 들어갈 수 있어서 필터 검사에서 제외 필요
@@ -191,9 +189,12 @@ Class MStore
 					}
 					if(is_string($this->params[$key])){
 						$this->params[$key]			= strip_tags($this->params[$key]);
+						if ( strpos($key, "category") === 0 || $key == "stag" ) {
+							$this->params[$key]		= str_replace('"', "", sanitize_text_field($this->params[$key]));
+						}
 						if($key!="redirect_to"){
 							$this->params[$key]		= mbw_check_substr($this->params[$key],100);
-						}
+						}						
 					}
 				}
 			}
@@ -855,7 +856,7 @@ Class MStore
 			}
 			$store_path		= mbw_get_option("store_path");
 			if ( !empty($store_path) ) {
-				$store_path		= str_replace("..","",$store_path);
+				$store_path	= mbw_value_filter($store_path, "path");
 			}
 			$skin_name		= str_replace("..","",$skin_name);
 			$skin_path		= MBW_PLUGIN_PATH;

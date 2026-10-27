@@ -413,6 +413,31 @@ if(!function_exists('mbw_check_api_required')){
 							}
 						}
 					}
+					
+					if ( !empty($data["type"]) ) {
+						$item_type		= $data["type"];
+						
+						if ( $item_type == "kcaptcha_img" ) {
+							if ( intval(mbw_get_option("kcaptcha_mode")) !=0 ) {
+								$mode			= mbw_value_filter(mbw_get_param("mode"),"name");
+								$board_action	= mbw_value_filter(mbw_get_param("board_action"),"name");
+								$kcaptcha_img	= mbw_value_filter(mbw_get_param("kcaptcha_img"),"name");								
+								if ( !empty($data["modify"]) ) {
+									$modify_type		= mbw_value_filter($data["modify"],"name");
+								}else{
+									$modify_type		= "";
+								}
+								if ( !empty($data["reply"]) ) {
+									$reply_type		= mbw_value_filter($data["reply"],"name");
+								}else{
+									$reply_type		= "";
+								}
+								if ( ($mode=="write" || $mode=="comment") && ($board_action=="write" || ($board_action=="reply" && $reply_type!="none") || ($board_action=="modify" && $modify_type!="none")) && empty($kcaptcha_img) ) {
+									mbw_error_message("MSG_FIELD_EMPTY_ERROR1", "W_KCAPTCHA","1201","kcaptcha_img");
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -598,17 +623,40 @@ if(!function_exists('mbw_file_upload')){
 		global $mb_fields,$mb_admin_tables,$mb_board_table_name;
 		global $mb_image_upload_files,$mb_board_upload_files;
 		
-		if(!empty($_SERVER['HTTP_REFERER'])){			
-			if(defined('MBW_HOME_URL') && strpos(MBW_HOME_URL,'http')===0){
+		// 관리자가 아닐 경우 파일 업로드 보안 처리
+		if ( !mbw_is_admin() ) {
+			if ( !mbw_is_login() ) {
+				// 비로그인 사용자이면서 내부 요청이 아닐 경우 오류 처리 (완벽하지 않음)
+				if ( !mbw_is_same_origin_request("basic") ) {
+					mbw_error_message("MSG_ERROR", "[SAME ORIGIN] Upload","1500");
+					return array("name"=>"");
+				}
+			}
+			
+			// 이미지 첨부시 글작성 권한이 있는지 체크 (mb-settings.php 파일에서 mbw_is_permission_level 함수로 권한 체크를 하지만 한번 더 확인)
+			if ( !empty($args["type"]) && $args["type"] == "editor" ) {
+				$mb_user_level		= mbw_get_user("fn_user_level");
+				$board_action		= mbw_get_param("board_action");
+				$permission_level	= mbw_get_board_option("fn_write_level");
+				if ( intval($permission_level) > intval($mb_user_level) ) {
+					mbw_error_message("MSG_ERROR", "[PERMISSION] Upload","1500");
+					return array("name"=>"");
+				}
+			}
+		}
+		// HTTP_REFERER 값이 존재할 경우 내부 주소에서 넘어온 것인지 확인 (완벽하지 않음)
+		if ( !empty($_SERVER['HTTP_REFERER']) ) {
+			if ( defined('MBW_HOME_URL') && strpos(MBW_HOME_URL,'http') === 0 ) {
 				$referer_url	= str_replace(array("http://","https://"), "", $_SERVER['HTTP_REFERER']);
 				$home_url	= rtrim(MBW_HOME_URL,"/");
 				$home_url	= str_replace(array("http://","https://"), "", $home_url);
-				if(strpos($referer_url,$home_url)!==0){
+				if ( strpos($referer_url,$home_url) !== 0 ) {
 					mbw_error_message("MSG_ERROR", "[REFERER] Upload","1500");
 					return array("name"=>"");
 				}
 			}
 		}
+
 		if(mbw_get_result_data("state")=="error"){
 			return array("name"=>"");
 		}else if(mbw_get_param("action")=="mb_uploader" && !mbw_verify_nonce()){
@@ -826,7 +874,7 @@ if(!function_exists('mbw_file_upload')){
 				$file_info					= new finfo(FILEINFO_MIME_TYPE);
 				$mime_type				= $file_info->buffer($file_data);
 			}else{
-				mbw_error_message("Upload error<br>Finfo class not found in PHP","","1500");
+				mbw_error_message("[Upload error] Finfo class not found in PHP","","1500");
 				return array("name"=>"");
 			}
 
@@ -997,20 +1045,44 @@ if(!function_exists('mbw_file_upload')){
 						$file_info						= new finfo(FILEINFO_MIME_TYPE);
 						$mime_type					= $file_info->buffer($fd);
 					}else{
-						mbw_error_message("Upload error Finfo class not found in PHP","","1500");
-						return false;
-					}				
+						mbw_error_message("[Upload error] Finfo class not found in PHP","","1500");
+						return array("name"=>"");
+					}
+					
+					$name_array		= explode('.', $file_name);
+					$file_ext			= strtolower(array_pop($name_array));
 					
 					if(strpos($mime_type,"image/")!==0){
 						mbw_error_message("MSG_ERROR", "Upload","1500");
 					}else if(strpos(wp_normalize_path(realpath($uploadPath.$datePath)), MBW_UPLOAD_PATH)!==0){
 						mbw_error_message("MSG_ERROR", "Upload","1500");
+					}else if(!in_array($file_ext, $mb_image_upload_files)){
+						mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
 					}else{					
-						$fp_path		= $uploadPath.$datePath.$file_name;
-						$fp				= fopen($fp_path,"w");
-						fwrite($fp,$fd);
-						fclose($fp);
-						@chmod($fp_path, 0644);
+						$fp_path		= $uploadPath.$datePath.$file_name;						
+						if ( function_exists('imagecreatefromstring') && ($file_ext === 'jpg' || $file_ext === 'jpeg' || $file_ext === 'png') ) {
+							//보안 처리를 위해 jpg, png 파일은 안전한 방식으로 이미지 생성
+							//이미지 에디터는 jpg, png 확장자만 사용, 업로드 플러그인은 gif, bmp 확장자도 지원
+							//imagegif 함수는 gif 모션기능이 제거되기 때문에 fwrite 함수로 저장
+							$image = @imagecreatefromstring($fd);
+							if ($image !== false) {
+								if ($file_ext === 'jpg' || $file_ext === 'jpeg') {
+									imagejpeg($image, $fp_path, 90);
+								} elseif ($file_ext === 'png') {
+									imagealphablending($image, false);
+									imagesavealpha($image, true);
+									imagepng($image, $fp_path);
+								}
+								imagedestroy($image);
+							}
+						} else {
+							$fp				= fopen($fp_path,"w");
+							fwrite($fp,$fd);
+							fclose($fp);
+						}
+						if ( is_file($fp_path) ) {
+							@chmod($fp_path, 0644);
+						}
 						mbw_check_image_orientation($fp_path);
 						do_action('mbw_file_api_image_upload',$fp_path,$file_pid);
 						$img_small_size		= mbw_get_option("make_img_small_size");
@@ -1116,18 +1188,30 @@ if(!function_exists('mbw_create_image')){
 					$img		= @imagecreatefromjpeg($path);
 					if(!empty($img)){
 						imagecopyresampled($create_img, $img, 0, 0, 0, 0, $create_width, $create_height, $img_width, $img_height);
-						imagejpeg($create_img, $file_path, 80);
-						@chmod($file_path, 0644);
-					}else return;
+						imagejpeg($create_img, $file_path, 80);						
+						imagedestroy($img);
+						if ( is_file($file_path) ) {
+							@chmod($file_path, 0644);
+						}
+					}
+					imagedestroy($create_img);
 				}else if($type==3 && function_exists("imagepng")){	//png
-					$create_img	= imagecreatetruecolor($create_width, $create_height);
-					imagefill($create_img,0,0,imagecolorallocate($create_img, 255, 255, 255));		
+					$create_img	= imagecreatetruecolor($create_width, $create_height);					
+					imagealphablending($create_img, false);
+					imagesavealpha($create_img, true);					
+					$transparent = imagecolorallocatealpha($create_img, 0, 0, 0, 127);
+					imagefill($create_img, 0, 0, $transparent);
 					$img		= @imagecreatefrompng($path);
 					if(!empty($img)){
+						imagealphablending($img, true);
 						imagecopyresampled($create_img, $img, 0, 0, 0, 0, $create_width, $create_height, $img_width, $img_height);
-						imagepng($create_img, $file_path);
-						@chmod($file_path, 0644);
-					}else return;
+						imagepng($create_img, $file_path);						
+						imagedestroy($img);
+						if ( is_file($file_path) ) {
+							@chmod($file_path, 0644);
+						}
+					}
+					imagedestroy($create_img);
 				}else return;
 			}
 		}	

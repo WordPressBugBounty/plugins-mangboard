@@ -3,7 +3,7 @@
  * Plugin Name: MangBoard
  * Plugin URI: https://mangboard.com/
  * Description: MangBoard는 Wordpress에서 게시판을 생성/관리 할 수 있는 기능을 제공합니다
- * Version: 2.4.6
+ * Version: 2.4.7
  * Author: Hometory
  * Author URI: https://www.hometory.com/
  * License: GPLv2 or later
@@ -209,14 +209,26 @@ if(!function_exists('mbw_check_shortcode')){
 				}
 			}
 			global $mb_board_name;
-			if(!empty($post->post_content) && strpos($post->post_content, '['.MBW_SHORTCODE_BOARD." name=") !== false){
+			if ( !empty($post->post_content) && strpos($post->post_content, "[".MBW_SHORTCODE_BOARD." name=") !== false ) {
 				$post_content			= $post->post_content;
-				$index1					= strpos($post_content,'['.MBW_SHORTCODE_BOARD." name=")+16;
+				$index1					= strpos($post_content,"[".MBW_SHORTCODE_BOARD." name=")+16;
 				$index2					= strpos($post_content,"\"",$index1);
 				$board_name			= trim(substr($post_content,$index1,$index2-$index1));
 				if(!empty($board_name) && empty($mb_board_name)){
 					$mb_board_name		= mbw_value_filter($board_name,"name");
 					mbw_init_board($mb_board_name);
+					
+					// 숏코드에 mode 값이 존재할 경우 mode 값을 설정					
+					if ( mbw_get_param("mode") == "" ) {
+						$pos_end = strpos($post_content, ']', $index1);
+						if ($pos_end !== false) {
+							$shortcode_str = substr($post_content, $index1, $pos_end - $index1 + 1);
+							if ( strpos($shortcode_str, "mode=") !== false && preg_match('/mode\s*=\s*(["\']?)([^"\'>\s]+)\1/i', $shortcode_str, $matches)) {
+								mbw_set_param("mode", mbw_value_filter($matches[2], "name"));
+							}
+						}
+					}
+					
 				}
 			}
 			do_action('mbw_shortcode', $post->post_content);

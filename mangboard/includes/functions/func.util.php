@@ -609,6 +609,9 @@ if(!function_exists('mbw_get_dir_entry')){
 		
 		$store_path				= mbw_get_option("store_path");
 		if ( !empty($store_path) ) {
+			$store_path	= mbw_value_filter($store_path, "path");
+		}
+		if ( !empty($store_path) ) {
 			$path					= WP_CONTENT_DIR.$store_path.$dir_name;
 			$path					= rtrim(wp_normalize_path($path),'/\\');
 			if ( is_dir($path) ) {
@@ -651,6 +654,9 @@ if(!function_exists('mbw_get_file_entry')){
 		}
 		
 		$store_path					= mbw_get_option("store_path");
+		if ( !empty($store_path) ) {
+			$store_path	= mbw_value_filter($store_path, "path");
+		}
 		if ( !empty($store_path) ) {
 			$path					= WP_CONTENT_DIR.$store_path.$dir_name;
 			$path					= rtrim(wp_normalize_path($path),'/\\');
@@ -851,6 +857,8 @@ if(!function_exists('mbw_value_filter')){
 			$pattern		= "/[^0-9\s\/\:\-]/";		//숫자,공백,슬래시,:,-
 		}else if($type=='mime_type'){
 			$pattern		= "/[^0-9a-zA-Z\/\.\_\-\+\&]/";		//영문,숫자,/,.,-,_,+,&
+		}else if($type=='path'){
+			$pattern		= "/[^0-9a-zA-Z\/\_\-]/";		//영문,숫자,/,-,_
 		}else if($type=='name'){
 			$pattern		= "/[^0-9a-zA-Z\_\-]/";		//영문,숫자,-,_
 		}else if($type=='id'){
