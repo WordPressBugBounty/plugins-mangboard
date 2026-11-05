@@ -29,6 +29,8 @@ $file_check				= false;
 $upload_check			= false;
 if(mbw_get_param("mode")=="write"){
 	$upload_check		= mbw_check_api_file("board");
+}else if(mbw_get_param("mode")=="comment"){
+	mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_ACCESS"],"1102");
 }
 
 if(mbw_get_result_data("state")=="error"){
@@ -63,7 +65,11 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 		else $send_data[$api_fields["fn_is_secret"]]	= 1;
 	}
 
-	$where_data[$api_fields["fn_pid"]]			= $board_pid;
+	$where_data[$api_fields["fn_pid"]]			= $board_pid;	
+	if( (intval(mbw_get_user("fn_user_level")) < intval(mbw_get_board_option("fn_modify_level"))) && !empty($api_fields["fn_user_pid"]) ){
+		$where_data[$api_fields["fn_user_pid"]]			= mbw_get_user("fn_pid");
+	}
+	
 }else if((intval(mbw_get_board_option("fn_modify_level")) <= intval(mbw_get_user("fn_user_level"))) && mbw_get_param("board_action")=="multi_modify"){	
 	//체크박스가 선택된 항목만 수정
 	$check_array	= mbw_get_param("check_array");
@@ -122,7 +128,10 @@ if(mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify"){
 }else if(mbw_get_param("board_action")=="delete"){
 	if(mbw_get_param("board_name")!="" && !empty($board_pid)){
 		$query_command										= "DELETE";
-		$where_data[$api_fields["fn_pid"]]					= $board_pid;	
+		$where_data[$api_fields["fn_pid"]]					= $board_pid;
+		if( (intval(mbw_get_user("fn_user_level")) < intval(mbw_get_board_option("fn_delete_level"))) && !empty($api_fields["fn_user_pid"]) ){
+			$where_data[$api_fields["fn_user_pid"]]			= mbw_get_user("fn_pid");
+		}
 
 		//게시물 삭제시 파일 연결 해제
 		$query_data[]		= $mdb->prepare( "UPDATE ".$mb_admin_tables["files"]." set ".$mb_fields["files"]["fn_board_pid"]."=0 where ".$mb_fields["files"]["fn_table_name"]."=%s and ".$mb_fields["files"]["fn_board_pid"]."=%d", $mb_board_table_name, $board_pid);

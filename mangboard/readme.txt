@@ -4,7 +4,7 @@ Tags: board,gallery,calendar,mangboard,망보드
 Requires at least: 5.5.0
 Tested up to: 7.2
 Requires PHP: 5.5.1
-Stable tag: 2.4.7
+Stable tag: 2.4.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,19 @@ The plugin is available in English, Japanese(日本語), Chinese(中国語) and 
 안정화 작업 및 보안 기능 수정
 
 == Changelog ==
+
+= 2.6.0 (2.4.8) =
+* 보안 취약점 수정 [Wordfence에서 보안점검을 통해 알려주신 취약점 수정 - 게시물 삭제 권한]
+* 보안 취약점 수정 [Patchstack에서 보안점검을 통해 알려주신 취약점 수정 - XSS]
+* 게시판 설정 페이지에서 수정,삭제,관리 권한에 대해 설정 가능한 레벨을 5~10레벨로 수정
+* minor bug 수정
+
+= 2.5.9 =
+* 카메라를 이용하여 찍은 사진의 회전 정보가 초기화되어 업로드된 사진의 회전 방향이 일치하지 않는 문제 수정
+  => 에디터 이미지 업로드 플러그인이 설치된 홈페이지만 해당 (망보드 2.5.8 버전에서만 문제 발생)
+* 일부 환경에서 "게시물 멀티 수정 플러그인" 기능이 정상적으로 동작하지 않는 문제 수정
+  => 게시물 멀티 수정 플러그인이 설치된 홈페이지만 해당 (망보드 2.5.8 버전에서만 문제 발생)
+* minor bug 수정
 
 = 2.5.8 (2.4.7) =
 * 보안 취약점 수정 [Patchstack에서 보안점검을 통해 알려주신 취약점 수정]

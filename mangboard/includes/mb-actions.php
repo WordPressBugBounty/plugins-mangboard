@@ -539,12 +539,18 @@ if(!function_exists('mbw_api_callback')){
 		mbw_add_trace("mbw_api_callback");
 		global $mdb,$mstore,$mb_fields,$mb_request_mode,$mb_languages,$send_data;
 		global $mb_admin_tables,$mb_board_table_name,$mb_comment_table_name;
+		$mode		= mbw_value_filter(mbw_get_param("mode"), "name");
 		$action		= mbw_value_filter(mbw_get_param("action"), "name");
 		$file_name	= str_replace( "_", "-", $action).".php";
 		$store_path	= mbw_get_option("store_path");
 		if ( !empty($store_path) ) {
 			$store_path	= mbw_value_filter($store_path, "path");
 		}
+		// mode 값이 comment 로 설정되어 있고, action에 board 값이 존재할 경우 기본 api 파일로 설정
+		if ( $mode == "comment" && strpos($action, 'board') !== false) {
+			$file_name	= "mb-comment.php";
+		}
+		
 		/*
 		//구형 브라우저에서 오류가 발생하는 문제 때문에 보류 2026-10-27
 		if ( !mbw_is_login() ) {

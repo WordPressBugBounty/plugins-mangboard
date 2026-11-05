@@ -145,7 +145,8 @@ if(mbw_get_param("mode")=="user"){
 					if(!empty($mb_fields["select_board"]["fn_data_type"]) && !empty($item[$mb_fields["select_board"]["fn_data_type"]]) && ($item[$mb_fields["select_board"]["fn_data_type"]]=="html")){
 						$content			= mbw_htmlspecialchars_decode($content);					
 						$item_level		= intval($item[$mb_fields["select_board"]["fn_level"]]);
-						if ( $item_level == 0 ) {	//비회원이 작성한 게시물은 추가 보안 검증
+						//레벨 10 (관리자) 이하의 회원이 작성했거나 DISALLOW_UNFILTERED_HTML 설정이 있을 경우 추가 검증
+						if ( $item_level < 10 || (defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) ) {
 							if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
 								$content		= mbw_get_htmlpurify($content);
 							} else {

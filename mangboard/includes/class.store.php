@@ -152,9 +152,9 @@ Class MStore
 			if ( !empty($this->params["user_name"]) ) {
 				$this->params["user_name"]			= preg_replace('/[()=]/', '', $this->params["user_name"]);
 			}
-			
+				
 			//image_path 에서 파일 이름 및 확장자 체크 
-			if ( !empty($this->params["image_path"]) ) {		
+			if ( !empty($this->params["image_path"]) && is_string($this->params["image_path"]) ) {
 				$image_path	= $this->params["image_path"];
 				if(strpos($image_path, '.php')!==false || strpos($image_path, '.phar')!==false || strpos($image_path, '.phtm')!==false){
 					$this->params["image_path"]			= "";

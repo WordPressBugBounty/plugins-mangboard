@@ -34,9 +34,11 @@ if(!function_exists('mbw_set_user_point2')){
 				}
 			}else if($target=="board"){
 				$sign			= "+";
-				if($action=="write")	$point		= intval(mbw_get_board_option("fn_point_board_write"));
-				else if($action=="reply")	$point		= intval(mbw_get_board_option("fn_point_board_reply"));
-				else if($action=="delete"){
+				if(mbw_get_param("mode")=="write" && $action=="write"){
+					$point		= intval(mbw_get_board_option("fn_point_board_write"));
+				}else if(mbw_get_param("mode")=="write" && $action=="reply"){
+					$point		= intval(mbw_get_board_option("fn_point_board_reply"));
+				}else if($action=="delete"){
 					$point			= intval(mbw_get_board_option("fn_point_board_write"))*(-1);
 					$board_pid		= mbw_get_param("board_pid");
 					if(!empty($board_pid)){
@@ -246,9 +248,11 @@ if(!function_exists('mbw_set_user_point')){
 				}
 			}else if($target=="board"){
 				$sign			= "+";
-				if($action=="write")	$point		= intval(mbw_get_board_option("fn_point_board_write"));
-				else if($action=="reply")	$point		= intval(mbw_get_board_option("fn_point_board_reply"));
-				else if($action=="delete"){
+				if(mbw_get_param("mode")=="write" && $action=="write"){
+					$point		= intval(mbw_get_board_option("fn_point_board_write"));
+				}else if(mbw_get_param("mode")=="write" && $action=="reply"){
+					$point		= intval(mbw_get_board_option("fn_point_board_reply"));
+				}else if($action=="delete"){			
 					$point			= intval(mbw_get_board_option("fn_point_board_write"))*(-1);
 					$board_pid		= mbw_get_param("board_pid");
 					if(!empty($board_pid)){

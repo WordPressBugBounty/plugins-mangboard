@@ -9,10 +9,10 @@ if(!mbw_verify_nonce() && mbw_get_param("board_action")!="list"){
 }
 
 $query_command		= "";
-$send_data					= array();
+$send_data				= array();
 $where_data				= array();
 $query_data				= array();
-$parent_pid					= intval(mbw_get_param("parent_pid"));
+$parent_pid				= intval(mbw_get_param("parent_pid"));
 $comment_pid			= intval(mbw_get_param("comment_pid"));
 $comment_parent_pid	= 0;
 
@@ -68,10 +68,16 @@ if(mbw_get_param("mode")=="comment"){
 		$query_command												= "UPDATE";
 		if(isset($api_fields["fn_parent_pid"]) && empty($send_data[$api_fields["fn_parent_pid"]]))		unset($send_data[$api_fields["fn_parent_pid"]]);
 		$where_data[$api_fields["fn_pid"]]			= $comment_pid;
+		if( (intval(mbw_get_user("fn_user_level")) < intval(mbw_get_board_option("fn_modify_level")) ) && !empty($api_fields["fn_user_pid"]) ){
+			$where_data[$api_fields["fn_user_pid"]]			= mbw_get_user("fn_pid");
+		}
 	}else if(mbw_get_param("board_action")=="delete"){
 		if(!empty($comment_pid)){
 			$query_command									= "DELETE";
-			$where_data[$api_fields["fn_pid"]]				= $comment_pid;
+			$where_data[$api_fields["fn_pid"]]				= $comment_pid;			
+			if( (intval(mbw_get_user("fn_user_level")) < intval(mbw_get_board_option("fn_delete_level"))) && !empty($api_fields["fn_user_pid"]) ){
+				$where_data[$api_fields["fn_user_pid"]]			= mbw_get_user("fn_pid");
+			}
 
 			if(mbw_get_param("board_name")!=""){				
 				//댓글 삭제시 댓글에 연결된 쿠키정보 삭제
@@ -112,7 +118,7 @@ if(mbw_get_result_data("state")=="error"){
 mbw_set_user_point("comment",mbw_get_param("board_action"));
 
 $mb_user_level						= mbw_get_user("fn_user_level");
-$mb_user_pid							= mbw_get_user("fn_pid");
+$mb_user_pid						= mbw_get_user("fn_pid");
 
 $comment_mode		= "view";
 $where_query			= $mdb->prepare(" where ".$api_fields["fn_parent_pid"]."=%d", $parent_pid);

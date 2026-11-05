@@ -66,12 +66,10 @@ if($mode=="html5"){
 				}
 			}
 		}else{
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo mbw_get_result_data("message");
+			echo esc_html(strip_tags(mbw_get_result_data("message")));
 		}
 	}else if(mbw_get_result_data("state")=="error"){
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo mbw_get_result_data("message");
+		echo esc_html(strip_tags(mbw_get_result_data("message")));
 	}	
 }
 do_action('mbw_uploader_api_footer');

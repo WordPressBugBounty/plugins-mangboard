@@ -80,14 +80,14 @@ if(!function_exists('mbw_check_request_size')){
 			global $mstore;
 			$content_length		= $_SERVER['CONTENT_LENGTH'];
 			$upload_max			= mbw_convert_to_bytes(ini_get("upload_max_filesize"));
-			$post_max				= mbw_convert_to_bytes(ini_get("post_max_size"));
+			$post_max			= mbw_convert_to_bytes(ini_get("post_max_size"));
 			if($post_max<$upload_max) $upload_max		= $post_max;
 
 			if($upload_max<$content_length){			
 				mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_convert_to_bytes($upload_max,'mb'),"1503");
 
 				if(mbw_get_param('mode')=='basic' && mbw_get_param('action')=='mb_uploader'){
-					echo mbw_get_result_data("message"); // phpcs:ignore
+					echo esc_html(strip_tags(mbw_get_result_data("message")));
 				}else{
 					wp_send_json(mbw_get_result_array());
 				}	
@@ -1049,7 +1049,10 @@ if(!function_exists('mbw_is_permission_level')){
 				$permission_name			= __MW("W_COMMENT_WRITE");
 			}else if(mbw_get_param("board_action")=="modify"){
 				$permission_level				= $comment_level;
-				$permission_name			= __MW("W_COMMENT_WRITE");
+				$permission_name			= __MW("W_MODIFY");
+			}else if(mbw_get_param("board_action")=="delete"){
+				$permission_level				= $comment_level;
+				$permission_name			= __MW("W_DELETE");
 			}else{
 				$permission_level				= $view_level;
 				$permission_name			= __MW("W_VIEW");
@@ -1169,8 +1172,9 @@ if(!function_exists('mbw_error_message')){
 		}
 
 		$mb_error_message[]		= $error_message;
-		if(count($mb_error_message)==1){
-			mbw_set_result_data(array("state"=>"error","code"=>$code,"target_name"=>$target_name,"message"=>$error_message));
+		if(count($mb_error_message)==1){			
+			$error_message	= wp_kses_post($error_message);
+			mbw_set_result_data(array("state"=>"error","code"=>esc_html($code),"target_name"=>esc_html($target_name),"message"=>$error_message));
 			//Error 로그 남기기
 			if(mbw_get_option("error_log")) mbw_set_log("error",$error_message);
 			return '<div class="mb-error-message-box">'.$error_message.'</div>';
@@ -1723,7 +1727,6 @@ if(!function_exists('mbw_clear_auth_cookie')){
 		mbw_set_cookie("wordpress_mb_logged", "");	//wordpress.com 호스팅 캐시 방지 쿠키
 	}
 }
-
 
 if(!function_exists('mbw_is_image_file')){
 	function mbw_is_image_file($name){

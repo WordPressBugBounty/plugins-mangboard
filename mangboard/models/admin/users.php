@@ -61,7 +61,7 @@ $desktop_model['view']		= '
 $desktop_model['write']		= '
 {"tpl":"tag","tag_name":"table","type":"start","name":"W_EDIT_USER_INFO","width":"15%,*","mobile_width":"90px,*","class":"table table-write"},
 {"field":"fn_user_id","name":"W_ID","width":"300px","required":"(*)","required_action":"write","unique":"","modify":"static","maxlength":"140","pattern":"pattern_en_num_4ge","pattern_error":"MSG_ID_INPUT_CHECK"},
-{"field":"fn_user_name","name":"W_NAME","width":"300px","required":"(*)","maxlength":"30","pattern":"pattern_2ge","pattern_error":"MSG_NAME_INPUT_2MORE"},
+{"field":"fn_user_name","name":"W_NAME","width":"300px","required":"(*)","required_error":"MSG_FIELD_EMPTY_ERROR2","maxlength":"30","pattern":"pattern_2ge","pattern_error":"MSG_NAME_INPUT_2MORE"},
 {"field":"fn_passwd","name":"W_PASSWORD","width":"300px","type":"password","modify":"admin_user_name_password","pattern":"pattern_4ge","pattern_error":"MSG_PASSWORD_INPUT_4MORE"},
 {"field":"fn_user_group","name":"W_GROUP","width":"300px","maxlength":"50"},
 {"field":"fn_user_level","name":"W_LEVEL","width":"100px","type":"select","data":"0,1,2,3,4,5,6,7,8,9,10","default":"1","description":""},

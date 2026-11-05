@@ -332,6 +332,12 @@ if(!function_exists('mbw_get_board_option')){
 				$value		= strip_tags(mbw_htmlspecialchars_decode($value));
 			}
 		}
+		if($field=="fn_modify_level" || $field=="fn_secret_level" || $field=="fn_delete_level" || $field=="fn_manage_level"){
+			$value			= intval($value);
+			if($value<5){
+				$value			= 5;
+			}
+		}				
 		return $value;
 	}
 }

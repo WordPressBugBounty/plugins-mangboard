@@ -50,9 +50,9 @@ if(!function_exists('mbw_set_api_params')){
 		mbw_add_trace("mbw_set_api_params");
 		global $mstore,$mdb,$mb_admin_tables,$mb_fields;
 		global $mb_board_table_name,$mb_comment_table_name;
-		$api_fields					= $fields;
+		$api_fields				= $fields;
 		$check_fields				= $fields;
-		$send_data					= array();
+		$send_data				= array();
 		$mb_user_level			= mbw_get_user("fn_user_level");
 
 		//관리자 테이블에는 htmlspecialchars 기능 적용 안함
@@ -77,22 +77,22 @@ if(!function_exists('mbw_set_api_params')){
 			if ( is_array($data_type) ) {
 				$data_type		= implode(",", $data_type);
 			}
-			$data_type	= mbw_value_filter($data_type);			
+			$data_type	= mbw_value_filter($data_type);
 		}else{
-			$data_type	= "html";
+			if(isset($api_fields["fn_data_type"]) && mbw_get_param("content")!=""){
+				$data_type	= "html";
+			}
 		}
 		mbw_set_param("data_type", $data_type);
 		
-		if( ($check_htmlspecialchars && ( strpos($data_type, "html") !== false )) || !is_string($data_type) ){
-			if(mbw_get_param("content")!=""){
-				$tmp_content		= mbw_get_param("content");				
-				if(!mbw_is_admin() || (defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) || mbw_get_option("anti_spam_protection") === 0){
-					if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
-						mbw_set_param("content",mbw_get_htmlpurify($tmp_content));
-					} else {
-						mbw_set_param("content",wp_kses_post($tmp_content));
-					}						
-				}			
+		$tmp_content		= mbw_get_param("content");
+		if( !empty($tmp_content) && $check_htmlspecialchars && ( strpos($data_type, "html") !== false || strpos($tmp_content, '<') !== false ) ){
+			if(!mbw_is_admin() || (defined('DISALLOW_UNFILTERED_HTML') && DISALLOW_UNFILTERED_HTML) || mbw_get_option("anti_spam_protection") === 0){
+				if( function_exists('mbw_get_htmlpurify') && version_compare(PHP_VERSION, '5.4.0', '>=') ){
+					mbw_set_param("content",mbw_get_htmlpurify($tmp_content));
+				} else {
+					mbw_set_param("content",wp_kses_post($tmp_content));
+				}
 			}
 		}
 
@@ -130,11 +130,16 @@ if(!function_exists('mbw_set_api_params')){
 
 		foreach($check_fields as $key => $value){
 			$param_key		= str_replace("fn_", "", $key);	
-			if(strpos($key, 'fn_')===0 && isset($_REQUEST[$param_key]) && $key!="fn_pid"){
-				if(!empty($allow_fields) && strpos($allow_fields, ','.$param_key.',')===false) continue;
+			if ( strpos($key, 'fn_') === 0 && isset($_REQUEST[$param_key]) && $key != "fn_pid" ) {
+				if ( !empty($allow_fields) && strpos($allow_fields, ','.$param_key.',') === false ) {
+					continue;
+				}
 				$param_data				= mbw_get_param($param_key);				
 				
 				if ( $key == "fn_data_type" ) {
+					if ( mbw_get_param("mode")=="write" && !isset($_REQUEST["content"]) ) {
+						continue;
+					}
 					if ( is_array($param_data) ) {
 						$param_data		= implode(",", $param_data);
 					}
@@ -455,35 +460,39 @@ if(!function_exists('mbw_check_api_permission')){
 
 		if(mbw_get_param("mode")=="comment"){	
 			$table_name		= $mb_comment_table_name;
-			$pid					= mbw_get_param("comment_pid");
+			$pid				= mbw_get_param("comment_pid");
 		}else{
 			$table_name		= $mb_board_table_name;
-			$pid					= mbw_get_param("board_pid");
+			$pid				= mbw_get_param("board_pid");
 		}
 
 		//접근 권한 체크
-		$mb_user_level						= mbw_get_user("fn_user_level");
-		$mb_user_pid							= intval(mbw_get_user("fn_pid"));
+		$mb_user_level			= mbw_get_user("fn_user_level");
+		$mb_user_pid			= intval(mbw_get_user("fn_pid"));
 
 		if(strpos(mbw_get_param("board_action"),"delete")!==false){
 			if(intval(mbw_get_board_option("fn_delete_level")) > $mb_user_level){
 				//user_pid 필드가 없는 게시판은 일반 유저가 삭제하지 못하도록 설정
 				if(!empty($api_fields["fn_user_pid"])){
 					$board_item	= $mdb->get_row($mdb->prepare("select * from ".$table_name." where ".$api_fields["fn_pid"]."=%d limit 1", $pid),ARRAY_A);
-
-					//비회원이 작성한 글일 경우 비밀번호가 일치하는지 확인
-					if($board_item[$api_fields["fn_user_pid"]]=="0"){
-						if(!empty($api_fields["fn_passwd"])){
-							if(empty($send_data[$api_fields["fn_passwd"]])){
-								mbw_error_message("MSG_FIELD_EMPTY_ERROR1", $mb_languages["W_PASSWORD"],"1201");
-							}else if(!mbw_check_password(mbw_get_param("passwd"), $board_item[$api_fields["fn_passwd"]])){
-								mbw_error_message("MSG_MATCH_ERROR", $mb_languages["W_PASSWORD"],"1206","passwd");
-							}
-						}
-					//회원이 작성한 글일 경우 본인 글이 아닐 경우 에러 출력
+					
+					if(empty($board_item)){
+						mbw_error_message("MSG_ITEM_NOT_EXIST");
 					}else{
-						if($mb_user_pid!=$board_item[$api_fields["fn_user_pid"]]){
-							mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_DELETE"],"1102");
+						//비회원이 작성한 글일 경우 비밀번호가 일치하는지 확인
+						if($board_item[$api_fields["fn_user_pid"]]=="0"){
+							if(!empty($api_fields["fn_passwd"])){
+								if(empty($send_data[$api_fields["fn_passwd"]])){
+									mbw_error_message("MSG_FIELD_EMPTY_ERROR1", $mb_languages["W_PASSWORD"],"1201");
+								}else if(!mbw_check_password(mbw_get_param("passwd"), $board_item[$api_fields["fn_passwd"]])){
+									mbw_error_message("MSG_MATCH_ERROR", $mb_languages["W_PASSWORD"],"1206","passwd");
+								}
+							}
+						//회원이 작성한 글일 경우 본인 글이 아닐 경우 에러 출력
+						}else{
+							if ( $mb_user_pid === 0 || $mb_user_pid != $board_item[$api_fields["fn_user_pid"]] ) {
+								mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_DELETE"],"1102");
+							}
 						}
 					}
 				}else{
@@ -491,29 +500,32 @@ if(!function_exists('mbw_check_api_permission')){
 				}
 			}
 		}else if(strpos(mbw_get_param("board_action"),"modify")!==false){
-			$board_item	= $mdb->get_row($mdb->prepare("select * from ".$table_name." where ".$api_fields["fn_pid"]."=%d limit 1", $pid),ARRAY_A);
-
-			if(intval(mbw_get_board_option("fn_modify_level")) > $mb_user_level){
-				//비회원이 작성한 글일 경우 비밀번호가 일치하는지 확인
-				if(!empty($api_fields["fn_user_pid"])){
-					if($board_item[$api_fields["fn_user_pid"]]=="0"){
-						if(empty($send_data[$api_fields["fn_passwd"]])){
-							mbw_error_message("MSG_FIELD_EMPTY_ERROR1", $mb_languages["W_PASSWORD"],"1201");
-						}else if(!mbw_check_password(mbw_get_param("passwd"), $board_item[$api_fields["fn_passwd"]])){
-							mbw_error_message("MSG_MATCH_ERROR", $mb_languages["W_PASSWORD"],"1206","passwd");
+			if(intval(mbw_get_board_option("fn_modify_level")) > $mb_user_level){				
+				$board_item	= $mdb->get_row($mdb->prepare("select * from ".$table_name." where ".$api_fields["fn_pid"]."=%d limit 1", $pid),ARRAY_A);
+				if(empty($board_item)){
+					mbw_error_message("MSG_ITEM_NOT_EXIST");
+				}else{
+					//비회원이 작성한 글일 경우 비밀번호가 일치하는지 확인
+					if(!empty($api_fields["fn_user_pid"])){
+						if($board_item[$api_fields["fn_user_pid"]]=="0"){
+							if(empty($send_data[$api_fields["fn_passwd"]])){
+								mbw_error_message("MSG_FIELD_EMPTY_ERROR1", $mb_languages["W_PASSWORD"],"1201");
+							}else if(!mbw_check_password(mbw_get_param("passwd"), $board_item[$api_fields["fn_passwd"]])){
+								mbw_error_message("MSG_MATCH_ERROR", $mb_languages["W_PASSWORD"],"1206","passwd");
+							}
+						//회원이 작성한 글일 경우 본인 글이 아닐 경우 에러 출력
+						}else{
+							if ( $mb_user_pid === 0 || $mb_user_pid != $board_item[$api_fields["fn_user_pid"]] ) {
+								mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_MODIFY"],"1102");
+							}
 						}
-					//회원이 작성한 글일 경우 본인 글이 아닐 경우 에러 출력
-					}else{
-						if($mb_user_pid!=$board_item[$api_fields["fn_user_pid"]]){							
+					}else if($mb_board_table_name==$mb_admin_tables["users"]){
+						if ( $mb_user_pid === 0 || $mb_user_pid != $board_item[$api_fields["fn_pid"]] ) {
 							mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_MODIFY"],"1102");
 						}
-					}
-				}else if($mb_board_table_name==$mb_admin_tables["users"]){
-					if($mb_user_pid!=$board_item[$api_fields["fn_pid"]]){
+					}else{
 						mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_MODIFY"],"1102");
 					}
-				}else{
-					mbw_error_message("MSG_PERMISSION_ERROR", $mb_languages["W_MODIFY"],"1102");
 				}
 			}
 
@@ -553,6 +565,7 @@ if(!function_exists('mbw_check_api_file')){
 							$name_array	= explode('.',$file_name);
 							if(count($name_array)==1) return false;
 							$file_ext			= strtolower(array_pop($name_array));
+							$file_ext			= mbw_value_filter($file_ext, "name");
 
 							if($file_size==0){
 								mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_get_option("upload_file_size"),"1503");
@@ -575,6 +588,7 @@ if(!function_exists('mbw_check_api_file')){
 						$name_array	= explode('.',$file_name);
 						if(count($name_array)==1) return false;
 						$file_ext			= strtolower(array_pop($name_array));
+						$file_ext			= mbw_value_filter($file_ext, "name");
 
 						if($file_size==0){
 							mbw_error_message("MSG_UPLOAD_SIZE_ERROR", mbw_get_option("upload_file_size"),"1503");
@@ -731,7 +745,8 @@ if(!function_exists('mbw_file_upload')){
 							
 							$name_array	= explode('.',$upload_data["name"]);
 							if(count($name_array)==1) return $upload_data;
-							$file_ext			= strtolower(array_pop($name_array));					
+							$file_ext			= strtolower(array_pop($name_array));
+							$file_ext			= mbw_value_filter($file_ext, "name");
 
 							if(!is_uploaded_file($file_tmp)){
 								mbw_error_message("MSG_ERROR", "Upload","1500");
@@ -799,7 +814,8 @@ if(!function_exists('mbw_file_upload')){
 						$upload_data["name"]		= mbw_check_upload_filename($file_data["name"]);
 						$name_array	= explode('.',$upload_data["name"]);
 						if(count($name_array)==1) return $upload_data;
-						$file_ext			= strtolower(array_pop($name_array));						
+						$file_ext			= strtolower(array_pop($name_array));
+						$file_ext			= mbw_value_filter($file_ext, "name");
 
 						if(!is_uploaded_file($file_tmp)){
 							mbw_error_message("MSG_ERROR", "Upload","1500");
@@ -884,8 +900,8 @@ if(!function_exists('mbw_file_upload')){
 			
 			$name_array		= explode('.',$upload_data["name"]);
 			if(count($name_array)==1) return array("name"=>"");
-			$file_ext				= array_pop($name_array);
-			$file_ext				= strtolower($file_ext);
+			$file_ext				= strtolower(array_pop($name_array));
+			$file_ext				= mbw_value_filter($file_ext, "name");
 
 			if(!in_array($file_ext, $check_ext)){
 				mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
@@ -946,6 +962,7 @@ if(!function_exists('mbw_file_upload')){
 				$name_array	= explode('.',$upload_data["name"]);
 				if(count($name_array)==1) return $upload_data;
 				$file_ext			= strtolower(array_pop($name_array));
+				$file_ext			= mbw_value_filter($file_ext, "name");
 				if(mbw_get_param("file_type")!=""){
 					$file_type	= mbw_get_param("file_type");
 				}else{
@@ -968,39 +985,42 @@ if(!function_exists('mbw_file_upload')){
 					$upload_data["path"]	= $datePath.$file_name;
 					if(defined('MBW_IMAGE_EDITOR') && mbw_get_param("mode")=="write" && mbw_get_param("board_action")=="modify" && mbw_get_param("image_path")!=""){		//게시물 수정시 대표이미지가 존재할 경우 해당 경로에 덮어쓰기로 저장
 						$image_path				= mbw_get_param("image_path");
-						$file_item					= $mdb->get_row($mdb->prepare("select * from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_file_path"]."=%s limit 1;", $image_path),ARRAY_A);
-						if(empty($file_item)){		//수정할 이미지가 삭제되었을 경우 대표 이미지 경로에 다시 저장							
-							$file_name				= basename($image_path);
-							$datePath					= preg_replace('/[^0-9a-zA-Z\/]/', '', str_replace($file_name, "", $image_path));
-							
-							$file_name				= mbw_check_upload_filename($file_name);
-							$name_array				= explode('.',$file_name);
-							$file_ext					= strtolower(array_pop($name_array));
-							
-							if(!in_array($file_ext, $mb_image_upload_files)){
-								mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
-								return array("name"=>"");
-							}else{						
-								if(strpos($file_name, 'F')===0 && strpos($file_name, '_')!==false){
-									$upload_data["name"]		= substr($file_name,strpos($file_name, '_')+1);
-								}else{
-									$upload_data["name"]		= $file_name;
-								}
-								$upload_data["path"]	= $datePath.$file_name;
-								$board_pid				= mbw_get_param("board_pid");
-								if(!empty($board_pid)){
-									if(isset($api_fields["fn_board_pid"])){
-										$send_data[$api_fields["fn_board_pid"]]						= intval($board_pid);
+						if ( is_string($image_path) ) {
+							$file_item					= $mdb->get_row($mdb->prepare("select * from `".$mb_admin_tables["files"]."` where ".$mb_fields["files"]["fn_file_path"]."=%s limit 1;", $image_path),ARRAY_A);
+							if(empty($file_item)){		//수정할 이미지가 삭제되었을 경우 대표 이미지 경로에 다시 저장							
+								$file_name				= basename($image_path);
+								$datePath					= preg_replace('/[^0-9a-zA-Z\/]/', '', str_replace($file_name, "", $image_path));
+								
+								$file_name				= mbw_check_upload_filename($file_name);
+								$name_array				= explode('.',$file_name);
+								$file_ext					= strtolower(array_pop($name_array));
+								$file_ext					= mbw_value_filter($file_ext, "name");
+								
+								if(!in_array($file_ext, $mb_image_upload_files)){
+									mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
+									return array("name"=>"");
+								}else{						
+									if(strpos($file_name, 'F')===0 && strpos($file_name, '_')!==false){
+										$upload_data["name"]		= substr($file_name,strpos($file_name, '_')+1);
+									}else{
+										$upload_data["name"]		= $file_name;
 									}
-									$board_name		= mbw_get_param("board_name");
-									if(!empty($board_name)){								
-										if(isset($api_fields["fn_board_name"])){
-											$send_data[$api_fields["fn_board_name"]]						= mbw_htmlspecialchars2($board_name);
+									$upload_data["path"]	= $datePath.$file_name;
+									$board_pid				= mbw_get_param("board_pid");
+									if(!empty($board_pid)){
+										if(isset($api_fields["fn_board_pid"])){
+											$send_data[$api_fields["fn_board_pid"]]						= intval($board_pid);
 										}
-										$table_name			= mbw_get_board_table_name($board_name);
-										if(isset($api_fields["fn_table_name"]) && !empty($table_name)){
-											$send_data[$api_fields["fn_table_name"]]						= mbw_htmlspecialchars2($table_name);
-										}							
+										$board_name		= mbw_get_param("board_name");
+										if(!empty($board_name)){								
+											if(isset($api_fields["fn_board_name"])){
+												$send_data[$api_fields["fn_board_name"]]						= mbw_htmlspecialchars2($board_name);
+											}
+											$table_name			= mbw_get_board_table_name($board_name);
+											if(isset($api_fields["fn_table_name"]) && !empty($table_name)){
+												$send_data[$api_fields["fn_table_name"]]						= mbw_htmlspecialchars2($table_name);
+											}
+										}
 									}
 								}
 							}
@@ -1051,6 +1071,7 @@ if(!function_exists('mbw_file_upload')){
 					
 					$name_array		= explode('.', $file_name);
 					$file_ext			= strtolower(array_pop($name_array));
+					$file_ext			= mbw_value_filter($file_ext, "name");
 					
 					if(strpos($mime_type,"image/")!==0){
 						mbw_error_message("MSG_ERROR", "Upload","1500");
@@ -1058,28 +1079,11 @@ if(!function_exists('mbw_file_upload')){
 						mbw_error_message("MSG_ERROR", "Upload","1500");
 					}else if(!in_array($file_ext, $mb_image_upload_files)){
 						mbw_error_message("MSG_UPLOAD_EXT_ERROR", $file_ext,"1502");
-					}else{					
-						$fp_path		= $uploadPath.$datePath.$file_name;						
-						if ( function_exists('imagecreatefromstring') && ($file_ext === 'jpg' || $file_ext === 'jpeg' || $file_ext === 'png') ) {
-							//보안 처리를 위해 jpg, png 파일은 안전한 방식으로 이미지 생성
-							//이미지 에디터는 jpg, png 확장자만 사용, 업로드 플러그인은 gif, bmp 확장자도 지원
-							//imagegif 함수는 gif 모션기능이 제거되기 때문에 fwrite 함수로 저장
-							$image = @imagecreatefromstring($fd);
-							if ($image !== false) {
-								if ($file_ext === 'jpg' || $file_ext === 'jpeg') {
-									imagejpeg($image, $fp_path, 90);
-								} elseif ($file_ext === 'png') {
-									imagealphablending($image, false);
-									imagesavealpha($image, true);
-									imagepng($image, $fp_path);
-								}
-								imagedestroy($image);
-							}
-						} else {
-							$fp				= fopen($fp_path,"w");
-							fwrite($fp,$fd);
-							fclose($fp);
-						}
+					}else{
+						$fp_path		= $uploadPath.$datePath.$file_name;
+						$fp				= fopen($fp_path,"w");
+						fwrite($fp,$fd);
+						fclose($fp);
 						if ( is_file($fp_path) ) {
 							@chmod($fp_path, 0644);
 						}
@@ -1110,10 +1114,15 @@ if(!function_exists('mbw_check_image_orientation')){
 					if(empty($image_size)) return false;
 					$image_type		= $image_size[2];
 				}
+				$source = null;
 				if($image_type==2){		//jpg
 					$source = @imagecreatefromjpeg($filename);
 				}else if($image_type==3){		//png
 					$source = @imagecreatefrompng($filename);
+					if($source) {
+						imagealphablending($source, false);
+						imagesavealpha($source, true);
+					}
 				}
 				if(!empty($source)){
 					$orientation			= $exif['Orientation'];
@@ -1126,13 +1135,17 @@ if(!function_exists('mbw_check_image_orientation')){
 					}else{
 						$angle	= 0;
 					}
-					$image = imagerotate($source, $angle, 0);
 					if($image_type==3 && function_exists("imagepng")){
+						$bg_color = imagecolorallocatealpha($source, 0, 0, 0, 127);
+						$image = imagerotate($source, $angle, $bg_color);
 						@imagepng($image, $filename);
+						@imagedestroy($image);
 					}else if(function_exists("imagejpeg")){
+						$bg_color = imagecolorallocate($source, 0, 0, 0);
+						$image = imagerotate($source, $angle, $bg_color);
 						@imagejpeg($image, $filename,100);
-					}
-					@imagedestroy($image);
+						@imagedestroy($image);
+					}					
 				}
 			}
 		}
